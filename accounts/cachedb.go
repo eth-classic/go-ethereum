@@ -32,9 +32,9 @@ import (
 	"sync"
 
 	"github.com/boltdb/bolt"
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/logger"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
 	"github.com/mailru/easyjson"
 )
 

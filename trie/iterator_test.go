@@ -21,8 +21,8 @@ import (
 
 	"bytes"
 	"fmt"
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/ethdb"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/ethdb"
 	"math/rand"
 )
 

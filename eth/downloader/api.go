@@ -22,9 +22,9 @@ import (
 
 	"math/big"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/event"
-	"github.com/ethereumproject/go-ethereum/rpc"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/event"
+	"github.com/ethereumclassic/go-ethereum/rpc"
 )
 
 type DoneEvent struct {

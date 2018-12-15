@@ -19,10 +19,10 @@ package runtime
 import (
 	"math/big"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core"
-	"github.com/ethereumproject/go-ethereum/core/state"
-	"github.com/ethereumproject/go-ethereum/core/vm"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/core"
+	"github.com/ethereumclassic/go-ethereum/core/state"
+	"github.com/ethereumclassic/go-ethereum/core/vm"
 )
 
 // Env is a basic runtime environment required for running the EVM.

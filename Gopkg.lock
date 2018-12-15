@@ -33,33 +33,16 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/ethereumproject/benchmark"
-  packages = [
-    "rtprof",
-    "rtprof/pprof/driver",
-    "rtprof/pprof/internal/binutils",
-    "rtprof/pprof/internal/driver",
-    "rtprof/pprof/internal/elfexec",
-    "rtprof/pprof/internal/graph",
-    "rtprof/pprof/internal/measurement",
-    "rtprof/pprof/internal/plugin",
-    "rtprof/pprof/internal/report",
-    "rtprof/pprof/internal/symbolizer",
-    "rtprof/pprof/internal/symbolz",
-    "rtprof/pprof/measurement",
-    "rtprof/pprof/profile",
-    "rtprof/pprof/third_party/d3",
-    "rtprof/pprof/third_party/d3flamegraph",
-    "rtprof/pprof/third_party/d3tip",
-    "rtprof/pprof/third_party/svg"
-  ]
+  name = "github.com/ethereumclassic/benchmark"
+  packages = ["rtprof"]
   revision = "8eff34efba2579d41fe2fb772fe1a3c89f6496ce"
 
 [[projects]]
   branch = "master"
-  name = "github.com/ethereumproject/ethash"
+  name = "github.com/ethereumclassic/ethash"
   packages = ["."]
   revision = "65a5b25efc277ff0996160cc3c76a44bec7a11fb"
+
 
 [[projects]]
   name = "github.com/fatih/color"
@@ -334,6 +317,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "cba934e30ac391c4e1f3f69951e33020e183d729fb2bf60a18c7708836b9acdc"
+  inputs-digest = "a323d411bcc269b6a07f026898e4cf6fffd0e314761b25f0a709df4c729c3eea"
   solver-name = "gps-cdcl"
   solver-version = 1

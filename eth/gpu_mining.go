@@ -25,12 +25,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereumproject/ethash"
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/miner"
+	"github.com/ethereumclassic/ethash"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/core/types"
+	"github.com/ethereumclassic/go-ethereum/logger"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/miner"
 )
 
 func (s *Ethereum) StartMining(threads int, gpus string) error {

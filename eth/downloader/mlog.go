@@ -1,6 +1,6 @@
 package downloader
 
-import "github.com/ethereumproject/go-ethereum/logger"
+import "github.com/ethereumclassic/go-ethereum/logger"
 
 var mlogDownloader = logger.MLogRegisterAvailable("downloader", mLogLines)
 

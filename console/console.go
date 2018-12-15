@@ -27,9 +27,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ethereumproject/go-ethereum/internal/jsre"
-	"github.com/ethereumproject/go-ethereum/internal/web3ext"
-	"github.com/ethereumproject/go-ethereum/rpc"
+	"github.com/ethereumclassic/go-ethereum/internal/jsre"
+	"github.com/ethereumclassic/go-ethereum/internal/web3ext"
+	"github.com/ethereumclassic/go-ethereum/rpc"
 	"github.com/fatih/color"
 	"github.com/peterh/liner"
 	"github.com/robertkrimen/otto"

@@ -26,9 +26,9 @@ import (
 	"sync"
 
 	"fmt"
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/rlp"
-	"github.com/ethereumproject/go-ethereum/trie"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/rlp"
+	"github.com/ethereumclassic/go-ethereum/trie"
 )
 
 type DumpAccount struct {

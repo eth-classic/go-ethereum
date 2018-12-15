@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/rlp"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/rlp"
 )
 
 type Log struct {
