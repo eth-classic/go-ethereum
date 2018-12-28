@@ -112,10 +112,11 @@
   name = "gopkg.in/urfave/cli.v1"
   revision = "01857ac33766ce0c93856370626f9799281c14f4"
 
-[[constraint]]
-  branch = "master"
-  name = "github.com/ethereumclassic/benchmark"
 
 [[constraint]]
   name = "github.com/fatih/color"
   version = "v1.7.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/ethereumclassic/benchmark"

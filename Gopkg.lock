@@ -31,17 +31,11 @@
   revision = "2777226d0340d8da18b49993ce2b4aeb9c1c6929"
   version = "v0.8.0"
 
-
-[[projects]]
-  branch = "fix/organization"
-  name = "github.com/ethereumclassic/ethash"
-  packages = ["."]
-  revision = "2a9c8beab14c25d70ad215596621c596c762fa20"
-
 [[projects]]
   branch = "master"
-  name = "github.com/ethereumproject/benchmark"
+  name = "github.com/ethereumclassic/benchmark"
   packages = [
+    "rtprof",
     "rtprof/pprof/driver",
     "rtprof/pprof/internal/binutils",
     "rtprof/pprof/internal/driver",
@@ -59,7 +53,13 @@
     "rtprof/pprof/third_party/d3tip",
     "rtprof/pprof/third_party/svg"
   ]
-  revision = "8eff34efba2579d41fe2fb772fe1a3c89f6496ce"
+  revision = "ded86b067aa526087d793c217d77adbe8243e8d1"
+
+[[projects]]
+  branch = "fix/organization"
+  name = "github.com/ethereumclassic/ethash"
+  packages = ["."]
+  revision = "2a9c8beab14c25d70ad215596621c596c762fa20"
 
 [[projects]]
   name = "github.com/fatih/color"
@@ -334,6 +334,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bca21745cc762befaf0e3247d58b64856fd4a52a37d06cd267016b16814cc8aa"
+  inputs-digest = "0f03add799bd26e6625b2cc76a13bac25628d48a7327b177c9d2dadd2dfd6142"
   solver-name = "gps-cdcl"
   solver-version = 1
