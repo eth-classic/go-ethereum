@@ -2,10 +2,10 @@
 
 
 [[projects]]
-  branch = "master"
+  branch = "v0.9-ethereumclassic"
   name = "github.com/ETCDEVTeam/sputnikvm-ffi"
   packages = ["go/sputnikvm"]
-  revision = "67fde4837870516c14cf253f8e956141c9d586f9"
+  revision = "4f0ef0531cd5cf1d59ebc5e47e8489d7ec68f1f9"
 
 [[projects]]
   branch = "master"
@@ -31,18 +31,35 @@
   revision = "2777226d0340d8da18b49993ce2b4aeb9c1c6929"
   version = "v0.8.0"
 
-[[projects]]
-  branch = "master"
-  name = "github.com/ethereumclassic/benchmark"
-  packages = ["rtprof"]
-  revision = "8eff34efba2579d41fe2fb772fe1a3c89f6496ce"
 
 [[projects]]
-  branch = "master"
+  branch = "fix/organization"
   name = "github.com/ethereumclassic/ethash"
   packages = ["."]
-  revision = "65a5b25efc277ff0996160cc3c76a44bec7a11fb"
+  revision = "2a9c8beab14c25d70ad215596621c596c762fa20"
 
+[[projects]]
+  branch = "master"
+  name = "github.com/ethereumproject/benchmark"
+  packages = [
+    "rtprof/pprof/driver",
+    "rtprof/pprof/internal/binutils",
+    "rtprof/pprof/internal/driver",
+    "rtprof/pprof/internal/elfexec",
+    "rtprof/pprof/internal/graph",
+    "rtprof/pprof/internal/measurement",
+    "rtprof/pprof/internal/plugin",
+    "rtprof/pprof/internal/report",
+    "rtprof/pprof/internal/symbolizer",
+    "rtprof/pprof/internal/symbolz",
+    "rtprof/pprof/measurement",
+    "rtprof/pprof/profile",
+    "rtprof/pprof/third_party/d3",
+    "rtprof/pprof/third_party/d3flamegraph",
+    "rtprof/pprof/third_party/d3tip",
+    "rtprof/pprof/third_party/svg"
+  ]
+  revision = "8eff34efba2579d41fe2fb772fe1a3c89f6496ce"
 
 [[projects]]
   name = "github.com/fatih/color"
@@ -317,6 +334,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a323d411bcc269b6a07f026898e4cf6fffd0e314761b25f0a709df4c729c3eea"
+  inputs-digest = "bca21745cc762befaf0e3247d58b64856fd4a52a37d06cd267016b16814cc8aa"
   solver-name = "gps-cdcl"
   solver-version = 1

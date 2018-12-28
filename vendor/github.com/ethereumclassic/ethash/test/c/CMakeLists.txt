@@ -10,8 +10,6 @@ IF( NOT Boost_FOUND )
     set(Boost_USE_MULTITHREADED ON)
 
     if (MSVC)
-        # TODO handle other msvc versions or it will fail find them
-        set(Boost_COMPILER -vc120)
         # use static boost libraries *.lib
         set(Boost_USE_STATIC_LIBS ON)
     elseif (APPLE)
@@ -24,7 +22,7 @@ IF( NOT Boost_FOUND )
         set(Boost_USE_STATIC_LIBS OFF)
 
     endif()
-    find_package(Boost 1.48.0 COMPONENTS unit_test_framework system filesystem)
+    find_package(Boost 1.54.0 COMPONENTS unit_test_framework system filesystem)
 ENDIF()
 
 IF (Boost_FOUND)

@@ -40,11 +40,11 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/crypto"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/pow"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/crypto"
+	"github.com/ethereumclassic/go-ethereum/logger"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/pow"
 )
 
 var (
@@ -132,7 +132,7 @@ func (l *Light) Verify(block pow.Block) bool {
 	// to prevent DOS attacks.
 	blockNum := block.NumberU64()
 	if blockNum >= epochLength*2048 {
-		glog.V(logger.Debug).Infof("block number %d too high, limit is %d", epochLength*2048)
+		glog.V(logger.Debug).Infof("block number %d too high, limit is %d", blockNum, epochLength*2048)
 		return false
 	}
 
