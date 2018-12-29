@@ -56,10 +56,10 @@
   revision = "ded86b067aa526087d793c217d77adbe8243e8d1"
 
 [[projects]]
-  branch = "fix/organization"
+  branch = "master"
   name = "github.com/ethereumclassic/ethash"
   packages = ["."]
-  revision = "2a9c8beab14c25d70ad215596621c596c762fa20"
+  revision = "476fb24e1fe1d0c6e66abe4d64438338b7ca6221"
 
 [[projects]]
   name = "github.com/fatih/color"
@@ -334,6 +334,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0f03add799bd26e6625b2cc76a13bac25628d48a7327b177c9d2dadd2dfd6142"
+  inputs-digest = "4d3a13467e1e0465ce109c75f55a3cc0d511ba0b3eb28d9c291e65411ae8db1a"
   solver-name = "gps-cdcl"
   solver-version = 1
