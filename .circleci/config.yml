@@ -16,24 +16,24 @@ sputnik_vm_steps: &sputnik_vm_steps
         paths:
           - go/src/github.com/ethereumclassic/go-ethereum/vendor/github.com/ETCDEVTeam/sputnikvm-ffi/c/libsputnikvm.a
 
-deploy_steps: &deploy_steps
-  steps:
-    - restore_cache:
-        key: v10-toolchain-{{ arch }}
-    - attach_workspace:
-        at: ~/
-    - deploy:
-        name: Deploy to builds.etcdevteam.com
-        command: |
-          if [[ $CIRCLE_PROJECT_USERNAME != ethereumclassic ]]; then echo "Deployments only enabled from ethereumclassic/ repo. Exiting." && exit 0; fi
-          export GOPATH=$HOME/go
-          export PATH=$PATH:$HOME/.cargo/bin
-          cd $GOPATH/src/github.com/ethereumclassic/go-ethereum
-          cp $GOPATH/bin/geth ./
-          export VERSION=`git describe --tags`
-          ./geth version | awk '/^Version: /{if (ENVIRON["VERSION"] != $2){printf "Expected: \"%s\", got \"%s\"\n",ENVIRON["VERSION"], $2; exit 1}}'
-
-          ./scripts/deploy.sh gcloud-circleci.json.enc
+# deploy_steps: &deploy_steps
+#  steps:
+#    - restore_cache:
+#        key: v10-toolchain-{{ arch }}
+#    - attach_workspace:
+#        at: ~/
+#    - deploy:
+#        name: Deploy to builds.etcdevteam.com
+#        command: |
+#          if [[ $CIRCLE_PROJECT_USERNAME != ethereumclassic ]]; then echo "Deployments only enabled from ethereumclassic/ repo. Exiting." && exit 0; fi
+#          export GOPATH=$HOME/go
+#          export PATH=$PATH:$HOME/.cargo/bin
+#          cd $GOPATH/src/github.com/ethereumclassic/go-ethereum
+#          cp $GOPATH/bin/geth ./
+#          export VERSION=`git describe --tags`
+#          ./geth version | awk '/^Version: /{if (ENVIRON["VERSION"] != $2){printf "Expected: \"%s\", got \"%s\"\n",ENVIRON["VERSION"], $2; exit 1}}'
+#
+#          ./scripts/deploy.sh gcloud-circleci.json.enc
 
 unit_tests_steps: &unit_tests_steps
   steps:
@@ -229,15 +229,15 @@ jobs:
       - image: circleci/golang:1.9
     <<: *bats_tests_steps
 
-  mac_deploy:
-    macos:
-      xcode: "9.0"
-    <<: *deploy_steps
+#  mac_deploy:
+#    macos:
+#      xcode: "9.0"
+#    <<: *deploy_steps
 
-  linux_deploy:
-    docker:
-      - image: circleci/golang:1.9
-    <<: *deploy_steps
+#  linux_deploy:
+#    docker:
+#      - image: circleci/golang:1.9
+#    <<: *deploy_steps
 
 workflows:
   version: 2
@@ -271,16 +271,16 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - mac_deploy:
-          requires:
-            - mac_evm_unit_tests
-            - mac_sputnikvm_unit_tests
-            - mac_bats_tests
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /.*/
+#      - mac_deploy:
+#          requires:
+#            - mac_evm_unit_tests
+#            - mac_sputnikvm_unit_tests
+#            - mac_bats_tests
+#          filters:
+#            branches:
+#              only: master
+#            tags:
+#              only: /.*/
 
   linux_build:
     jobs:
@@ -312,13 +312,13 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - linux_deploy:
-          requires:
-            - linux_evm_unit_tests
-            - linux_sputnikvm_unit_tests
-            - linux_bats_tests
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /.*/
+#      - linux_deploy:
+#          requires:
+#            - linux_evm_unit_tests
+#            - linux_sputnikvm_unit_tests
+#            - linux_bats_tests
+#          filters:
+#            branches:
+#              only: master
+#            tags:
+#              only: /.*/
