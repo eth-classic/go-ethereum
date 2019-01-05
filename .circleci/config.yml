@@ -57,7 +57,7 @@ deploy_steps: &deploy_steps
          curl -fL https://getcli.jfrog.io | sh
          # Configure Bintray OR Artifactory creds.
          ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY --interactive=false
-        #  ./jfrog bt config --url $BINTRAY_URL --user $BINTRAY_USER --apikey $BINTRAY_APIKEY --interactive=false
+         # ./jfrog bt config --url $BINTRAY_URL --user $BINTRAY_USER --apikey $BINTRAY_APIKEY --interactive=false
          # Upload files.
          # Usage: jfrog bt upload [command options] <source path> <target location> [target path]
          #   The second argument specifies the location within Bintray for uploaded file, in the form of subject/repository/package/version.
