@@ -16,24 +16,55 @@ sputnik_vm_steps: &sputnik_vm_steps
         paths:
           - go/src/github.com/ethereumclassic/go-ethereum/vendor/github.com/ETCDEVTeam/sputnikvm-ffi/c/libsputnikvm.a
 
-# deploy_steps: &deploy_steps
-#  steps:
-#    - restore_cache:
-#        key: v10-toolchain-{{ arch }}
-#    - attach_workspace:
-#        at: ~/
-#    - deploy:
-#        name: Deploy to builds.etcdevteam.com
-#        command: |
-#          if [[ $CIRCLE_PROJECT_USERNAME != ethereumclassic ]]; then echo "Deployments only enabled from ethereumclassic/ repo. Exiting." && exit 0; fi
-#          export GOPATH=$HOME/go
-#          export PATH=$PATH:$HOME/.cargo/bin
-#          cd $GOPATH/src/github.com/ethereumclassic/go-ethereum
-#          cp $GOPATH/bin/geth ./
-#          export VERSION=`git describe --tags`
-#          ./geth version | awk '/^Version: /{if (ENVIRON["VERSION"] != $2){printf "Expected: \"%s\", got \"%s\"\n",ENVIRON["VERSION"], $2; exit 1}}'
-#
-#          ./scripts/deploy.sh gcloud-circleci.json.enc
+deploy_steps: &deploy_steps
+ steps:
+   - restore_cache:
+       key: v10-toolchain-{{ arch }}
+   - attach_workspace:
+       at: ~/
+   - deploy:
+       name: Deploy to Bintray/Artifactory
+       command: |
+         if [[ $CIRCLE_PROJECT_USERNAME != ethereumclassic ]]; then echo "Deployments only enabled from ethereumclassic/ repo. Exiting." && exit 0; fi
+         export GOPATH=$HOME/go
+         cd $GOPATH/bin # There is a cached 'geth' executable in here because workflows.
+         if [[ ! -f ./geth ]]; then echo "WTF y no haz cached geth??" && exit 1; fi
+         # Note that this follow VERSION vars are assuming:
+         # - that there IS a last tag
+         # - that the tag is named according to semver, with a 'v' prefix, like 'v.5.4.3'
+         # TODO: handle cases where these aren't met
+         export VERSION=`git describe --tags` # eg. v5.5.2-16-geb15c1474
+         export VERSION_SEMVER_FULL=$(git describe --tags $(git rev-list --tags --max-count=1)) eg. v5.5.2
+         export VERSION_MAJOR=`echo ${VERSION_SEMVER_FULL} | sed "s/^v\([0-9]*\).*/\1/"` # eg. 5
+         export VERSION_MINOR=`echo ${VERSION_SEMVER_FULL} | sed "s/v[0-9]*\.\([0-9]*\).*/\1/"` # eg. the second 5, lulz
+         # VERSION_BASE_DIST is essentially an arbitrarily-grouped 'bucket' for sorting releases conveniently with the distributor's "version" idea
+         export VERSION_BASE_DIST="v$VERSION_MAJOR.$VERSION_MINOR.x"
+         # Ensure versions match, b/c IIRC there was a once-upon-a-time issue with cached builds mismatching.
+         ./geth version | awk '/^Version: /{if (ENVIRON["VERSION"] != $2){printf "Expected: \"%s\", got \"%s\"\n",ENVIRON["VERSION"], $2; exit 1}}'
+         export ARCHIVE_NAME="ethereum-classic-go-ethereum-$OS_NAME-$VERSION"
+         # Archive the executables.
+         zip "$GETH_ARCHIVE_NAME.zip" ./geth
+         tar -zcf "$GETH_ARCHIVE_NAME.tar.gz" ./geth
+         # Create associated hashes of the archives. Use 'tee' so that the hash shows in the CI logs.
+         if command -v openssl 2>/dev/null; then 
+          openssl dgst -sha256 "$GETH_ARCHIVE_NAME.zip" | tee "$GETH_ARCHIVE_NAME.zip.sha256"
+          openssl dgst -sha256 "$GETH_ARCHIVE_NAME.tar.gz" | tee "$GETH_ARCHIVE_NAME.tar.gz.sha256"
+         else 
+          OS_NAME=`echo $(uname) | tr "[:upper:]" "[:lower:]"`
+          if [[ $OS_NAME == "darwin" ]]; then echo 'Install OpenSSL for Mac plz'; else echo 'Install OpenSSL for Linux plz'; fi
+         fi
+         # Get jfrog for Bintray OR Artifactory deploys
+         curl -fL https://getcli.jfrog.io | sh
+         # Configure Bintray OR Artifactory creds.
+         # I'm going to assume Bintray from here, but we can easily swap 'bt' for 'rt' if we use Artifactory instead.
+         # ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY --interactive=false
+         ./jfrog bt config --url $BINTRAY_URL --user $BINTRAY_USER --apikey $BINTRAY_APIKEY --interactive=false
+         # Upload files.
+         # Usage: jfrog bt upload [command options] <source path> <target location> [target path]
+         #   The second argument specifies the location within Bintray for uploaded file, in the form of subject/repository/package/version.
+         ./jfrog bt upload "*.zip" "ethereumclassic/Go-ethereum/go-ethereum/$VERSION_BASE_DIST"
+         ./jfrog bt upload "*.tar.gz" "ethereumclassic/Go-ethereum/go-ethereum/$VERSION_BASE_DIST"
+         ./jfrog bt upload "*.sha256" "ethereumclassic/Go-ethereum/go-ethereum/$VERSION_BASE_DIST"
 
 unit_tests_steps: &unit_tests_steps
   steps:
