@@ -56,15 +56,14 @@ deploy_steps: &deploy_steps
          # Get jfrog for Bintray OR Artifactory deploys
          curl -fL https://getcli.jfrog.io | sh
          # Configure Bintray OR Artifactory creds.
-         # I'm going to assume Bintray from here, but we can easily swap 'bt' for 'rt' if we use Artifactory instead.
-         # ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY --interactive=false
-         ./jfrog bt config --url $BINTRAY_URL --user $BINTRAY_USER --apikey $BINTRAY_APIKEY --interactive=false
+         ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY --interactive=false
+        #  ./jfrog bt config --url $BINTRAY_URL --user $BINTRAY_USER --apikey $BINTRAY_APIKEY --interactive=false
          # Upload files.
          # Usage: jfrog bt upload [command options] <source path> <target location> [target path]
          #   The second argument specifies the location within Bintray for uploaded file, in the form of subject/repository/package/version.
-         ./jfrog bt upload "*.zip" "ethereumclassic/Go-ethereum/go-ethereum/$VERSION_BASE_DIST"
-         ./jfrog bt upload "*.tar.gz" "ethereumclassic/Go-ethereum/go-ethereum/$VERSION_BASE_DIST"
-         ./jfrog bt upload "*.sha256" "ethereumclassic/Go-ethereum/go-ethereum/$VERSION_BASE_DIST"
+         ./jfrog rt upload "*.zip" "ethereumclassic/Go-ethereum/go-ethereum/$VERSION_BASE_DIST"
+         ./jfrog rt upload "*.tar.gz" "ethereumclassic/Go-ethereum/go-ethereum/$VERSION_BASE_DIST"
+         ./jfrog rt upload "*.sha256" "ethereumclassic/Go-ethereum/go-ethereum/$VERSION_BASE_DIST"
 
 unit_tests_steps: &unit_tests_steps
   steps:
