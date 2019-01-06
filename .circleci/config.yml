@@ -41,7 +41,7 @@ deploy_steps: &deploy_steps
          export VERSION_BASE_DIST="v$VERSION_MAJOR.$VERSION_MINOR.x"
          # Ensure versions match, b/c IIRC there was a once-upon-a-time issue with cached builds mismatching.
          ./geth version | awk '/^Version: /{if (ENVIRON["VERSION"] != $2){printf "Expected: \"%s\", got \"%s\"\n",ENVIRON["VERSION"], $2; exit 1}}'
-         export ARCHIVE_NAME="ethereum-classic-go-ethereum-$OS_NAME-$VERSION"
+         export GETH_ARCHIVE_NAME="ethereum-classic-go-ethereum-$OS_NAME-$VERSION"
          # Archive the executables.
          zip "$GETH_ARCHIVE_NAME.zip" ./geth
          tar -zcf "$GETH_ARCHIVE_NAME.tar.gz" ./geth
@@ -58,9 +58,7 @@ deploy_steps: &deploy_steps
          # Upload files.
          # Usage: jfrog rt u [command options] <source pattern> <target pattern>
          #   The second argument specifies the location within Bintray for uploaded file, in the form of subject/repository/package/version.
-         ./jfrog rt upload "*.zip" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
-         ./jfrog rt upload "*.tar.gz" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
-         ./jfrog rt upload "*.sha256" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
+         ./jfrog rt upload "GETH_ARCHIVE_NAME*" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
 
 unit_tests_steps: &unit_tests_steps
   steps:
