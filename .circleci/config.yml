@@ -58,9 +58,9 @@ deploy_steps: &deploy_steps
          # Upload files.
          # Usage: jfrog rt u [command options] <source pattern> <target pattern>
          #   The second argument specifies the location within Bintray for uploaded file, in the form of subject/repository/package/version.
-         ./jfrog rt upload "*.zip" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST"
-         ./jfrog rt upload "*.tar.gz" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST"
-         ./jfrog rt upload "*.sha256" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST"
+         ./jfrog rt upload "*.zip" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
+         ./jfrog rt upload "*.tar.gz" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
+         ./jfrog rt upload "*.sha256" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
 
 unit_tests_steps: &unit_tests_steps
   steps:
