@@ -220,30 +220,30 @@ jobs:
     macos:
       xcode: "9.0"
     environment:
-        USE_SPUTNIK_VM: false
+        USE_SPUTNIK_VM: "false"
     <<: *unit_tests_steps
 
   linux_evm_unit_tests:
     docker:
       - image: circleci/golang:1.9
     environment:
-        GOMAXPROCS: 2
-        USE_SPUTNIK_VM: false
+        GOMAXPROCS: "2"
+        USE_SPUTNIK_VM: "false"
     <<: *unit_tests_steps
 
   mac_sputnikvm_unit_tests:
     macos:
       xcode: "9.0"
     environment:
-        USE_SPUTNIK_VM: true
+        USE_SPUTNIK_VM: "true"
     <<: *unit_tests_steps
 
   linux_sputnikvm_unit_tests:
     docker:
       - image: circleci/golang:1.9
     environment:
-        GOMAXPROCS: 2
-        USE_SPUTNIK_VM: true
+        GOMAXPROCS: "2"
+        USE_SPUTNIK_VM: "true"
     <<: *unit_tests_steps
 
   mac_bats_tests:
