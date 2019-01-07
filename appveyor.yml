@@ -3,13 +3,12 @@ clone_folder: c:\gopath\src\github.com\ethereumclassic\go-ethereum
 os: Visual Studio 2015
 environment:
   GOPATH: c:\gopath
-  GCP_PASSWD:
-    secure: erzLJz7qT0kCJa+jZG6Sf9wwkfLYO2UDLzydkKTdwqA=
 install:
   - set PATH=%GOPATH%\bin;c:\go\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
 
-  - ps: $env:VERSION = "$(git describe --tags)"
-  - ps: $env:VERSION_SEMVER_BASIC = "$(git describe --tags $(git rev-list --tags --max-count=1))"
+  - ps: $env:VERSION = "$(git describe --tags)" # eg. v1.2.3-14-abcd123
+  - ps: $env:VERSION_SEMVER_BASIC = "$(git describe --tags $(git rev-list --tags --max-count=1))" # eg. v1.2.3
+  - ps: $env:VERSION_BASE_DIST = "$(echo $env:VERSION_SEMVER_BASIC | sed 's/\(^v[0-9]*\.[0-9]*\.\)[0-9]*/\1/')" # eg. v1.2. (will append 'x' at deploy path)
 
   # Install schroedinger.
   - go get github.com/etcdevteam/go-schroedinger/cmd/schroedinger/...
@@ -31,6 +30,7 @@ install:
 
   - echo %VERSION%
   - echo %VERSION_SEMVER_BASIC%
+  - echo %VERSION_BASE_DIST%
   - echo %PATH%
   - echo %GOPATH%
   - go version
@@ -50,33 +50,13 @@ before_deploy:
   - ps: >- 
       $sha256 = (Get-Content ethereum-classic-go-ethereum-win64-$env:VERSION.zip.sha256)
       Write-Host -ForegroundColor Yellow -Message "sha256(ethereum-classic-go-ethereum-win64-$env:VERSION.zip.sha256) = $sha256"
-artifacts:
-  - path: "*.zip"
-  - path: "*.sha256"
-deploy:
-- provider: BinTray
-  username: realcodywburns
-  api_key:
-    secure: #TODO # AABBCC+DDD==
-  subject: ethereumclassic
-  repo: Go-ethereum
-  package: go-ethereum
-  version: "%VERSION_SEMVER_BASIC%"
-  publish: true
-  override: true
-  explode: false
-  on:
-    branch: master
-- provider: BinTray
-  username: realcodywburns
-  api_key:
-    secure: #TODO # AABBCC+DDD==
-  subject: ethereumclassic
-  repo: Go-ethereum
-  package: go-ethereum
-  version: "%VERSION_SEMVER_BASIC%"
-  publish: true
-  override: true
-  explode: false
-  on:
-    appveyor_repo_tag: true
+deploy_script:
+  - ps: $env:ARTIFACTORY_URL = ""
+  - ps: $env:ARTIFACTORY_USER = ""
+  - ps: $env:ARTIFACTORY_APIKEY = ""
+  - ps: >-
+      If (($env:APPVEYOR_REPO_NAME -eq 'ethereumclassic/go-ethereum') -and (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true'))) {
+        curl -fL https://getcli.jfrog.io | sh
+        jfrog.exe config --url $env:ARTIFACTORY_URL --user $env:ARTIFACTORY_USER --apikey $env:ARTIFACTORY_APIKEY --interactive=false
+        jfrog.exe rt upload "ethereum-classic-go-ethereum-*" "ethereumclassic/go-ethereum/$env:VERSION_BASE_DISTx/"
+      }
