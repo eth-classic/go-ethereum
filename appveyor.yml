@@ -3,11 +3,10 @@ clone_folder: c:\gopath\src\github.com\ethereumclassic\go-ethereum
 os: Visual Studio 2015
 environment:
   GOPATH: c:\gopath
+  ARTIFACTORY_URL:
+  ARTIFACTORY_USER:
+  ARTIFACTORY_APIKEY:
 install:
-  - ps: $env:ARTIFACTORY_URL = ""
-  - ps: $env:ARTIFACTORY_USER = ""
-  - ps: $env:ARTIFACTORY_APIKEY = ""
-
   - set PATH=%GOPATH%\bin;c:\go\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
   - echo %PATH%
   - echo %GOPATH%
@@ -56,6 +55,6 @@ deploy_script:
   - curl -sL https://getcli.jfrog.io | bash
   - ps: >-
       If (($env:APPVEYOR_REPO_NAME -eq 'ethereumclassic/go-ethereum') -and (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true'))) {
-        .\jfrog.exe config --url $env:ARTIFACTORY_URL --user $env:ARTIFACTORY_USER --apikey $env:ARTIFACTORY_APIKEY --interactive=false
+        .\jfrog.exe config --url "$env:ARTIFACTORY_URL" --user "$env:ARTIFACTORY_USER" --apikey "$env:ARTIFACTORY_APIKEY" --interactive=false
         .\jfrog.exe rt upload "ethereum-classic-go-ethereum-*" "ethereumclassic/go-ethereum/$env:VERSION_BASE_DIST`x/"
       }
