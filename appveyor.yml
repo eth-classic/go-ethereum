@@ -56,6 +56,6 @@ deploy_script:
   - curl -sL https://getcli.jfrog.io | bash
   - ps: >-
       If (($env:APPVEYOR_REPO_NAME -eq 'ethereumclassic/go-ethereum') -and (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true'))) {
-        jfrog.exe config --url $env:ARTIFACTORY_URL --user $env:ARTIFACTORY_USER --apikey $env:ARTIFACTORY_APIKEY --interactive=false
-        jfrog.exe rt upload "ethereum-classic-go-ethereum-*" "ethereumclassic/go-ethereum/$env:VERSION_BASE_DIST`x/"
+        .\jfrog.exe config --url $env:ARTIFACTORY_URL --user $env:ARTIFACTORY_USER --apikey $env:ARTIFACTORY_APIKEY --interactive=false
+        .\jfrog.exe rt upload "ethereum-classic-go-ethereum-*" "ethereumclassic/go-ethereum/$env:VERSION_BASE_DIST`x/"
       }
