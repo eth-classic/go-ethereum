@@ -40,7 +40,7 @@ deploy_steps: &deploy_steps
          # VERSION_BASE_DIST is essentially an arbitrarily-grouped 'bucket' for sorting releases conveniently with the distributor's "version" idea
          export VERSION_BASE_DIST="v$VERSION_MAJOR.$VERSION_MINOR.x"
          # Visualize our VERSIONs:
-         for x in VERSION{,_SEMVER_FULL,_MAJOR,_MINOR,_BASE_DIST}; do echo "$x={!x}"; done
+         for x in VERSION{,_SEMVER_FULL,_MAJOR,_MINOR,_BASE_DIST}; do echo "$x=${!x}"; done
          # Ensure versions match, b/c IIRC there was a once-upon-a-time issue with cached builds mismatching.
          ./geth version | awk '/^Version: /{if (ENVIRON["VERSION"] != $2){printf "Expected: \"%s\", got \"%s\"\n",ENVIRON["VERSION"], $2; exit 1}}'
          export GETH_ARCHIVE_NAME="ethereum-classic-go-ethereum-$OS_NAME-$VERSION"
