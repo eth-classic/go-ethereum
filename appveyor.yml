@@ -51,7 +51,7 @@ build_script:
   - 7z a ethereum-classic-go-ethereum-win64-%VERSION%.zip geth.exe
 before_deploy:
   - ps: Get-FileHash ethereum-classic-go-ethereum-win64-%VERSION%.zip -Algorithm SHA256
-  - ps: Get-FileHash ethereum-classic-go-ethereum-win64-%VERSION%.zip | Out-File ethereum-classic-go-ethereum-win64-%VERSION%.zip.sha256
+  - ps: Get-FileHash ethereum-classic-go-ethereum-win64-%VERSION%.zip -Algorithm SHA256 | Out-File ethereum-classic-go-ethereum-win64-%VERSION%.zip.sha256
 deploy_script:
   - curl -sL https://getcli.jfrog.io | bash
   - ps: >-
