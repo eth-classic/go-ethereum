@@ -311,7 +311,7 @@ func CalcDifficulty(config *ChainConfig, time, parentTime uint64, parentNumber, 
 }
 
 func calcDifficultyDiehard(time, parentTime uint64, parentDiff *big.Int, diehardBlock *big.Int) *big.Int {
-	// https://github.com/ethereumproject/ECIPs/blob/master/ECIPS/ECIP-1010.md
+	// https://github.com/ethereumclassic/ECIPs/blob/master/ECIPs/ECIP-1010.md
 	// algorithm:
 	// diff = (parent_diff +
 	//         (parent_diff / 2048 * max(1 - (block_timestamp - parent_timestamp) // 10, -99))
@@ -359,7 +359,7 @@ func calcDifficultyDiehard(time, parentTime uint64, parentDiff *big.Int, diehard
 }
 
 func calcDifficultyExplosion(time, parentTime uint64, parentNumber, parentDiff *big.Int, delayBlock *big.Int, continueBlock *big.Int) *big.Int {
-	// https://github.com/ethereumproject/ECIPs/blob/master/ECIPs/ECIP-1010.md
+	// https://github.com/ethereumclassic/ECIPs/blob/master/ECIPs/ECIP-1010.md
 	// algorithm:
 	// diff = (parent_diff +
 	//         (parent_diff / 2048 * max(1 - (block_timestamp - parent_timestamp) // 10, -99))

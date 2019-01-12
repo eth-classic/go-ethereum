@@ -112,7 +112,7 @@ type StateConfig struct {
 }
 
 // GenesisDump is the geth JSON format.
-// https://github.com/ethereumproject/wiki/wiki/Ethereum-Chain-Spec-Format#subformat-genesis
+// https://github.com/ethereumclassic/wiki/blob/master/Ethereum-Chain-Spec-Format.md#subformat-genesis
 type GenesisDump struct {
 	Nonce      prefixedHex `json:"nonce"`
 	Timestamp  prefixedHex `json:"timestamp"`
