@@ -50,8 +50,8 @@ deploy_steps: &deploy_steps
          # Create associated hashes of the archives. Use 'tee' so that the hash shows in the CI logs.
          # Since openssl generates output like the below, we use bash's 'read' to echo only the sha.
          # > SHA256(CHANGELOG.md)= e0e8d8af305a3d90dc92e429c379c5c119c23786599f1e185639aafa4fe6163f
-         openssl dgst -sha256 "$GETH_ARCHIVE_NAME.zip" | while read -r fn sha; do echo "$sha"; done | tee "$GETH_ARCHIVE_NAME.zip.sha256"
-         openssl dgst -sha256 "$GETH_ARCHIVE_NAME.tar.gz" | while read -r fn sha; do echo "$sha"; done | tee "$GETH_ARCHIVE_NAME.tar.gz.sha256"
+         openssl dgst -sha256 "$GETH_ARCHIVE_NAME.zip" | cut -d' ' -f2 | tee "$GETH_ARCHIVE_NAME.zip.sha256"
+         openssl dgst -sha256 "$GETH_ARCHIVE_NAME.tar.gz" | cut -d' ' -f2 | tee "$GETH_ARCHIVE_NAME.tar.gz.sha256"
          # Get jfrog for Bintray OR Artifactory deploys
          curl -fL https://getcli.jfrog.io | sh
          # Configure Bintray OR Artifactory creds.
@@ -60,7 +60,7 @@ deploy_steps: &deploy_steps
          # Upload files.
          # Usage: jfrog rt u [command options] <source pattern> <target pattern>
          #   The second argument specifies the location within Bintray for uploaded file, in the form of subject/repository/package/version.
-         ./jfrog rt upload "GETH_ARCHIVE_NAME*" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
+         ./jfrog rt upload "$GETH_ARCHIVE_NAME*" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
 
 unit_tests_steps: &unit_tests_steps
   steps:
