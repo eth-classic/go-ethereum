@@ -3,12 +3,20 @@ clone_folder: c:\gopath\src\github.com\ethereumclassic\go-ethereum
 os: Visual Studio 2015
 environment:
   GOPATH: c:\gopath
-  GCP_PASSWD:
-    secure: erzLJz7qT0kCJa+jZG6Sf9wwkfLYO2UDLzydkKTdwqA=
+  ARTIFACTORY_URL:
+  ARTIFACTORY_USER:
+  ARTIFACTORY_APIKEY:
 install:
   - set PATH=%GOPATH%\bin;c:\go\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
+  - echo %PATH%
+  - echo %GOPATH%
 
-  - ps: $env:VERSION = "$(git describe --tags)"
+  - ps: $env:VERSION = "$(git describe --tags)" # eg. v1.2.3-14-abcd123
+  - ps: $env:VERSION_SEMVER_BASIC = "$(git describe --tags $(git rev-list --tags --max-count=1))" # eg. v1.2.3
+  - ps: $env:VERSION_BASE_DIST = ($env:VERSION_SEMVER_BASIC -replace "[0-9]*$", "") # eg. v1.2. (will append 'x' at deploy path)
+  - echo %VERSION%
+  - echo %VERSION_SEMVER_BASIC%
+  - echo %VERSION_BASE_DIST%
 
   # Install schroedinger.
   - go get github.com/etcdevteam/go-schroedinger/cmd/schroedinger/...
@@ -28,9 +36,6 @@ install:
 
   - cd c:\gopath\src\github.com\ethereumclassic\go-ethereum
 
-  - echo %VERSION%
-  - echo %PATH%
-  - echo %GOPATH%
   - go version
   - go env
   - go get golang.org/x/sys/windows
@@ -42,18 +47,14 @@ build_script:
   - go build -tags=sputnikvm -ldflags "-X main.Version=%VERSION%" github.com/ethereumclassic/go-ethereum/cmd/geth
   - ps: >-
       .\geth.exe version | Where {$_ -match "^Version: "} | %{$actual=($_ -split "\s+")[1];If($actual -ne $env:VERSION){"Expected: `"$env:VERSION`", got: `"$ACTUAL`""; exit 1}}
-  - 7z a geth-classic-win64-%VERSION%.zip geth.exe
+  - 7z a ethereum-classic-go-ethereum-win64-%VERSION%.zip geth.exe
 before_deploy:
-  # Set up GCP upload.
+  - ps: Get-FileHash ethereum-classic-go-ethereum-win64-%VERSION%.zip -Algorithm SHA256
+  - ps: Get-FileHash ethereum-classic-go-ethereum-win64-%VERSION%.zip -Algorithm SHA256 | Out-File ethereum-classic-go-ethereum-win64-%VERSION%.zip.sha256
+deploy_script:
+  - curl -sL https://getcli.jfrog.io | bash
   - ps: >-
       If (($env:APPVEYOR_REPO_NAME -eq 'ethereumclassic/go-ethereum') -and (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true'))) {
-        nuget install secure-file -ExcludeVersion
-        secure-file\tools\secure-file -decrypt gcloud-appveyor.json.enc -secret "$env:GCP_PASSWD" -out .gcloud.json
+        .\jfrog.exe config --url "$env:ARTIFACTORY_URL" --user "$env:ARTIFACTORY_USER" --apikey "$env:ARTIFACTORY_APIKEY" --interactive=false
+        .\jfrog.exe rt upload "ethereum-classic-go-ethereum-*" "ethereumclassic/go-ethereum/$env:VERSION_BASE_DIST`x/"
       }
-# Deploy on APPVEYOR_REPO_BRANCH=master or APPVEYOR_REPO_TAG=true
-# TODO: find better way to deploy artifacts
-#deploy_script:
-#  - ps: >-
-#      If (($env:APPVEYOR_REPO_NAME -eq 'ethereumclassic/go-ethereum') -and (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true'))) {
-#        janus.exe deploy -to="builds.etcdevteam.com/go-ethereum/$env:VERSION_BASE/" -files="./*.zip" -key="./.gcloud.json"
-#      }
