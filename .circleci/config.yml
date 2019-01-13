@@ -264,15 +264,15 @@ jobs:
       - image: circleci/golang:1.9
     <<: *bats_tests_steps
 
-mac_deploy:
-  macos:
-    xcode: "9.0"
-  <<: *deploy_steps
+  mac_deploy:
+    macos:
+      xcode: "9.0"
+    <<: *deploy_steps
 
-linux_deploy:
-  docker:
-    - image: circleci/golang:1.9
-  <<: *deploy_steps
+  linux_deploy:
+    docker:
+      - image: circleci/golang:1.9
+    <<: *deploy_steps
 
 workflows:
   version: 2
