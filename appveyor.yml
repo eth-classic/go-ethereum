@@ -3,9 +3,12 @@ clone_folder: c:\gopath\src\github.com\ethereumclassic\go-ethereum
 os: Visual Studio 2015
 environment:
   GOPATH: c:\gopath
-  ARTIFACTORY_URL:
+  ARTIFACTORY_URL: https://ethereumclassic.jfrog.io/ethereumclassic
   ARTIFACTORY_USER:
+    secure: g+YfckDrcilGRMBLymlC5g==
   ARTIFACTORY_APIKEY:
+    secure: HzaJar7AlmLYzNRAX4T5DKzLnrk8ltb51tKRcbTY8LNxc7s+K5/PpEdq+vi0WNA74BsBvN0S3cNXdo3kdeQxQDGoFzQyCF24DcJJxnaHxy8=
+
 install:
   - set PATH=%GOPATH%\bin;c:\go\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
   - echo %PATH%
