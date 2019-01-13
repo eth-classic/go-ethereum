@@ -27,8 +27,7 @@ deploy_steps: &deploy_steps
        command: |
          if [[ $CIRCLE_PROJECT_USERNAME != ethereumclassic ]]; then echo "Deployments only enabled from ethereumclassic/ repo. Exiting." && exit 0; fi
          export GOPATH=$HOME/go
-         cd $GOPATH/bin # There is a cached 'geth' executable in here because workflows.
-         if [[ ! -f ./geth ]]; then echo "WTF y no haz cached geth??" && exit 1; fi
+         cd $GOPATH/src/github.com/ethereumclassic/go-ethereum
          # Note that this follow VERSION vars are assuming:
          # - that there IS a last tag
          # - that the tag is named according to semver, with a 'v' prefix, like 'v.5.4.3'
@@ -42,6 +41,8 @@ deploy_steps: &deploy_steps
          # Visualize our VERSIONs:
          for x in VERSION{,_SEMVER_FULL,_MAJOR,_MINOR,_BASE_DIST}; do echo "$x=${!x}"; done
          # Ensure versions match, b/c IIRC there was a once-upon-a-time issue with cached builds mismatching.
+         cd $GOPATH/bin # There is a cached 'geth' executable in here because workflows.
+         if [[ ! -f ./geth ]]; then echo "WTF y no haz cached geth??" && exit 1; fi
          ./geth version | awk '/^Version: /{if (ENVIRON["VERSION"] != $2){printf "Expected: \"%s\", got \"%s\"\n",ENVIRON["VERSION"], $2; exit 1}}'
          export GETH_ARCHIVE_NAME="ethereum-classic-go-ethereum-$OS_NAME-$VERSION"
          # Archive the executables.
