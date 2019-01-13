@@ -52,15 +52,23 @@ deploy_steps: &deploy_steps
          # > SHA256(CHANGELOG.md)= e0e8d8af305a3d90dc92e429c379c5c119c23786599f1e185639aafa4fe6163f
          openssl dgst -sha256 "$GETH_ARCHIVE_NAME.zip" | cut -d' ' -f2 | tee "$GETH_ARCHIVE_NAME.zip.sha256"
          openssl dgst -sha256 "$GETH_ARCHIVE_NAME.tar.gz" | cut -d' ' -f2 | tee "$GETH_ARCHIVE_NAME.tar.gz.sha256"
+         # TODO: Finish configuring CircleCI for jfrog deployment
          # Get jfrog for Bintray OR Artifactory deploys
-         curl -fL https://getcli.jfrog.io | sh
+         #curl -fL https://getcli.jfrog.io | sh
          # Configure Bintray OR Artifactory creds.
-         ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY --interactive=false
+         #./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY --interactive=false
          # ./jfrog bt config --url $BINTRAY_URL --user $BINTRAY_USER --apikey $BINTRAY_APIKEY --interactive=false
          # Upload files.
          # Usage: jfrog rt u [command options] <source pattern> <target pattern>
          #   The second argument specifies the location within Bintray for uploaded file, in the form of subject/repository/package/version.
-         ./jfrog rt upload "$GETH_ARCHIVE_NAME*" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
+         #./jfrog rt upload "$GETH_ARCHIVE_NAME*" "ethereumclassic/go-ethereum/$VERSION_BASE_DIST/"
+         # TODO: this is only temporary solution:
+         mkdir /tmp/artifacts
+         cp "$GETH_ARCHIVE_NAME*" /tmp/artifacts
+
+   - store_artifacts:
+       path: /tmp/artifacts
+       destination: /
 
 unit_tests_steps: &unit_tests_steps
   steps:
