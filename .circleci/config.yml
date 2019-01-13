@@ -32,6 +32,7 @@ deploy_steps: &deploy_steps
          # - that there IS a last tag
          # - that the tag is named according to semver, with a 'v' prefix, like 'v.5.4.3'
          # TODO: handle cases where these aren't met
+         export OS_NAME=`echo $(uname) | tr "[:upper:]" "[:lower:]"`
          export VERSION=`git describe --tags` # eg. v5.5.2-16-geb15c1474
          export VERSION_SEMVER_FULL=$(git describe --tags $(git rev-list --tags --max-count=1)) # eg. v5.5.2
          export VERSION_MAJOR=`echo ${VERSION_SEMVER_FULL} | sed "s/^v\([0-9]*\).*/\1/"` # eg. 5
