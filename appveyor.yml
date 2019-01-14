@@ -51,11 +51,10 @@ build_script:
   - ps: >-
       .\geth.exe version | Where {$_ -match "^Version: "} | %{$actual=($_ -split "\s+")[1];If($actual -ne $env:VERSION){"Expected: `"$env:VERSION`", got: `"$ACTUAL`""; exit 1}}
   - 7z a ethereum-classic-go-ethereum-win64-%VERSION%.zip geth.exe
-artifacts:
-  - path: "ethereum-classic-go-ethereum-*"
-before_deploy:
   - ps: Get-FileHash ethereum-classic-go-ethereum-win64-$env:VERSION.zip -Algorithm SHA256
   - ps: Get-FileHash ethereum-classic-go-ethereum-win64-$env:VERSION.zip -Algorithm SHA256 | Out-File ethereum-classic-go-ethereum-win64-$env:VERSION.zip.sha256
+artifacts:
+  - path: "ethereum-classic-go-ethereum-*"
 deploy_script:
   - curl -sL https://getcli.jfrog.io | bash
   - ps: >-
