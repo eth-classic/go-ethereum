@@ -22,12 +22,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/core"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/eth"
-	"github.com/ethereumproject/go-ethereum/eth/downloader"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/core"
+	"github.com/ethereumclassic/go-ethereum/core/types"
+	"github.com/ethereumclassic/go-ethereum/eth"
+	"github.com/ethereumclassic/go-ethereum/eth/downloader"
+	"github.com/ethereumclassic/go-ethereum/logger"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
 	"gopkg.in/urfave/cli.v1"
 )
 

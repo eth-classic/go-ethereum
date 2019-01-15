@@ -26,8 +26,8 @@ import (
 	"sort"
 	"sync/atomic"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/rlp"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/rlp"
 )
 
 var ErrInvalidSig = errors.New("invalid v, r, s values")

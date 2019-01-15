@@ -4,7 +4,6 @@ package accounts
 
 import (
 	json "encoding/json"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -18,7 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonEd74d837DecodeGithubComEthereumprojectGoEthereumAccounts(in *jlexer.Lexer, out *AccountJSON) {
+func easyjsonEd74d837DecodeGithubComEthereumclassicGoEthereumAccounts(in *jlexer.Lexer, out *AccountJSON) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -53,51 +52,63 @@ func easyjsonEd74d837DecodeGithubComEthereumprojectGoEthereumAccounts(in *jlexer
 		in.Consumed()
 	}
 }
-func easyjsonEd74d837EncodeGithubComEthereumprojectGoEthereumAccounts(out *jwriter.Writer, in AccountJSON) {
+func easyjsonEd74d837EncodeGithubComEthereumclassicGoEthereumAccounts(out *jwriter.Writer, in AccountJSON) {
 	out.RawByte('{')
 	first := true
 	_ = first
-	if !first {
-		out.RawByte(',')
+	{
+		const prefix string = ",\"address\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Address))
 	}
-	first = false
-	out.RawString("\"address\":")
-	out.String(string(in.Address))
-	if !first {
-		out.RawByte(',')
+	{
+		const prefix string = ",\"key\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.EncryptedKey))
 	}
-	first = false
-	out.RawString("\"key\":")
-	out.String(string(in.EncryptedKey))
-	if !first {
-		out.RawByte(',')
+	{
+		const prefix string = ",\"file\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.File))
 	}
-	first = false
-	out.RawString("\"file\":")
-	out.String(string(in.File))
 	out.RawByte('}')
 }
 
 // MarshalJSON supports json.Marshaler interface
 func (v AccountJSON) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonEd74d837EncodeGithubComEthereumprojectGoEthereumAccounts(&w, v)
+	easyjsonEd74d837EncodeGithubComEthereumclassicGoEthereumAccounts(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v AccountJSON) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonEd74d837EncodeGithubComEthereumprojectGoEthereumAccounts(w, v)
+	easyjsonEd74d837EncodeGithubComEthereumclassicGoEthereumAccounts(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *AccountJSON) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonEd74d837DecodeGithubComEthereumprojectGoEthereumAccounts(&r, v)
+	easyjsonEd74d837DecodeGithubComEthereumclassicGoEthereumAccounts(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *AccountJSON) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonEd74d837DecodeGithubComEthereumprojectGoEthereumAccounts(l, v)
+	easyjsonEd74d837DecodeGithubComEthereumclassicGoEthereumAccounts(l, v)
 }

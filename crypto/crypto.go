@@ -27,11 +27,11 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/crypto/ecies"
-	"github.com/ethereumproject/go-ethereum/crypto/secp256k1"
-	"github.com/ethereumproject/go-ethereum/crypto/sha3"
-	"github.com/ethereumproject/go-ethereum/rlp"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/crypto/ecies"
+	"github.com/ethereumclassic/go-ethereum/crypto/secp256k1"
+	"github.com/ethereumclassic/go-ethereum/crypto/sha3"
+	"github.com/ethereumclassic/go-ethereum/rlp"
 	"golang.org/x/crypto/ripemd160"
 )
 

@@ -20,7 +20,6 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
-
 [[constraint]]
   name = "github.com/boltdb/bolt"
   version = "1.3.1"
@@ -31,10 +30,10 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/ethereumproject/ethash"
+  name = "github.com/ethereumclassic/ethash"
 
 [[constraint]]
-  branch = "master"
+  branch = "v0.9-ethereumclassic"
   name = "github.com/ETCDEVTeam/sputnikvm-ffi"
 
 [[constraint]]
@@ -113,10 +112,11 @@
   name = "gopkg.in/urfave/cli.v1"
   revision = "01857ac33766ce0c93856370626f9799281c14f4"
 
-[[constraint]]
-  branch = "master"
-  name = "github.com/ethereumproject/benchmark"
 
 [[constraint]]
   name = "github.com/fatih/color"
   version = "v1.7.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/ethereumclassic/benchmark"

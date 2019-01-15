@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/ethereumproject/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
 )
 
 var (

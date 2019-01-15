@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang
+    steps:
+      - run: mkdir -p ~/go/src/github.com/ethereumclassic
+      - checkout:
+          path: ~/go/src/github.com/ethereumclassic/benchmark
+      - run:
+          command: |
+            cd ~/go/src/github.com/ethereumclassic/benchmark
+            export GOPATH=$HOME/go
+            go get -v ./...
+            go build ./...
+            go test ./...

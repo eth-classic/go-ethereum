@@ -20,10 +20,10 @@ import (
 	"bytes"
 	"math/big"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"github.com/ethereumproject/go-ethereum/rlp"
-	"github.com/ethereumproject/go-ethereum/trie"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/ethdb"
+	"github.com/ethereumclassic/go-ethereum/rlp"
+	"github.com/ethereumclassic/go-ethereum/trie"
 )
 
 // NewStateSync create a new state trie download scheduler.

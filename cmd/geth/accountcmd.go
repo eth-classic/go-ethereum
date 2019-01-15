@@ -22,11 +22,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/ethereumproject/go-ethereum/accounts"
-	"github.com/ethereumproject/go-ethereum/console"
-	"github.com/ethereumproject/go-ethereum/crypto"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/accounts"
+	"github.com/ethereumclassic/go-ethereum/console"
+	"github.com/ethereumclassic/go-ethereum/crypto"
+	"github.com/ethereumclassic/go-ethereum/logger"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
 	"gopkg.in/urfave/cli.v1"
 )
 

@@ -34,14 +34,14 @@ import (
 	"io"
 	"strings"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core/state"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/core/vm"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/p2p/discover"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/core/state"
+	"github.com/ethereumclassic/go-ethereum/core/types"
+	"github.com/ethereumclassic/go-ethereum/core/vm"
+	"github.com/ethereumclassic/go-ethereum/ethdb"
+	"github.com/ethereumclassic/go-ethereum/logger"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/p2p/discover"
 )
 
 var (
@@ -112,7 +112,7 @@ type StateConfig struct {
 }
 
 // GenesisDump is the geth JSON format.
-// https://github.com/ethereumproject/wiki/wiki/Ethereum-Chain-Spec-Format#subformat-genesis
+// https://github.com/ethereumclassic/wiki/blob/master/Ethereum-Chain-Spec-Format.md#subformat-genesis
 type GenesisDump struct {
 	Nonce      prefixedHex `json:"nonce"`
 	Timestamp  prefixedHex `json:"timestamp"`

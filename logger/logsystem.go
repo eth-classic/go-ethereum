@@ -22,7 +22,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
 )
 
 // LogSystem is implemented by log output devices.
