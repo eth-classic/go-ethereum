@@ -1,33 +1,18 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of go-ethereum.
-//
-// go-ethereum is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// go-ethereum is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
-
 package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	//"io/ioutil"
 	"log"
 	"os"
 
-	"github.com/ethereumclassic/go-ethereum/accounts"
-	"github.com/ethereumclassic/go-ethereum/console"
-	"github.com/ethereumclassic/go-ethereum/crypto"
-	"github.com/ethereumclassic/go-ethereum/logger"
-	"github.com/ethereumclassic/go-ethereum/logger/glog"
 	"gopkg.in/urfave/cli.v1"
+
+	"github.com/ether-core/go-ethereum/accounts"
+	"github.com/ether-core/go-ethereum/console"
+	"github.com/ether-core/go-ethereum/crypto"
+	"github.com/ether-core/go-ethereum/logger"
+	"github.com/ether-core/go-ethereum/logger/glog"
 )
 
 var (
@@ -35,25 +20,6 @@ var (
 		Name:  "index-accounts,indexaccounts",
 		Usage: "Enable key-value db store for indexing large amounts of key files",
 	}
-	walletCommand = cli.Command{
-		Name:  "wallet",
-		Usage: "Ethereum presale wallet",
-		Subcommands: []cli.Command{
-			{
-				Action: importWallet,
-				Name:   "import",
-				Usage:  "import ethereum presale wallet",
-			},
-		},
-		Description: `
-
-geth wallet import /path/to/my/presale.wallet
-
-	Will prompt for your password and imports your ether presale account.
-	It can be used non-interactively with the --password option taking a
-	passwordfile as argument containing the wallet password in plaintext.
-
-	`}
 	accountCommand = cli.Command{
 		Action: accountMan,
 		Name:   "account",
@@ -342,25 +308,25 @@ func accountUpdate(ctx *cli.Context) error {
 	return nil
 }
 
-func importWallet(ctx *cli.Context) error {
-	keyfile := ctx.Args().First()
-	if len(keyfile) == 0 {
-		log.Fatal("keyfile must be given as argument")
-	}
-	keyJson, err := ioutil.ReadFile(keyfile)
-	if err != nil {
-		log.Fatal("Could not read wallet file: ", err)
-	}
-	accman := MakeAccountManager(ctx)
-	passphrase := getPassPhrase("", false, 0, MakePasswordList(ctx))
-
-	acct, err := accman.ImportPreSaleKey(keyJson, passphrase)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Address: {%x}\n", acct.Address)
-	return nil
-}
+//func importWallet(ctx *cli.Context) error {
+//	keyfile := ctx.Args().First()
+//	if len(keyfile) == 0 {
+//		log.Fatal("keyfile must be given as argument")
+//	}
+//	keyJson, err := ioutil.ReadFile(keyfile)
+//	if err != nil {
+//		log.Fatal("Could not read wallet file: ", err)
+//	}
+//	accman := MakeAccountManager(ctx)
+//	passphrase := getPassPhrase("", false, 0, MakePasswordList(ctx))
+//
+//	acct, err := accman.ImportPreSaleKey(keyJson, passphrase)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	fmt.Printf("Address: {%x}\n", acct.Address)
+//	return nil
+//}
 
 func accountImport(ctx *cli.Context) error {
 	keyfile := ctx.Args().First()

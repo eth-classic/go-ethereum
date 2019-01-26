@@ -3,9 +3,10 @@ package main
 import (
 	"time"
 
-	"github.com/ethereumclassic/go-ethereum/eth"
-	"github.com/ethereumclassic/go-ethereum/eth/downloader"
 	"gopkg.in/urfave/cli.v1"
+
+	"github.com/ether-core/go-ethereum/eth"
+	"github.com/ether-core/go-ethereum/eth/downloader"
 )
 
 //go:generate stringer -type=logEventType

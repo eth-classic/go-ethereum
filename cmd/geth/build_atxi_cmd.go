@@ -3,9 +3,10 @@ package main
 import (
 	"math"
 
-	"github.com/ethereumclassic/go-ethereum/core"
-	"github.com/ethereumclassic/go-ethereum/ethdb"
-	"github.com/ethereumclassic/go-ethereum/logger/glog"
+	"github.com/ether-core/go-ethereum/core"
+	"github.com/ether-core/go-ethereum/ethdb"
+	"github.com/ether-core/go-ethereum/logger/glog"
+
 	"gopkg.in/urfave/cli.v1"
 )
 

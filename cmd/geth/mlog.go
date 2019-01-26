@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ethereumclassic/go-ethereum/logger"
+	"github.com/ether-core/go-ethereum/logger"
 )
 
 var mlogClient = logger.MLogRegisterAvailable("client", mlogLinesClient)

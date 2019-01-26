@@ -33,13 +33,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereumclassic/go-ethereum/core"
-	"github.com/ethereumclassic/go-ethereum/eth"
-	"github.com/ethereumclassic/go-ethereum/eth/downloader"
-	"github.com/ethereumclassic/go-ethereum/eth/fetcher"
-	"github.com/ethereumclassic/go-ethereum/logger"
-	"github.com/ethereumclassic/go-ethereum/logger/glog"
 	"gopkg.in/urfave/cli.v1"
+
+	"github.com/ether-core/go-ethereum/core"
+	"github.com/ether-core/go-ethereum/eth"
+	"github.com/ether-core/go-ethereum/eth/downloader"
+	"github.com/ether-core/go-ethereum/eth/fetcher"
+	"github.com/ether-core/go-ethereum/logger"
+	"github.com/ether-core/go-ethereum/logger/glog"
 )
 
 var firstInsertChainEvent = true

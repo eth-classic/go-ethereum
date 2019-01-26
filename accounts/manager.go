@@ -1,23 +1,3 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
-// Package accounts implements encrypted storage of secp256k1 private keys.
-//
-// Keys are stored as encrypted JSON files according to the Web3 Secret Storage specification.
-// See https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition for more information.
 package accounts
 
 import (
@@ -32,8 +12,8 @@ import (
 	"encoding/json"
 	"path/filepath"
 
-	"github.com/ethereumclassic/go-ethereum/common"
-	"github.com/ethereumclassic/go-ethereum/crypto"
+	"github.com/ether-core/go-ethereum/common"
+	"github.com/ether-core/go-ethereum/crypto"
 )
 
 var (
@@ -376,17 +356,6 @@ func (am *Manager) Update(a Account, passphrase, newPassphrase string) error {
 		return err
 	}
 	return am.keyStore.Update(a.File, key, newPassphrase)
-}
-
-// ImportPreSaleKey decrypts the given Ethereum presale wallet and stores
-// a key file in the key directory. The key file is encrypted with the same passphrase.
-func (am *Manager) ImportPreSaleKey(keyJSON []byte, passphrase string) (Account, error) {
-	a, _, err := importPreSaleKey(&am.keyStore, keyJSON, passphrase)
-	if err != nil {
-		return a, err
-	}
-	am.ac.add(a)
-	return a, nil
 }
 
 // zeroKey zeroes a private key in memory.

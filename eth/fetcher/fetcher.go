@@ -1,20 +1,3 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
-// Package fetcher contains the block announcement based synchronisation.
 package fetcher
 
 import (
@@ -23,14 +6,14 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/ethereumclassic/go-ethereum/common"
-	"github.com/ethereumclassic/go-ethereum/core"
-	"github.com/ethereumclassic/go-ethereum/core/types"
-	"github.com/ethereumclassic/go-ethereum/event"
-	"github.com/ethereumclassic/go-ethereum/logger"
-	"github.com/ethereumclassic/go-ethereum/logger/glog"
-	"github.com/ethereumclassic/go-ethereum/metrics"
-	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
+	"github.com/ether-core/go-ethereum/common"
+	"github.com/ether-core/go-ethereum/core"
+	"github.com/ether-core/go-ethereum/core/types"
+	"github.com/ether-core/go-ethereum/event"
+	"github.com/ether-core/go-ethereum/trie"
+	"github.com/ether-core/go-ethereum/logger"
+	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/ether-core/go-ethereum/metrics"
 )
 
 const (
@@ -132,7 +115,7 @@ type Fetcher struct {
 	completing map[common.Hash]*announce   // Blocks with headers, currently body-completing
 
 	// Block cache
-	queue  *prque.Prque            // Queue containing the import operations (block number sorted)
+	queue  *trie.Prque            // Queue containing the import operations (block number sorted)
 	queues map[string]int          // Per peer block counts to prevent memory exhaustion
 	queued map[common.Hash]*inject // Set of already queued blocks (to dedupe imports)
 
@@ -168,7 +151,7 @@ func New(mux *event.TypeMux, getBlock blockRetrievalFn, verifyHeader headerVerif
 		fetching:       make(map[common.Hash]*announce),
 		fetched:        make(map[common.Hash][]*announce),
 		completing:     make(map[common.Hash]*announce),
-		queue:          prque.New(),
+		queue:          trie.NewPrque(),
 		queues:         make(map[string]int),
 		queued:         make(map[common.Hash]*inject),
 		getBlock:       getBlock,

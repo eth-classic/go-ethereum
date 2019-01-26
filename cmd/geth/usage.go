@@ -88,7 +88,7 @@ var AppHelpFlagAndCommandGroups = []flagGroup{
 		Name: "ACCOUNT",
 		Commands: []cli.Command{
 			accountCommand,
-			walletCommand,
+			//walletCommand,
 			buildAddrTxIndexCommand,
 		},
 		Flags: []cli.Flag{
@@ -175,7 +175,7 @@ var AppHelpFlagAndCommandGroups = []flagGroup{
 			monitorCommand,
 			makeMlogDocCommand,
 			gpuInfoCommand,
-			gpuBenchCommand,
+			//gpuBenchCommand,
 		},
 		Flags: []cli.Flag{
 			VerbosityFlag,

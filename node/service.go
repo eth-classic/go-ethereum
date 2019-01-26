@@ -1,29 +1,13 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
 package node
 
 import (
 	"path/filepath"
 	"reflect"
 
-	"github.com/ethereumclassic/go-ethereum/ethdb"
-	"github.com/ethereumclassic/go-ethereum/event"
-	"github.com/ethereumclassic/go-ethereum/p2p"
-	"github.com/ethereumclassic/go-ethereum/rpc"
+	"github.com/ether-core/go-ethereum/ethdb"
+	"github.com/ether-core/go-ethereum/event"
+	"github.com/ether-core/go-ethereum/p2p"
+	"github.com/ether-core/go-ethereum/rpc"
 )
 
 // ServiceContext is a collection of service independent options inherited from

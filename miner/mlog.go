@@ -1,6 +1,8 @@
 package miner
 
-import "github.com/ethereumclassic/go-ethereum/logger"
+import (
+	"github.com/ether-core/go-ethereum/logger"
+)
 
 var mlogMiner = logger.MLogRegisterAvailable("miner", mlogMinerLines)
 

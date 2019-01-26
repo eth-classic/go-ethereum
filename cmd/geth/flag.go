@@ -1,19 +1,3 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of go-ethereum.
-//
-// go-ethereum is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// go-ethereum is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
-
 package main
 
 import (
@@ -27,28 +11,27 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-
 	"errors"
 
-	"github.com/ethereumclassic/ethash"
-	"github.com/ethereumclassic/go-ethereum/accounts"
-	"github.com/ethereumclassic/go-ethereum/common"
-	"github.com/ethereumclassic/go-ethereum/core"
-	"github.com/ethereumclassic/go-ethereum/core/state"
-	"github.com/ethereumclassic/go-ethereum/core/types"
-	"github.com/ethereumclassic/go-ethereum/crypto"
-	"github.com/ethereumclassic/go-ethereum/eth"
-	"github.com/ethereumclassic/go-ethereum/eth/downloader"
-	"github.com/ethereumclassic/go-ethereum/ethdb"
-	"github.com/ethereumclassic/go-ethereum/event"
-	"github.com/ethereumclassic/go-ethereum/logger"
-	"github.com/ethereumclassic/go-ethereum/logger/glog"
-	"github.com/ethereumclassic/go-ethereum/miner"
-	"github.com/ethereumclassic/go-ethereum/node"
-	"github.com/ethereumclassic/go-ethereum/p2p/discover"
-	"github.com/ethereumclassic/go-ethereum/p2p/nat"
-	"github.com/ethereumclassic/go-ethereum/pow"
-	"github.com/ethereumclassic/go-ethereum/whisper"
+	"github.com/ether-core/go-ethereum/ethash"
+	"github.com/ether-core/go-ethereum/accounts"
+	"github.com/ether-core/go-ethereum/common"
+	"github.com/ether-core/go-ethereum/core"
+	"github.com/ether-core/go-ethereum/core/state"
+	"github.com/ether-core/go-ethereum/core/types"
+	"github.com/ether-core/go-ethereum/crypto"
+	"github.com/ether-core/go-ethereum/eth"
+	"github.com/ether-core/go-ethereum/eth/downloader"
+	"github.com/ether-core/go-ethereum/ethdb"
+	"github.com/ether-core/go-ethereum/event"
+	"github.com/ether-core/go-ethereum/logger"
+	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/ether-core/go-ethereum/miner"
+	"github.com/ether-core/go-ethereum/node"
+	"github.com/ether-core/go-ethereum/p2p/discover"
+	"github.com/ether-core/go-ethereum/p2p/nat"
+	"github.com/ether-core/go-ethereum/pow"
+	"github.com/ether-core/go-ethereum/whisper"
 	"gopkg.in/urfave/cli.v1"
 )
 

@@ -29,13 +29,9 @@ setup: ## Install all the build and lint dependencies
 build: cmd/abigen cmd/bootnode cmd/disasm cmd/ethtest cmd/evm cmd/gethrpctest cmd/rlpdump cmd/geth ## Build a local snapshot binary version of all commands
 	@ls -ld $(BINARY)/*
 
-cmd/geth: chainconfig ## Build a local snapshot binary version of geth. Use WITH_SVM=0 to disable building with SputnikVM (default: WITH_SVM=1)
-ifeq (${WITH_SVM}, 1)
-	./scripts/build_sputnikvm.sh build
-else
+cmd/geth: 
 	mkdir -p ./${BINARY}
 	go build ${LDFLAGS} -o ${BINARY}/geth -tags="netgo" ./cmd/geth
-endif
 	@echo "Done building geth."
 	@echo "Run \"$(BINARY)/geth\" to launch geth."
 
@@ -78,13 +74,9 @@ install: ## Install all packages to $GOPATH/bin
 	go install ./cmd/{abigen,bootnode,disasm,ethtest,evm,gethrpctest,rlpdump}
 	$(MAKE) install_geth
 
-install_geth: chainconfig ## Install geth to $GOPATH/bin. Use WITH_SVM=0 to disable building with SputnikVM (default: WITH_SVM=1)
+install_geth:
 	$(info Installing $$GOPATH/bin/geth)
-ifeq (${WITH_SVM}, 1)
-	./scripts/build_sputnikvm.sh install
-else
 	go install ${LDFLAGS} -tags="netgo" ./cmd/geth ; fi
-endif
 
 fmt: ## gofmt and goimports all go files
 	find . -name '*.go' -not -wholename './vendor/*' -not -wholename './_vendor*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
@@ -126,12 +118,6 @@ core/assets/assets.go: ${GOPATH}/bin/resources core/config/*.json core/config/*.
 
 ${GOPATH}/bin/resources:
 	go get -u github.com/omeid/go-resources/cmd/resources
-
-clean: ## Remove local snapshot binary directory
-	if [ -d ${BINARY} ] ; then rm -rf ${BINARY} ; fi
-	go clean -i ./...
-	rm -rf vendor/github.com/ETCDEVTeam/sputnikvm-ffi/c/ffi/target
-	rm -f vendor/github.com/ETCDEVTeam/sputnikvm-ffi/c/libsputnikvm.*
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:

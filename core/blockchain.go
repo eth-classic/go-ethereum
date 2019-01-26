@@ -1,20 +1,3 @@
-// Copyright 2014 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
-// Package core implements the Ethereum consensus protocol.
 package core
 
 import (
@@ -34,18 +17,20 @@ import (
 
 	"encoding/binary"
 
-	"github.com/ethereumclassic/go-ethereum/common"
-	"github.com/ethereumclassic/go-ethereum/core/state"
-	"github.com/ethereumclassic/go-ethereum/core/types"
-	"github.com/ethereumclassic/go-ethereum/core/vm"
-	"github.com/ethereumclassic/go-ethereum/crypto"
-	"github.com/ethereumclassic/go-ethereum/ethdb"
-	"github.com/ethereumclassic/go-ethereum/event"
-	"github.com/ethereumclassic/go-ethereum/logger"
-	"github.com/ethereumclassic/go-ethereum/logger/glog"
-	"github.com/ethereumclassic/go-ethereum/pow"
-	"github.com/ethereumclassic/go-ethereum/rlp"
-	"github.com/ethereumclassic/go-ethereum/trie"
+	"github.com/ether-core/go-ethereum/common"
+	"github.com/ether-core/go-ethereum/core/state"
+	"github.com/ether-core/go-ethereum/core/types"
+	"github.com/ether-core/go-ethereum/core/vm"
+	"github.com/ether-core/go-ethereum/crypto"
+	"github.com/ether-core/go-ethereum/ethdb"
+	"github.com/ether-core/go-ethereum/event"
+	"github.com/ether-core/go-ethereum/logger"
+	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/ether-core/go-ethereum/pow"
+	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/ether-core/go-ethereum/trie"
+
+	//yyay useless shit
 	"github.com/hashicorp/golang-lru"
 )
 

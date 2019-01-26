@@ -49,13 +49,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereumclassic/go-ethereum/core"
-	"github.com/ethereumclassic/go-ethereum/eth"
-	"github.com/ethereumclassic/go-ethereum/logger"
-	"github.com/ethereumclassic/go-ethereum/logger/glog"
-	"github.com/ethereumclassic/go-ethereum/metrics"
 	"github.com/gizak/termui"
 	"gopkg.in/urfave/cli.v1"
+
+	"github.com/ether-core/go-ethereum/core"
+	"github.com/ether-core/go-ethereum/eth"
+	"github.com/ether-core/go-ethereum/logger"
+	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/ether-core/go-ethereum/metrics"
 )
 
 const (

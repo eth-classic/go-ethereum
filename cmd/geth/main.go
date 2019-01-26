@@ -1,20 +1,3 @@
-// Copyright 2014 The go-ethereum Authors
-// This file is part of go-ethereum.
-//
-// go-ethereum is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// go-ethereum is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
-
-// geth is the official command-line client for Ethereum.
 package main
 
 import (
@@ -27,12 +10,11 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/ethereumclassic/benchmark/rtprof"
-	"github.com/ethereumclassic/go-ethereum/common"
-	"github.com/ethereumclassic/go-ethereum/console"
-	"github.com/ethereumclassic/go-ethereum/core"
-	"github.com/ethereumclassic/go-ethereum/logger"
-	"github.com/ethereumclassic/go-ethereum/metrics"
+	"github.com/ether-core/go-ethereum/common"
+	"github.com/ether-core/go-ethereum/console"
+	"github.com/ether-core/go-ethereum/core"
+	"github.com/ether-core/go-ethereum/logger"
+	"github.com/ether-core/go-ethereum/metrics"
 )
 
 // Version is the application revision identifier. It can be set with the linker
@@ -64,16 +46,6 @@ var gpuInfoCommand = cli.Command{
 	Usage:   "GPU info",
 	Description: `
 	Prints OpenCL device info for all found GPUs.
-			`,
-}
-
-var gpuBenchCommand = cli.Command{
-	Action:  gpubench,
-	Name:    "gpu-bench",
-	Aliases: []string{"gpubench"},
-	Usage:   "Benchmark GPU",
-	Description: `
-	Runs quick benchmark on first GPU found.
 			`,
 }
 
@@ -124,7 +96,7 @@ func makeCLIApp() (app *cli.App) {
 		resetCommand,
 		monitorCommand,
 		accountCommand,
-		walletCommand,
+		//walletCommand,
 		consoleCommand,
 		attachCommand,
 		javascriptCommand,
@@ -132,7 +104,7 @@ func makeCLIApp() (app *cli.App) {
 		apiCommand,
 		makeDagCommand,
 		gpuInfoCommand,
-		gpuBenchCommand,
+		//gpuBenchCommand,
 		versionCommand,
 		makeMlogDocCommand,
 		buildAddrTxIndexCommand,
@@ -252,14 +224,6 @@ func makeCLIApp() (app *cli.App) {
 			}
 		}
 
-		if ctx.IsSet(SputnikVMFlag.Name) {
-			if core.SputnikVMExists {
-				core.UseSputnikVM = "true"
-			} else {
-				log.Fatal("This version of geth wasn't built to include SputnikVM. To build with SputnikVM, use -tags=sputnikvm following the go build command.")
-			}
-		}
-
 		// Check for migrations and handle if conditionals are met.
 		if err := handleIfDataDirSchemaMigrations(ctx); err != nil {
 			return err
@@ -299,19 +263,10 @@ func makeCLIApp() (app *cli.App) {
 			}
 		}
 
-		if port := ctx.GlobalInt(PprofFlag.Name); port != 0 {
-			interval := 5 * time.Second
-			if i := ctx.GlobalInt(PprofIntervalFlag.Name); i > 0 {
-				interval = time.Duration(i) * time.Second
-			}
-			rtppf.Start(interval, port)
-		}
-
 		return nil
 	}
 
 	app.After = func(ctx *cli.Context) error {
-		rtppf.Stop()
 		logger.Flush()
 		console.Stdin.Close() // Resets terminal mode.
 		return nil

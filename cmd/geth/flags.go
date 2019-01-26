@@ -3,17 +3,16 @@ package main
 import (
 	"math/big"
 	"runtime"
-
 	"strings"
-
 	"path/filepath"
 
-	"github.com/ethereumclassic/go-ethereum/common"
-	"github.com/ethereumclassic/go-ethereum/core"
-	"github.com/ethereumclassic/go-ethereum/eth"
-	"github.com/ethereumclassic/go-ethereum/logger/glog"
-	"github.com/ethereumclassic/go-ethereum/rpc"
 	"gopkg.in/urfave/cli.v1"
+
+	"github.com/ether-core/go-ethereum/common"
+	"github.com/ether-core/go-ethereum/core"
+	"github.com/ether-core/go-ethereum/eth"
+	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/ether-core/go-ethereum/rpc"
 )
 
 // These are all the command line flags we support.

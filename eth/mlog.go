@@ -4,11 +4,11 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/ethereumclassic/go-ethereum/common"
-	"github.com/ethereumclassic/go-ethereum/core/types"
-	"github.com/ethereumclassic/go-ethereum/logger"
-	"github.com/ethereumclassic/go-ethereum/logger/glog"
-	"github.com/ethereumclassic/go-ethereum/rlp"
+	"github.com/ether-core/go-ethereum/common"
+	"github.com/ether-core/go-ethereum/core/types"
+	"github.com/ether-core/go-ethereum/logger"
+	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/ether-core/go-ethereum/rlp"
 )
 
 var mlogWwireProtocol = logger.MLogRegisterAvailable("wire", mlogLinesWire)

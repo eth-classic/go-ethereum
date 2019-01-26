@@ -1,6 +1,8 @@
 package p2p
 
-import "github.com/ethereumclassic/go-ethereum/logger"
+import (
+	"github.com/ether-core/go-ethereum/logger"
+)
 
 var mlogServer = logger.MLogRegisterAvailable("server", mLogLinesServer)
 
