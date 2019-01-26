@@ -31,7 +31,6 @@ import (
 	"github.com/ether-core/go-ethereum/p2p/discover"
 	"github.com/ether-core/go-ethereum/p2p/nat"
 	"github.com/ether-core/go-ethereum/pow"
-	"github.com/ether-core/go-ethereum/whisper"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -472,22 +471,18 @@ func MakeSystemNode(version string, ctx *cli.Context) *node.Node {
 
 	// Configure node's service container.
 	name := makeNodeName(version, ctx)
-	stackConf, shhEnable := mustMakeStackConf(ctx, name, config)
+	stackConf, _ := mustMakeStackConf(ctx, name, config) // TODO THIS MAKES USE OF WSHIPER WHICH NEEDS TO BE RMEOVED
 
 	// Assemble and return the protocol stack
 	stack, err := node.New(stackConf)
 	if err != nil {
 		glog.Fatalf("%v: failed to create the protocol stack: %v", ErrStackFail, err)
 	}
+
 	if err := stack.Register(func(ctx *node.ServiceContext) (node.Service, error) {
 		return eth.New(ctx, ethConf)
 	}); err != nil {
 		glog.Fatalf("%v: failed to register the Ethereum service: %v", ErrStackFail, err)
-	}
-	if shhEnable {
-		if err := stack.Register(func(*node.ServiceContext) (node.Service, error) { return whisper.New(), nil }); err != nil {
-			glog.Fatalf("%v: failed to register the Whisper service: %v", ErrStackFail, err)
-		}
 	}
 
 	// If --mlog enabled, configure and create mlog dir and file
