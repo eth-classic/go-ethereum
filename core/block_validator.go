@@ -11,7 +11,6 @@ import (
 	"github.com/openether/ethcore/core/state"
 	"github.com/openether/ethcore/core/types"
 	"github.com/openether/ethcore/logger/glog"
-	"github.com/openether/ethcore/pow"
 
 )
 
@@ -43,14 +42,12 @@ type DifficultyConfig struct {
 type BlockValidator struct {
 	config *ChainConfig // Chain configuration options
 	bc     *BlockChain  // Canonical block chain
-	Pow    pow.PoW      // Proof of work used for validating
 }
 
 // NewBlockValidator returns a new block validator which is safe for re-use
-func NewBlockValidator(config *ChainConfig, blockchain *BlockChain, pow pow.PoW) *BlockValidator {
+func NewBlockValidator(config *ChainConfig, blockchain *BlockChain) *BlockValidator {
 	validator := &BlockValidator{
 		config: config,
-		Pow:    pow,
 		bc:     blockchain,
 	}
 	return validator
@@ -82,7 +79,7 @@ func (v *BlockValidator) ValidateBlock(block *types.Block) error {
 
 	header := block.Header()
 	// validate the block header
-	if err := ValidateHeader(v.config, v.Pow, header, parent.Header(), false, false); err != nil {
+	if err := ValidateHeader(v.config, header, parent.Header(), false, false); err != nil {
 		return err
 	}
 	// verify the uncles are correctly rewarded
@@ -177,7 +174,7 @@ func (v *BlockValidator) VerifyUncles(block, parent *types.Block) error {
 			return UncleError("uncle[%d](%x)'s parent is not ancestor (%x)", i, hash[:4], uncle.ParentHash[0:4])
 		}
 
-		if err := ValidateHeader(v.config, v.Pow, uncle, ancestors[uncle.ParentHash].Header(), true, true); err != nil {
+		if err := ValidateHeader(v.config, uncle, ancestors[uncle.ParentHash].Header(), true, true); err != nil {
 			return validateError(fmt.Sprintf("uncle[%d](%x) header invalid: %v", i, hash[:4], err))
 		}
 	}
@@ -197,13 +194,13 @@ func (v *BlockValidator) ValidateHeader(header, parent *types.Header, checkPow b
 	if v.bc.HasHeader(header.Hash()) {
 		return nil
 	}
-	return ValidateHeader(v.config, v.Pow, header, parent, checkPow, false)
+	return ValidateHeader(v.config, header, parent, checkPow, false)
 }
 
 // Validates a header. Returns an error if the header is invalid.
 //
 // See YP section 4.3.4. "Block Header Validity"
-func ValidateHeader(config *ChainConfig, pow pow.PoW, header *types.Header, parent *types.Header, checkPow, uncle bool) error {
+func ValidateHeader(config *ChainConfig, header *types.Header, parent *types.Header, checkPow, uncle bool) error {
 	if len(header.Extra) > types.HeaderExtraMax {
 		return fmt.Errorf("extra data size %d exceeds limit of %d", len(header.Extra), types.HeaderExtraMax)
 	}
@@ -243,9 +240,10 @@ func ValidateHeader(config *ChainConfig, pow pow.PoW, header *types.Header, pare
 
 	if checkPow {
 		// Verify the nonce of the header. Return an error if it's not valid
-		if !pow.Verify(types.NewBlockWithHeader(header)) {
-			return &BlockNonceErr{header.Number, header.Hash(), header.Nonce.Uint64()}
-		}
+		// TODO: lets actually put this where it goes and stop doing stupid shit eventually
+		//if !pow.Verify(types.NewBlockWithHeader(header)) {
+		//	return &BlockNonceErr{header.Number, header.Hash(), header.Nonce.Uint64()}
+		//}
 	}
 	// If all checks passed, validate the extra-data field for hard forks
 	return nil

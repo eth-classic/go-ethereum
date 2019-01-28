@@ -107,24 +107,9 @@ func (s *PublicEthereumAPI) CompileSolidity(source string) (map[string]*compiler
 	return solc.Compile(source)
 }
 
-// Etherbase is the address that mining rewards will be send to
-func (s *PublicEthereumAPI) Etherbase() (common.Address, error) {
-	return s.e.Etherbase()
-}
-
-// Coinbase is the address that mining rewards will be send to (alias for Etherbase)
-func (s *PublicEthereumAPI) Coinbase() (common.Address, error) {
-	return s.Etherbase()
-}
-
 // ProtocolVersion returns the current Ethereum protocol version this node supports
 func (s *PublicEthereumAPI) ProtocolVersion() *rpc.HexNumber {
 	return rpc.NewHexNumber(s.e.EthVersion())
-}
-
-// Hashrate returns the POW hashrate
-func (s *PublicEthereumAPI) Hashrate() *rpc.HexNumber {
-	return rpc.NewHexNumber(s.e.Miner().HashRate())
 }
 
 // Syncing returns false in case the node is currently not syncing with the network. It can be up to date or has not
@@ -1560,10 +1545,6 @@ func (api *PrivateAdminAPI) ImportChain(file string) (bool, error) {
 		if hasAllBlocks(api.eth.BlockChain(), blocks) {
 			blocks = blocks[:0]
 			continue
-		}
-		// Import the batch and reset the buffer
-		if res := api.eth.BlockChain().InsertChain(blocks); res.Error != nil {
-			return false, fmt.Errorf("batch %d: failed to insert: %v", batch, res.Error)
 		}
 		blocks = blocks[:0]
 	}

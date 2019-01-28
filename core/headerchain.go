@@ -16,7 +16,6 @@ import (
 	"github.com/openether/ethcore/event"
 	"github.com/openether/ethcore/logger"
 	"github.com/openether/ethcore/logger/glog"
-	"github.com/openether/ethcore/pow"
 
 	"github.com/hashicorp/golang-lru"
 )
@@ -556,7 +555,7 @@ func (hc *HeaderChain) postChainEvents(events []interface{}) {
 type headerValidator struct {
 	config *ChainConfig
 	hc     *HeaderChain // Canonical header chain
-	Pow    pow.PoW      // Proof of work used for validating
+	//Pow    pow.PoW      // Proof of work used for validating
 }
 
 // ValidateHeader validates the given header and, depending on the pow arg,
@@ -571,5 +570,5 @@ func (v *headerValidator) ValidateHeader(header, parent *types.Header, checkPow 
 	if v.hc.HasHeader(header.Hash()) {
 		return nil
 	}
-	return ValidateHeader(v.config, v.Pow, header, parent, checkPow, false)
+	return ValidateHeader(v.config, header, parent, checkPow, false)
 }

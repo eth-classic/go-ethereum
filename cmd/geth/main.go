@@ -26,28 +26,6 @@ func init() {
 	common.SetClientVersion(Version)
 }
 
-var makeDagCommand = cli.Command{
-	Action:  makedag,
-	Name:    "make-dag",
-	Aliases: []string{"makedag"},
-	Usage:   "Generate ethash dag (for testing)",
-	Description: `
-		The makedag command generates an ethash DAG in /tmp/dag.
-
-		This command exists to support the system testing project.
-		Regular users do not need to execute it.
-				`,
-}
-
-var gpuInfoCommand = cli.Command{
-	Action:  gpuinfo,
-	Name:    "gpu-info",
-	Aliases: []string{"gpuinfo"},
-	Usage:   "GPU info",
-	Description: `
-	Prints OpenCL device info for all found GPUs.
-			`,
-}
 
 var versionCommand = cli.Command{
 	Action: version,
@@ -102,9 +80,6 @@ func makeCLIApp() (app *cli.App) {
 		javascriptCommand,
 		statusCommand,
 		apiCommand,
-		makeDagCommand,
-		gpuInfoCommand,
-		//gpuBenchCommand,
 		versionCommand,
 		makeMlogDocCommand,
 		buildAddrTxIndexCommand,

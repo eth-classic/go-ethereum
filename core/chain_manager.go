@@ -276,7 +276,7 @@ func newCanonical(config *ChainConfig, n int, full bool) (ethdb.Database, *Block
 		return nil, nil, err
 	}
 
-	blockchain, err := NewBlockChain(db, MakeChainConfig(), FakePow{}, evmux)
+	blockchain, err := NewBlockChain(db, MakeChainConfig(), evmux)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -284,12 +284,6 @@ func newCanonical(config *ChainConfig, n int, full bool) (ethdb.Database, *Block
 	// Create and inject the requested chain
 	if n == 0 {
 		return db, blockchain, nil
-	}
-	if full {
-		// Full block-chain requested
-		blocks := makeBlockChain(config, genesis, n, db, canonicalSeed)
-		res := blockchain.InsertChain(blocks)
-		return db, blockchain, res.Error
 	}
 	// Header-only chain requested
 	headers := makeHeaderChain(config, genesis.Header(), n, db, canonicalSeed)

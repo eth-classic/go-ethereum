@@ -28,7 +28,6 @@ import (
 	"github.com/openether/ethcore/node"
 	"github.com/openether/ethcore/p2p/discover"
 	"github.com/openether/ethcore/p2p/nat"
-	"github.com/openether/ethcore/pow"
 
 	"gopkg.in/urfave/cli.v1"
 )
@@ -575,8 +574,6 @@ func mustMakeEthConf(ctx *cli.Context, sconf *core.SufficientChainConfig) *eth.C
 		NetworkId:               sconf.Network,
 		MaxPeers:                ctx.GlobalInt(aliasableName(MaxPeersFlag.Name, ctx)),
 		AccountManager:          accman,
-		Etherbase:               MakeEtherbase(accman, ctx),
-		MinerThreads:            ctx.GlobalInt(aliasableName(MinerThreadsFlag.Name, ctx)),
 		NatSpec:                 ctx.GlobalBool(aliasableName(NatspecEnabledFlag.Name, ctx)),
 		DocRoot:                 ctx.GlobalString(aliasableName(DocRootFlag.Name, ctx)),
 		GasPrice:                new(big.Int),
@@ -587,7 +584,6 @@ func mustMakeEthConf(ctx *cli.Context, sconf *core.SufficientChainConfig) *eth.C
 		GpobaseStepUp:           ctx.GlobalInt(aliasableName(GpobaseStepUpFlag.Name, ctx)),
 		GpobaseCorrectionFactor: ctx.GlobalInt(aliasableName(GpobaseCorrectionFactorFlag.Name, ctx)),
 		SolcPath:                ctx.GlobalString(aliasableName(SolcPathFlag.Name, ctx)),
-		AutoDAG:                 ctx.GlobalBool(aliasableName(AutoDAGFlag.Name, ctx)) || ctx.GlobalBool(aliasableName(MiningEnabledFlag.Name, ctx)),
 	}
 
 	if ctx.GlobalBool(aliasableName(FastSyncFlag.Name, ctx)) {
@@ -605,11 +601,6 @@ func mustMakeEthConf(ctx *cli.Context, sconf *core.SufficientChainConfig) *eth.C
 	}
 	if _, ok := ethConf.GpoMaxGasPrice.SetString(ctx.GlobalString(aliasableName(GpoMaxGasPriceFlag.Name, ctx)), 0); !ok {
 		log.Fatalf("malformed %s flag value %q", aliasableName(GpoMaxGasPriceFlag.Name, ctx), ctx.GlobalString(aliasableName(GpoMaxGasPriceFlag.Name, ctx)))
-	}
-
-	switch sconf.Consensus {
-	case "ethash-test":
-		ethConf.PowTest = true
 	}
 
 	// Override any default configs in dev mode
@@ -636,10 +627,6 @@ func mustMakeSufficientChainConfig(ctx *cli.Context) *core.SufficientChainConfig
 
 	config := &core.SufficientChainConfig{}
 	defer func() {
-		// Allow flags to override external config file.
-		if ctx.GlobalBool(aliasableName(DevModeFlag.Name, ctx)) {
-			config.Consensus = "ethash-test"
-		}
 		if ctx.GlobalIsSet(aliasableName(BootnodesFlag.Name, ctx)) {
 			config.ParsedBootstrap = MakeBootstrapNodesFromContext(ctx)
 			glog.V(logger.Warn).Warnf(`Overwriting external bootnodes configuration with those from --%s flag. Value set from flag: %v`, aliasableName(BootnodesFlag.Name, ctx), config.ParsedBootstrap)
@@ -815,15 +802,8 @@ func MakeChain(ctx *cli.Context) (chain *core.BlockChain, chainDb ethdb.Database
 	sconf := mustMakeSufficientChainConfig(ctx)
 	chainDb = MakeChainDatabase(ctx)
 
-	pow := pow.PoW(core.FakePow{})
-	if !ctx.GlobalBool(aliasableName(FakePoWFlag.Name, ctx)) {
-		pow = ethash.New()
-	} else {
-		glog.V(logger.Info).Infoln("Consensus: fake")
-		glog.D(logger.Warn).Warnln("Consensus: fake")
-	}
 
-	chain, err = core.NewBlockChain(chainDb, sconf.ChainConfig, pow, new(event.TypeMux))
+	chain, err = core.NewBlockChain(chainDb, sconf.ChainConfig, new(event.TypeMux))
 	if err != nil {
 		glog.Fatal("Could not start chainmanager: ", err)
 	}

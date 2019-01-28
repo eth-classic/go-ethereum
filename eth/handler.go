@@ -21,7 +21,6 @@ import (
 	"github.com/openether/ethcore/logger/glog"
 	"github.com/openether/ethcore/p2p"
 	"github.com/openether/ethcore/p2p/discover"
-	"github.com/openether/ethcore/pow"
 	"github.com/openether/ethcore/rlp"
 )
 
@@ -81,7 +80,7 @@ type ProtocolManager struct {
 
 // NewProtocolManager returns a new ethereum sub protocol manager. The Ethereum sub protocol manages peers capable
 // with the ethereum network.
-func NewProtocolManager(config *core.ChainConfig, mode downloader.SyncMode, networkId uint64, mux *event.TypeMux, txpool txPool, pow pow.PoW, blockchain *core.BlockChain, chaindb ethdb.Database) (*ProtocolManager, error) {
+func NewProtocolManager(config *core.ChainConfig, mode downloader.SyncMode, networkId uint64, mux *event.TypeMux, txpool txPool, blockchain *core.BlockChain, chaindb ethdb.Database) (*ProtocolManager, error) {
 	// Create the protocol manager with the base fields
 	manager := &ProtocolManager{
 		networkId:   networkId,
@@ -160,7 +159,7 @@ func NewProtocolManager(config *core.ChainConfig, mode downloader.SyncMode, netw
 		return nil, errIncompatibleConfig
 	}
 	// Construct the different synchronisation mechanisms
-	manager.downloader = downloader.New(mode, chaindb, manager.eventMux, blockchain, nil, manager.removePeer)
+	//manager.downloader = downloader.New(mode, chaindb, manager.eventMux, blockchain, nil, manager.removePeer)
 
 	validator := func(header *types.Header) error {
 		return manager.blockchain.Validator().ValidateHeader(header, manager.blockchain.GetHeader(header.ParentHash), true)
@@ -175,7 +174,7 @@ func NewProtocolManager(config *core.ChainConfig, mode downloader.SyncMode, netw
 		}
 		// Mark initial sync done on any fetcher import
 		atomic.StoreUint32(&manager.acceptsTxs, 1)
-		return manager.blockchain.InsertChain(blocks)
+		return nil
 	}
 	manager.fetcher = fetcher.New(mux, blockchain.GetBlock, validator, manager.BroadcastBlock, heighter, inserter, manager.removePeer)
 

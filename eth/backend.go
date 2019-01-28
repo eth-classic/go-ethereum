@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
-	"os"
-	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
@@ -60,7 +58,6 @@ type Config struct {
 	AccountManager *accounts.Manager
 	Etherbase      common.Address
 	GasPrice       *big.Int
-	MinerThreads   int
 	SolcPath       string
 
 	UseAddrTxIndex bool
@@ -92,7 +89,7 @@ type Ethereum struct {
 	txMu            sync.Mutex
 	blockchain      *core.BlockChain
 	accountManager  *accounts.Manager
-	//pow             *ethash.Ethash
+	//pow             *Ethash
 	protocolManager *ProtocolManager
 	SolcPath        string
 	solc            *compiler.Solidity
@@ -176,13 +173,9 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 		dappDb:                  dappDb,
 		eventMux:                ctx.EventMux,
 		accountManager:          config.AccountManager,
-		etherbase:               config.Etherbase,
 		netVersionId:            config.NetworkId,
 		NatSpec:                 config.NatSpec,
-		MinerThreads:            config.MinerThreads,
 		SolcPath:                config.SolcPath,
-		AutoDAG:                 config.AutoDAG,
-		PowTest:                 config.PowTest,
 		GpoMinGasPrice:          config.GpoMinGasPrice,
 		GpoMaxGasPrice:          config.GpoMaxGasPrice,
 		GpoFullBlockRatio:       config.GpoFullBlockRatio,
@@ -190,20 +183,6 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 		GpobaseStepUp:           config.GpobaseStepUp,
 		GpobaseCorrectionFactor: config.GpobaseCorrectionFactor,
 		httpclient:              httpclient.New(config.DocRoot),
-	}
-	switch {
-	case config.PowTest:
-		glog.V(logger.Info).Infof("Consensus: ethash used in test mode")
-		eth.pow, err = ethash.NewForTesting()
-		if err != nil {
-			return nil, err
-		}
-	case config.PowShared:
-		glog.V(logger.Info).Infof("Consensus: ethash used in shared mode")
-		eth.pow = ethash.NewShared()
-
-	default:
-		eth.pow = ethash.New()
 	}
 
 	// Initialize indexes db if enabled
@@ -254,7 +233,7 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 
 	eth.chainConfig = config.ChainConfig
 
-	eth.blockchain, err = core.NewBlockChain(chainDb, eth.chainConfig, eth.pow, eth.EventMux())
+	eth.blockchain, err = core.NewBlockChain(chainDb, eth.chainConfig, eth.EventMux())
 	if err != nil {
 		if err == core.ErrNoGenesis {
 			return nil, fmt.Errorf(`No chain found. Please initialise a new chain using the "init" subcommand.`)
@@ -273,7 +252,7 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 	newPool := core.NewTxPool(eth.chainConfig, eth.EventMux(), eth.blockchain.State, eth.blockchain.GasLimit)
 	eth.txPool = newPool
 
-	if eth.protocolManager, err = NewProtocolManager(eth.chainConfig, config.SyncMode, uint64(config.NetworkId), eth.eventMux, eth.txPool, eth.pow, eth.blockchain, chainDb); err != nil {
+	if eth.protocolManager, err = NewProtocolManager(eth.chainConfig, config.SyncMode, uint64(config.NetworkId), eth.eventMux, eth.txPool, eth.blockchain, chainDb); err != nil {
 		return nil, err
 	}
 
@@ -302,7 +281,7 @@ func (s *Ethereum) APIs() []rpc.API {
 		}, {
 			Namespace: "eth",
 			Version:   "1.0",
-			Service:   NewPublicBlockChainAPI(s.chainConfig, s.blockchain, s.miner, s.chainDb, s.gpo, s.eventMux, s.accountManager),
+			Service:   NewPublicBlockChainAPI(s.chainConfig, s.blockchain, s.chainDb, s.gpo, s.eventMux, s.accountManager),
 			Public:    true,
 		}, {
 			Namespace: "eth",
@@ -312,18 +291,8 @@ func (s *Ethereum) APIs() []rpc.API {
 		}, {
 			Namespace: "eth",
 			Version:   "1.0",
-			Service:   NewPublicMinerAPI(s),
-			Public:    true,
-		}, {
-			Namespace: "eth",
-			Version:   "1.0",
 			Service:   downloader.NewPublicDownloaderAPI(s.protocolManager.downloader, s.eventMux),
 			Public:    true,
-		}, {
-			Namespace: "miner",
-			Version:   "1.0",
-			Service:   NewPrivateMinerAPI(s),
-			Public:    false,
 		}, {
 			Namespace: "txpool",
 			Version:   "1.0",
@@ -365,28 +334,6 @@ func (s *Ethereum) ResetWithGenesisBlock(gb *types.Block) {
 	s.blockchain.ResetWithGenesisBlock(gb)
 }
 
-func (s *Ethereum) Etherbase() (eb common.Address, err error) {
-	eb = s.etherbase
-	if eb.IsEmpty() {
-		firstAccount, err := s.AccountManager().AccountByIndex(0)
-		eb = firstAccount.Address
-		if err != nil {
-			return eb, fmt.Errorf("etherbase address must be explicitly specified")
-		}
-	}
-	return eb, nil
-}
-
-// set in js console via admin interface or wrapper from cli flags
-func (self *Ethereum) SetEtherbase(etherbase common.Address) {
-	self.etherbase = etherbase
-	self.miner.SetEtherbase(etherbase)
-}
-
-func (s *Ethereum) StopMining()         { s.miner.Stop() }
-func (s *Ethereum) IsMining() bool      { return s.miner.Mining() }
-func (s *Ethereum) Miner() *miner.Miner { return s.miner }
-
 func (s *Ethereum) AccountManager() *accounts.Manager  { return s.accountManager }
 func (s *Ethereum) BlockChain() *core.BlockChain       { return s.blockchain }
 func (s *Ethereum) TxPool() *core.TxPool               { return s.txPool }
@@ -408,9 +355,6 @@ func (s *Ethereum) Protocols() []p2p.Protocol {
 // Start implements node.Service, starting all internal goroutines needed by the
 // Ethereum protocol implementation.
 func (s *Ethereum) Start(srvr *p2p.Server) error {
-	if s.AutoDAG {
-		s.StartAutoDAG()
-	}
 	s.protocolManager.Start(s.config.MaxPeers)
 	s.netRPCService = NewPublicNetAPI(srvr, s.NetVersion())
 	return nil
@@ -422,10 +366,7 @@ func (s *Ethereum) Stop() error {
 	s.blockchain.Stop()
 	s.protocolManager.Stop()
 	s.txPool.Stop()
-	s.miner.Stop()
 	s.eventMux.Stop()
-
-	s.StopAutoDAG()
 
 	s.chainDb.Close()
 	s.dappDb.Close()
@@ -437,69 +378,6 @@ func (s *Ethereum) Stop() error {
 // This function will wait for a shutdown and resumes main thread execution
 func (s *Ethereum) WaitForShutdown() {
 	<-s.shutdownChan
-}
-
-// StartAutoDAG() spawns a go routine that checks the DAG every autoDAGcheckInterval
-// by default that is 10 times per epoch
-// in epoch n, if we past autoDAGepochHeight within-epoch blocks,
-// it calls ethash.MakeDAG  to pregenerate the DAG for the next epoch n+1
-// if it does not exist yet as well as remove the DAG for epoch n-1
-// the loop quits if autodagquit channel is closed, it can safely restart and
-// stop any number of times.
-// For any more sophisticated pattern of DAG generation, use CLI subcommand
-// makedag
-func (self *Ethereum) StartAutoDAG() {
-	if self.autodagquit != nil {
-		return // already started
-	}
-	go func() {
-		glog.V(logger.Info).Infof("Automatic pregeneration of ethash DAG ON (ethash dir: %s)", ethash.DefaultDir)
-		var nextEpoch uint64
-		timer := time.After(0)
-		self.autodagquit = make(chan bool)
-		for {
-			select {
-			case <-timer:
-				glog.V(logger.Info).Infof("checking DAG (ethash dir: %s)", ethash.DefaultDir)
-				currentBlock := self.BlockChain().CurrentBlock().NumberU64()
-				thisEpoch := currentBlock / epochLength
-				if nextEpoch <= thisEpoch {
-					if currentBlock%epochLength > autoDAGepochHeight {
-						if thisEpoch > 0 {
-							previousDag, previousDagFull := dagFiles(thisEpoch - 1)
-							os.Remove(filepath.Join(ethash.DefaultDir, previousDag))
-							os.Remove(filepath.Join(ethash.DefaultDir, previousDagFull))
-							glog.V(logger.Info).Infof("removed DAG for epoch %d (%s)", thisEpoch-1, previousDag)
-						}
-						nextEpoch = thisEpoch + 1
-						dag, _ := dagFiles(nextEpoch)
-						if _, err := os.Stat(dag); os.IsNotExist(err) {
-							glog.V(logger.Info).Infof("Pregenerating DAG for epoch %d (%s)", nextEpoch, dag)
-							err := ethash.MakeDAG(nextEpoch*epochLength, "") // "" -> ethash.DefaultDir
-							if err != nil {
-								glog.V(logger.Error).Infof("Error generating DAG for epoch %d (%s)", nextEpoch, dag)
-								return
-							}
-						} else {
-							glog.V(logger.Error).Infof("DAG for epoch %d (%s)", nextEpoch, dag)
-						}
-					}
-				}
-				timer = time.After(autoDAGcheckInterval)
-			case <-self.autodagquit:
-				return
-			}
-		}
-	}()
-}
-
-// stopAutoDAG stops automatic DAG pregeneration by quitting the loop
-func (self *Ethereum) StopAutoDAG() {
-	if self.autodagquit != nil {
-		close(self.autodagquit)
-		self.autodagquit = nil
-	}
-	glog.V(logger.Info).Infof("Automatic pregeneration of ethash DAG: OFF (ethash dir: %s)", ethash.DefaultDir)
 }
 
 // HTTPClient returns the light http client used for fetching offchain docs
@@ -526,7 +404,7 @@ func (self *Ethereum) SetSolc(solcPath string) (*compiler.Solidity, error) {
 // dagFiles(epoch) returns the two alternative DAG filenames (not a path)
 // 1) <revision>-<hex(seedhash[8])> 2) full-R<revision>-<hex(seedhash[8])>
 func dagFiles(epoch uint64) (string, string) {
-	seedHash, _ := ethash.GetSeedHash(epoch * epochLength)
+	seedHash, _ := GetSeedHash(epoch * epochLength)
 	dag := fmt.Sprintf("full-R%d-%x", ethashRevision, seedHash[:8])
 	return dag, "full-R" + dag
 }
