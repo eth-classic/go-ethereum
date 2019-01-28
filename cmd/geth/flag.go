@@ -13,7 +13,6 @@ import (
 	"strings"
 	"errors"
 
-	"github.com/openether/ethcore/ethash"
 	"github.com/openether/ethcore/accounts"
 	"github.com/openether/ethcore/common"
 	"github.com/openether/ethcore/core"
@@ -26,11 +25,11 @@ import (
 	"github.com/openether/ethcore/event"
 	"github.com/openether/ethcore/logger"
 	"github.com/openether/ethcore/logger/glog"
-	"github.com/openether/ethcore/miner"
 	"github.com/openether/ethcore/node"
 	"github.com/openether/ethcore/p2p/discover"
 	"github.com/openether/ethcore/p2p/nat"
 	"github.com/openether/ethcore/pow"
+
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -458,7 +457,7 @@ func MakeSystemNode(version string, ctx *cli.Context) *node.Node {
 		if len(s) > types.HeaderExtraMax {
 			log.Fatalf("%s flag %q exceeds size limit of %d", aliasableName(ExtraDataFlag.Name, ctx), s, types.HeaderExtraMax)
 		}
-		miner.HeaderExtra = []byte(s)
+		//miner.HeaderExtra = []byte(s)
 	}
 
 	// Makes sufficient configuration from JSON file or DB pending flags.

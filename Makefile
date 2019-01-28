@@ -26,7 +26,7 @@ setup: ## Install all the build and lint dependencies
 	dep ensure
 	gometalinter --install
 
-build: cmd/abigen cmd/bootnode cmd/disasm cmd/ethtest cmd/evm cmd/gethrpctest cmd/rlpdump cmd/geth ## Build a local snapshot binary version of all commands
+build: cmd/abigen cmd/bootnode cmd/disasm cmd/evm cmd/gethrpctest cmd/rlpdump cmd/geth ## Build a local snapshot binary version of all commands
 	@ls -ld $(BINARY)/*
 
 cmd/geth: 
@@ -50,11 +50,6 @@ cmd/disasm: ## Build a local snapshot of disasm.
 	@echo "Done building disasm."
 	@echo "Run \"$(BINARY)/disasm\" to launch disasm."
 
-cmd/ethtest: ## Build a local snapshot of ethtest.
-	mkdir -p ./${BINARY} && go build ${LDFLAGS} -o ${BINARY}/ethtest ./cmd/ethtest
-	@echo "Done building ethtest."
-	@echo "Run \"$(BINARY)/ethtest\" to launch ethtest."
-
 cmd/evm: ## Build a local snapshot of evm.
 	mkdir -p ./${BINARY} && go build ${LDFLAGS} -o ${BINARY}/evm ./cmd/evm
 	@echo "Done building evm."
@@ -71,7 +66,7 @@ cmd/rlpdump: ## Build a local snapshot of rlpdump.
 	@echo "Run \"$(BINARY)/rlpdump\" to launch rlpdump."
 
 install: ## Install all packages to $GOPATH/bin
-	go install ./cmd/{abigen,bootnode,disasm,ethtest,evm,gethrpctest,rlpdump}
+	go install ./cmd/{abigen,bootnode,disasm,evm,gethrpctest,rlpdump}
 	$(MAKE) install_geth
 
 install_geth:
@@ -124,4 +119,4 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 
-.PHONY: setup test cover fmt lint ci build cmd/geth cmd/abigen cmd/bootnode cmd/disasm cmd/ethtest cmd/evm cmd/gethrlptest cmd/rlpdump install install_geth clean help static
+.PHONY: setup test cover fmt lint ci build cmd/geth cmd/abigen cmd/bootnode cmd/disasm cmd/evm cmd/gethrlptest cmd/rlpdump install install_geth clean help static

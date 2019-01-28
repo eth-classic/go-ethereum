@@ -18,7 +18,6 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/openether/ethcore/ethash"
 	"github.com/openether/ethcore/common"
 	"github.com/openether/ethcore/core"
 	"github.com/openether/ethcore/core/state"
@@ -711,11 +710,6 @@ func startNode(ctx *cli.Context, stack *node.Node) *eth.Ethereum {
 		}
 		a.AutoMode = true
 		go core.BuildAddrTxIndex(ethereum.BlockChain(), ethereum.ChainDb(), a.Db, math.MaxUint64, math.MaxUint64, 10000)
-	}
-	if ctx.GlobalBool(aliasableName(MiningEnabledFlag.Name, ctx)) {
-		if err := ethereum.StartMining(ctx.GlobalInt(aliasableName(MinerThreadsFlag.Name, ctx)), ctx.GlobalString(aliasableName(MiningGPUFlag.Name, ctx))); err != nil {
-			glog.Fatalf("Failed to start mining: %v", err)
-		}
 	}
 
 	return ethereum

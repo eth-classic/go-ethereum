@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/openether/ethcore/ethash"
 	"github.com/openether/ethcore/accounts"
 	"github.com/openether/ethcore/common"
 	"github.com/openether/ethcore/common/compiler"
@@ -25,7 +24,6 @@ import (
 	"github.com/openether/ethcore/event"
 	"github.com/openether/ethcore/logger"
 	"github.com/openether/ethcore/logger/glog"
-	"github.com/openether/ethcore/miner"
 	"github.com/openether/ethcore/node"
 	"github.com/openether/ethcore/p2p"
 	"github.com/openether/ethcore/rlp"
@@ -94,7 +92,7 @@ type Ethereum struct {
 	txMu            sync.Mutex
 	blockchain      *core.BlockChain
 	accountManager  *accounts.Manager
-	pow             *ethash.Ethash
+	//pow             *ethash.Ethash
 	protocolManager *ProtocolManager
 	SolcPath        string
 	solc            *compiler.Solidity
@@ -110,15 +108,8 @@ type Ethereum struct {
 	httpclient *httpclient.HTTPClient
 
 	eventMux *event.TypeMux
-	miner    *miner.Miner
 
-	Mining        bool
-	MinerThreads  int
 	NatSpec       bool
-	AutoDAG       bool
-	PowTest       bool
-	autodagquit   chan bool
-	etherbase     common.Address
 	netVersionId  int
 	netRPCService *PublicNetAPI
 }
@@ -283,10 +274,6 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 	eth.txPool = newPool
 
 	if eth.protocolManager, err = NewProtocolManager(eth.chainConfig, config.SyncMode, uint64(config.NetworkId), eth.eventMux, eth.txPool, eth.pow, eth.blockchain, chainDb); err != nil {
-		return nil, err
-	}
-	eth.miner = miner.New(eth, eth.chainConfig, eth.EventMux(), eth.pow)
-	if err = eth.miner.SetGasPrice(config.GasPrice); err != nil {
 		return nil, err
 	}
 

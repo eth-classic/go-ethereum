@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/openether/go-ethereum/accounts/abi/bind"
-	"github.com/openether/go-ethereum/common/compiler"
+	"github.com/openether/ethcore/accounts/abi/bind"
+	"github.com/openether/ethcore/common/compiler"
 )
 
 // Version is the application revision identifier. It can be set with the linker
