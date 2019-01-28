@@ -302,7 +302,9 @@ func (d *Downloader) GetPeers() *peerSet {
 
 // Synchronising returns whether the downloader is currently retrieving blocks.
 func (d *Downloader) Synchronising() bool {
-	return atomic.LoadInt32(&d.synchronising) > 0
+	// TODO: The fuck? I hate you guys so fucking much it hurts my soul
+	//return atomic.LoadInt32(&d.synchronising) > 0
+	return false // for now until we can actuall use a fucking sane check weather we need to sync
 }
 
 // RegisterPeer injects a new download peer into the set of block source to be
@@ -588,39 +590,39 @@ func (d *Downloader) spawnSync(fetchers []func() error) error {
 // used when cancelling the downloads from inside the downloader.
 func (d *Downloader) cancel() {
 	// Close the current cancel channel
-	d.cancelLock.Lock()
-	if d.cancelCh != nil {
-		select {
-		case <-d.cancelCh:
-			// Channel was already closed
-		default:
-			close(d.cancelCh)
-		}
-	}
-	d.cancelLock.Unlock()
+	//d.cancelLock.Lock()
+	//if d.cancelCh != nil {
+	//	select {
+	//	case <-d.cancelCh:
+	//		// Channel was already closed
+	//	default:
+	//		close(d.cancelCh)
+	//	}
+	//}
+	//d.cancelLock.Unlock()
 }
 
 // Cancel aborts all of the operations and waits for all download goroutines to
 // finish before returning.
 func (d *Downloader) Cancel() {
-	d.cancel()
-	d.cancelWg.Wait()
+	//d.cancel()
+	//d.cancelWg.Wait()
 }
 
 // Terminate interrupts the downloader, canceling all pending operations.
 // The downloader cannot be reused after calling Terminate.
 func (d *Downloader) Terminate() {
 	// Close the termination channel (make sure double close is allowed)
-	d.quitLock.Lock()
-	select {
-	case <-d.quitCh:
-	default:
-		close(d.quitCh)
-	}
-	d.quitLock.Unlock()
+	//d.quitLock.Lock()
+	//select {
+	//case <-d.quitCh:
+	//default:
+	//	close(d.quitCh)
+	//}
+	//d.quitLock.Unlock()
 
 	// Cancel any pending download requests
-	d.Cancel()
+	//d.Cancel()
 }
 
 // fetchHeight retrieves the head header of the remote peer to aid in estimating
