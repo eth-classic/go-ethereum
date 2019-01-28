@@ -9,7 +9,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 	// NO
 	"github.com/robertkrimen/otto"
 )

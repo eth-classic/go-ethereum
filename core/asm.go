@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core/vm"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/vm"
 )
 
 func Disassemble(script []byte) (asm []string) {

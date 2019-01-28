@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/accounts"
-	"github.com/ether-core/go-ethereum/core/state"
-	"github.com/ether-core/go-ethereum/core/types"
-	"github.com/ether-core/go-ethereum/core/vm"
-	"github.com/ether-core/go-ethereum/ethdb"
-	"github.com/ether-core/go-ethereum/event"
+	"github.com/openether/ethcore/accounts"
+	"github.com/openether/ethcore/core/state"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/core/vm"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/event"
 )
 
 // Validator is an interface which defines the standard for block validation.

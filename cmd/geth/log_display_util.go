@@ -5,8 +5,8 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/ether-core/go-ethereum/eth"
-	"github.com/ether-core/go-ethereum/eth/downloader"
+	"github.com/openether/ethcore/eth"
+	"github.com/openether/ethcore/eth/downloader"
 )
 
 //go:generate stringer -type=logEventType

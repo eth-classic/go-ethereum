@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/rlp"
 )
 
 // Version is the application revision identifier. It can be set with the linker

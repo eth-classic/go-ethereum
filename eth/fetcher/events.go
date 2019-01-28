@@ -1,7 +1,7 @@
 package fetcher
 
 import (
-	"github.com/ether-core/go-ethereum/core/types"
+	"github.com/openether/ethcore/core/types"
 )
 
 type FetcherInsertBlockEvent struct {

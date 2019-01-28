@@ -3,7 +3,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 // Type is the VM type accepted by **NewVm**

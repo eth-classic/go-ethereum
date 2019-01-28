@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/crypto"
+	"github.com/openether/ethcore/crypto"
 )
 
 // Callable method given a `Name` and whether the method is a constant.

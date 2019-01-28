@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core/vm"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/vm"
 )
 
 // Version is the application revision identifier. It can be set with the linker

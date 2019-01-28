@@ -10,8 +10,8 @@ import (
 	"golang.org/x/net/websocket"
 	"gopkg.in/fatih/set.v0"
 
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 // wsReaderWriterCloser reads and write payloads from and to a websocket  connection.

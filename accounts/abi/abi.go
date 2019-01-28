@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 // The ABI holds information about a contract's context and available

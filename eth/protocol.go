@@ -5,9 +5,9 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core/types"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/rlp"
 )
 
 // Constants to match up protocol versions and messages

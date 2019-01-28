@@ -10,16 +10,16 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/ethash"
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core"
-	"github.com/ether-core/go-ethereum/core/state"
-	"github.com/ether-core/go-ethereum/core/types"
-	"github.com/ether-core/go-ethereum/crypto"
-	"github.com/ether-core/go-ethereum/ethdb"
-	"github.com/ether-core/go-ethereum/event"
-	"github.com/ether-core/go-ethereum/logger/glog"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/ethash"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/core/state"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/crypto"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/rlp"
 )
 
 // Block Test JSON Format

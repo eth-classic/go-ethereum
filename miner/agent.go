@@ -4,10 +4,10 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
-	"github.com/ether-core/go-ethereum/pow"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/pow"
 )
 
 type CpuAgent struct {

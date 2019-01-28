@@ -20,7 +20,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 	"github.com/fatih/color"
 )
 

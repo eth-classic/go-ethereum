@@ -8,11 +8,11 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/ether-core/go-ethereum/accounts"
-	"github.com/ether-core/go-ethereum/console"
-	"github.com/ether-core/go-ethereum/crypto"
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/accounts"
+	"github.com/openether/ethcore/console"
+	"github.com/openether/ethcore/crypto"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 var (

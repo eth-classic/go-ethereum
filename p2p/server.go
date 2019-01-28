@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ether-core/go-ethereum/event"
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
-	"github.com/ether-core/go-ethereum/p2p/discover"
-	"github.com/ether-core/go-ethereum/p2p/nat"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/p2p/discover"
+	"github.com/openether/ethcore/p2p/nat"
 )
 
 const (

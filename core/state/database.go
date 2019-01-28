@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/ethdb"
-	"github.com/ether-core/go-ethereum/trie"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/trie"
 
 
 	lru "github.com/hashicorp/golang-lru"

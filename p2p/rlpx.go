@@ -18,12 +18,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ether-core/go-ethereum/crypto"
-	"github.com/ether-core/go-ethereum/crypto/ecies"
-	"github.com/ether-core/go-ethereum/crypto/secp256k1"
-	"github.com/ether-core/go-ethereum/crypto/sha3"
-	"github.com/ether-core/go-ethereum/p2p/discover"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/crypto"
+	"github.com/openether/ethcore/crypto/ecies"
+	"github.com/openether/ethcore/crypto/secp256k1"
+	"github.com/openether/ethcore/crypto/sha3"
+	"github.com/openether/ethcore/p2p/discover"
+	"github.com/openether/ethcore/rlp"
 )
 
 const (

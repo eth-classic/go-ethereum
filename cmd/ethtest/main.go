@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/logger/glog"
-	"github.com/ether-core/go-ethereum/tests"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/tests"
 
 	// I guess
 	"gopkg.in/urfave/cli.v1"

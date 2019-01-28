@@ -10,12 +10,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core/types"
-	"github.com/ether-core/go-ethereum/core/vm"
-	"github.com/ether-core/go-ethereum/ethdb"
-	"github.com/ether-core/go-ethereum/event"
-	"github.com/ether-core/go-ethereum/rpc"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/core/vm"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/rpc"
 )
 
 var (

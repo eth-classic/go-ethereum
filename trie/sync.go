@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/ethdb"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/ethdb"
 )
 
 // ErrNotRequested is returned by the trie sync when it's requested to process a

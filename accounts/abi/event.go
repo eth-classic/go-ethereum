@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/crypto"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/crypto"
 )
 
 // Event is an event potentially triggered by the EVM's LOG mechanism. The Event

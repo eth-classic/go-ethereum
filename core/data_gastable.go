@@ -3,7 +3,7 @@ package core
 import (
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/core/vm"
+	"github.com/openether/ethcore/core/vm"
 )
 
 var DefaultHomeSteadGasTable = &vm.GasTable{

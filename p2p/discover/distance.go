@@ -3,7 +3,7 @@ package discover
 import (
 	"sort"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 // node distance computation.

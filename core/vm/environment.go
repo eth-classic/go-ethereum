@@ -3,7 +3,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 // RuleSet is an interface that defines the current rule set during the

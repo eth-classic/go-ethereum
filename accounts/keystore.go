@@ -18,10 +18,10 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/crypto"
-	"github.com/ether-core/go-ethereum/crypto/randentropy"
-	"github.com/ether-core/go-ethereum/crypto/secp256k1"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/crypto"
+	"github.com/openether/ethcore/crypto/randentropy"
+	"github.com/openether/ethcore/crypto/secp256k1"
 )
 
 type key struct {

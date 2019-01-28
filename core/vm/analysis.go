@@ -3,7 +3,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 // destinations stores one map per contract (keyed by hash of code).

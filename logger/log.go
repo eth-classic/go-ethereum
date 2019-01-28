@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 func openFile(datadir string, filename string) *os.File {

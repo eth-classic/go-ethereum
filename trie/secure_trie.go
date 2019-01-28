@@ -2,8 +2,8 @@ package trie
 
 import (
 	"fmt"
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 var secureKeyPrefix = []byte("secure-key-")

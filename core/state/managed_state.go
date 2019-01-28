@@ -3,7 +3,7 @@ package state
 import (
 	"sync"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 type account struct {

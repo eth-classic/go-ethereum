@@ -8,7 +8,7 @@ import (
 	"time"
 	"bytes"
 
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/logger/glog"
 	// I FUCKING LOVE HOW WE BOTH IMPLMENET METRICS THEN OPEN A GIANT SECURITY HOLE BY CALLING IN THIS BULLSHIT! SO FUCKIJNG COOL. Its like BTC++ except everyone is fuckinmg stupid
 	"github.com/rcrowley/go-metrics"
 )

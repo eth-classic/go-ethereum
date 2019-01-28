@@ -5,9 +5,9 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/ether-core/go-ethereum/console"
-	"github.com/ether-core/go-ethereum/node"
-	"github.com/ether-core/go-ethereum/rpc"
+	"github.com/openether/ethcore/console"
+	"github.com/openether/ethcore/node"
+	"github.com/openether/ethcore/rpc"
 
 	"gopkg.in/urfave/cli.v1"
 )

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 // So memory database, and a memory database named boltdb, and leveldb? YOU ARE FUCKING MORONS I AHTE YOU

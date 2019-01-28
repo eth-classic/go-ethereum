@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/crypto"
-	"github.com/ether-core/go-ethereum/p2p"
-	"github.com/ether-core/go-ethereum/p2p/discover"
-	"github.com/ether-core/go-ethereum/rpc"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/crypto"
+	"github.com/openether/ethcore/p2p"
+	"github.com/openether/ethcore/p2p/discover"
+	"github.com/openether/ethcore/rpc"
 )
 
 // PrivateAdminAPI is the collection of administrative API methods exposed only

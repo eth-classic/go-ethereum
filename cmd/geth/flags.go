@@ -8,11 +8,11 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core"
-	"github.com/ether-core/go-ethereum/eth"
-	"github.com/ether-core/go-ethereum/logger/glog"
-	"github.com/ether-core/go-ethereum/rpc"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/eth"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/rpc"
 )
 
 // These are all the command line flags we support.

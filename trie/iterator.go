@@ -5,7 +5,7 @@ import (
 	"container/heap"
 	"errors"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 // Iterator is a key-value trie iterator that traverses a Trie.

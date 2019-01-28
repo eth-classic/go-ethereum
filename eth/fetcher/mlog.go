@@ -1,7 +1,7 @@
 package fetcher
 
 import (
-	"github.com/ether-core/go-ethereum/logger"
+	"github.com/openether/ethcore/logger"
 )
 
 var mlogFetcher = logger.MLogRegisterAvailable("fetcher", mLogLines)

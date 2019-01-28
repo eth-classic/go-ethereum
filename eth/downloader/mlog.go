@@ -1,7 +1,7 @@
 package downloader
 
 import (
-	"github.com/ether-core/go-ethereum/logger"
+	"github.com/openether/ethcore/logger"
 )
 
 var mlogDownloader = logger.MLogRegisterAvailable("downloader", mLogLines)

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core/vm"
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/vm"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 var (

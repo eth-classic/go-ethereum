@@ -6,10 +6,10 @@ import (
 	"math/big"
 	"sync/atomic"
 
-	"github.com/ether-core/go-ethereum/accounts/abi"
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core/types"
-	"github.com/ether-core/go-ethereum/crypto"
+	"github.com/openether/ethcore/accounts/abi"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/crypto"
 )
 
 // SignerFn is a signer function callback when a contract requires a method to

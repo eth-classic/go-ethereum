@@ -11,9 +11,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/crypto/sha3"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/crypto/sha3"
+	"github.com/openether/ethcore/rlp"
 )
 
 // HeaderExtraMax is the byte size limit for Header.Extra.

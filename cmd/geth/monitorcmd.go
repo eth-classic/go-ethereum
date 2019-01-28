@@ -14,10 +14,10 @@ import (
 	"github.com/gizak/termui"
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/logger/glog"
-	"github.com/ether-core/go-ethereum/node"
-	"github.com/ether-core/go-ethereum/rpc"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/node"
+	"github.com/openether/ethcore/rpc"
 
 )
 

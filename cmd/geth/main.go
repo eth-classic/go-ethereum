@@ -10,11 +10,11 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/console"
-	"github.com/ether-core/go-ethereum/core"
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/metrics"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/console"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/metrics"
 )
 
 // Version is the application revision identifier. It can be set with the linker

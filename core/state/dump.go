@@ -10,9 +10,9 @@ import (
 	"sync"
 	"fmt"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/rlp"
-	"github.com/ether-core/go-ethereum/trie"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/rlp"
+	"github.com/openether/ethcore/trie"
 )
 
 type DumpAccount struct {

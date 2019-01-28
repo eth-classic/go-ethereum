@@ -7,10 +7,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/ether-core/go-ethereum/crypto"
-	"github.com/ether-core/go-ethereum/logger/glog"
-	"github.com/ether-core/go-ethereum/p2p/discover"
-	"github.com/ether-core/go-ethereum/p2p/nat"
+	"github.com/openether/ethcore/crypto"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/p2p/discover"
+	"github.com/openether/ethcore/p2p/nat"
 )
 
 // Version is the application revision identifier. It can be set with the linker

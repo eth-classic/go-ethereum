@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 var (

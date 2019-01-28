@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/rlp"
 )
 
 // Msg defines the structure of a p2p message.

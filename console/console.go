@@ -11,9 +11,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/internal/jsre"
-	"github.com/ether-core/go-ethereum/internal/web3ext"
-	"github.com/ether-core/go-ethereum/rpc"
+	"github.com/openether/ethcore/internal/jsre"
+	"github.com/openether/ethcore/internal/web3ext"
+	"github.com/openether/ethcore/rpc"
 
 	"github.com/fatih/color"
 	"github.com/peterh/liner"

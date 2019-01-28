@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 func readDiskStats(stats *diskStats) {

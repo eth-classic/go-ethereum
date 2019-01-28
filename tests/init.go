@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ether-core/go-ethereum/core"
+	"github.com/openether/ethcore/core"
 )
 
 var (

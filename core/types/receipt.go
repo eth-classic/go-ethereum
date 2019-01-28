@@ -5,9 +5,9 @@ import (
 	"io"
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core/vm"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/vm"
+	"github.com/openether/ethcore/rlp"
 )
 
 type ReceiptStatus byte

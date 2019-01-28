@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/common/hexutil"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/common/hexutil"
+	"github.com/openether/ethcore/rlp"
 )
 
 //go:generate gencodec -type Log -field-override logMarshaling -out gen_log_json.go

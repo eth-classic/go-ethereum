@@ -3,8 +3,8 @@ package core
 import (
 	"runtime"
 
-	"github.com/ether-core/go-ethereum/core/types"
-	"github.com/ether-core/go-ethereum/pow"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/pow"
 )
 
 // nonceCheckResult contains the result of a nonce verification.

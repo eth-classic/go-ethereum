@@ -6,17 +6,17 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/ether-core/go-ethereum/accounts"
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/common/compiler"
-	"github.com/ether-core/go-ethereum/common/registrar"
-	"github.com/ether-core/go-ethereum/core"
-	"github.com/ether-core/go-ethereum/core/state"
-	"github.com/ether-core/go-ethereum/core/types"
-	"github.com/ether-core/go-ethereum/crypto"
-	"github.com/ether-core/go-ethereum/ethdb"
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/accounts"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/common/compiler"
+	"github.com/openether/ethcore/common/registrar"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/core/state"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/crypto"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 // registryAPIBackend is a backend for an Ethereum Registry.

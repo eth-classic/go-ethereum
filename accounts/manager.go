@@ -12,8 +12,8 @@ import (
 	"encoding/json"
 	"path/filepath"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/crypto"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/crypto"
 )
 
 var (

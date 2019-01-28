@@ -4,8 +4,8 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/core/types"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/types"
 )
 
 // ErrNoCode is returned by call and transact operations for which the requested

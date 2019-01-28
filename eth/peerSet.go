@@ -4,8 +4,8 @@ import (
 	"math/big"
 	"sync"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/p2p"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/p2p"
 )
 
 // peerSet represents the collection of active peers currently participating in

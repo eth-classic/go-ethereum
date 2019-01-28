@@ -16,9 +16,9 @@ import (
 
 	"github.com/boltdb/bolt"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
 
 	// Was working with bytes really that fucking hard? 
 	"github.com/mailru/easyjson"

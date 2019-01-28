@@ -6,9 +6,9 @@ import (
 
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/event"
-	"github.com/ether-core/go-ethereum/rpc"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/rpc"
 )
 
 type DoneEvent struct {

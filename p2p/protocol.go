@@ -3,7 +3,7 @@ package p2p
 import (
 	"fmt"
 
-	"github.com/ether-core/go-ethereum/p2p/discover"
+	"github.com/openether/ethcore/p2p/discover"
 )
 
 // Protocol represents a P2P subprotocol implementation.

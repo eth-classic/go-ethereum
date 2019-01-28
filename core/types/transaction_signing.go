@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/crypto"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/crypto"
 )
 
 var ErrInvalidChainId = errors.New("invalid chain id for signer")

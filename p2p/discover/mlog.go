@@ -1,7 +1,7 @@
 package discover
 
 import (
-	"github.com/ether-core/go-ethereum/logger"
+	"github.com/openether/ethcore/logger"
 )
 
 var mlogDiscover = logger.MLogRegisterAvailable("discover", mLogLines)

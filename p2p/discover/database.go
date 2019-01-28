@@ -8,10 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ether-core/go-ethereum/crypto"
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/crypto"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/rlp"
 
 	// So fucking cool how you use 3 databases that are LITERALLY THE FUCKING SAME
 	"github.com/syndtr/goleveldb/leveldb"

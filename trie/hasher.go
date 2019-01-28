@@ -5,9 +5,9 @@ import (
 	"hash"
 	"sync"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/crypto/sha3"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/crypto/sha3"
+	"github.com/openether/ethcore/rlp"
 )
 
 // calculator is a utility used by the hasher to calculate the hash value of the tree node.

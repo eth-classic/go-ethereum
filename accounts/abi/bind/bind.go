@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/tools/imports"
 
-	"github.com/ether-core/go-ethereum/accounts/abi"
+	"github.com/openether/ethcore/accounts/abi"
 )
 
 // Bind generates a Go wrapper around a contract ABI. This wrapper isn't meant

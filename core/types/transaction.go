@@ -10,8 +10,8 @@ import (
 	"sort"
 	"sync/atomic"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/rlp"
 )
 
 var ErrInvalidSig = errors.New("invalid v, r, s values")

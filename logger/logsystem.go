@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 // LogSystem is implemented by log output devices.

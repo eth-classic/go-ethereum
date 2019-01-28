@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ether-core/go-ethereum/core"
-	"github.com/ether-core/go-ethereum/core/vm"
-	"github.com/ether-core/go-ethereum/event"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/core/vm"
+	"github.com/openether/ethcore/event"
 )
 
 // FilterType determines the type of filter and is used to put the filter in to

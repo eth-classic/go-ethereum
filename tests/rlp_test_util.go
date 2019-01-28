@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/rlp"
 )
 
 // RLPTest is the JSON structure of a single RLP test.

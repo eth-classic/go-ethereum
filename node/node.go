@@ -9,11 +9,11 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/ether-core/go-ethereum/event"
-	"github.com/ether-core/go-ethereum/logger"
-	"github.com/ether-core/go-ethereum/logger/glog"
-	"github.com/ether-core/go-ethereum/p2p"
-	"github.com/ether-core/go-ethereum/rpc"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/p2p"
+	"github.com/openether/ethcore/rpc"
 )
 
 var (

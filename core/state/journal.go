@@ -3,7 +3,7 @@ package state
 import (
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 type journalEntry interface {

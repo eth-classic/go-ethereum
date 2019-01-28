@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"reflect"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 // packBytesSlice packs the given bytes as [L, V] as the canonical representation

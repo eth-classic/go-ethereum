@@ -9,12 +9,12 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/ether-core/go-ethereum/core"
-	"github.com/ether-core/go-ethereum/eth"
-	"github.com/ether-core/go-ethereum/eth/downloader"
-	"github.com/ether-core/go-ethereum/eth/fetcher"
-	"github.com/ether-core/go-ethereum/event"
-	"github.com/ether-core/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/eth"
+	"github.com/openether/ethcore/eth/downloader"
+	"github.com/openether/ethcore/eth/fetcher"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 // availableLogStatusFeatures stores state of implemented log STATUS features.

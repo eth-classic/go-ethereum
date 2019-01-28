@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/rlp"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/rlp"
 )
 
 type Log struct {

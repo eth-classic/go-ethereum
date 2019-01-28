@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"hash"
 
-	"github.com/ether-core/go-ethereum/crypto/secp256k1"
+	"github.com/openether/ethcore/crypto/secp256k1"
 )
 
 var (

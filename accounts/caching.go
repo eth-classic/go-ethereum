@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ether-core/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 )
 
 // Minimum amount of time between cache reloads. This limit applies if the platform does

@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"math/big"
 
-	"github.com/ether-core/go-ethereum/common"
-	"github.com/ether-core/go-ethereum/ethdb"
-	"github.com/ether-core/go-ethereum/rlp"
-	"github.com/ether-core/go-ethereum/trie"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/rlp"
+	"github.com/openether/ethcore/trie"
 )
 
 // NewStateSync create a new state trie download scheduler.
