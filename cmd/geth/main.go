@@ -27,7 +27,7 @@ import (
 
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/eth-classic/benchmark/rtprof"
+	"github.com/ethereumproject/benchmark/rtprof"
 	"github.com/eth-classic/go-ethereum/common"
 	"github.com/eth-classic/go-ethereum/console"
 	"github.com/eth-classic/go-ethereum/core"
