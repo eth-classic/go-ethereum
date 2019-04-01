@@ -31,7 +31,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ethereumproject/ethash"
+	"github.com/eth-classic/ethash"
 	"github.com/eth-classic/go-ethereum/common"
 	"github.com/eth-classic/go-ethereum/core"
 	"github.com/eth-classic/go-ethereum/core/state"
