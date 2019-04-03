@@ -10,6 +10,8 @@ require (
 	github.com/denisbrodbeck/machineid v0.8.0
 	github.com/eth-classic/benchmark v0.0.0-20180113190147-8eff34efba25
 	github.com/eth-classic/ethash v0.0.0-20180109211943-65a5b25efc27
+	github.com/ethereumproject/benchmark v0.0.0-20180113190147-8eff34efba25 // indirect
+	github.com/ethereumproject/go-ethereum v5.5.2+incompatible // indirect
 	github.com/fatih/color v1.7.0
 	github.com/gizak/termui v2.2.0+incompatible
 	github.com/golang/snappy v0.0.0-20170215233205-553a64147049
@@ -31,10 +33,11 @@ require (
 	github.com/robertkrimen/otto v0.0.0-20171130103205-3b44b4dcb6c0
 	github.com/rs/cors v0.0.0-20170727213201-7af7a1e09ba3
 	github.com/spf13/afero v1.1.0
+	github.com/stretchr/testify v1.3.0
 	github.com/syndtr/goleveldb v0.0.0-20171214120811-34011bf325bc
 	golang.org/x/crypto v0.0.0-20171219041129-d585fd2cc919
 	golang.org/x/net v0.0.0-20171212005608-d866cfc389ce
-	golang.org/x/sys v0.0.0-20171222143536-83801418e1b5
+	golang.org/x/sys v0.0.0-20190402142545-baf5eb976a8c
 	golang.org/x/text v0.0.0-20171227012246-e19ae1496984
 	golang.org/x/tools v0.0.0-20171226195143-b451b9aaee4d
 	gopkg.in/check.v1 v1.0.0-20161208181325-20d25e280405
