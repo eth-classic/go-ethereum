@@ -26,7 +26,7 @@ import (
 
 	"bytes"
 
-	"github.com/ethereumproject/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
 	"github.com/rcrowley/go-metrics"
 )
 

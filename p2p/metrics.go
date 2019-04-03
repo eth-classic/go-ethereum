@@ -19,7 +19,7 @@ package p2p
 import (
 	"net"
 
-	"github.com/ethereumproject/go-ethereum/metrics"
+	"github.com/ethereumclassic/go-ethereum/metrics"
 )
 
 // meteredConn wraps a network TCP connection for metrics.

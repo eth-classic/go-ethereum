@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/ethereumproject/go-ethereum/logger"
+	"github.com/ethereumclassic/go-ethereum/logger"
 )
 
 var mlogBlockchain = logger.MLogRegisterAvailable("blockchain", mLogLinesBlockchain)
@@ -14,6 +14,7 @@ var mlogTxPool = logger.MLogRegisterAvailable("txpool", mLogLinesTxPool)
 var mLogLinesBlockchain = []*logger.MLogT{
 	mlogBlockchainWriteBlock,
 	mlogBlockchainInsertBlocks,
+	mlogBlockchainReorgBlocks,
 }
 
 var mLogLinesHeaderchain = []*logger.MLogT{
