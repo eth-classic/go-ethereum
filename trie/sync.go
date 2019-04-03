@@ -1,28 +1,11 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
 package trie
 
 import (
 	"errors"
 	"fmt"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"gopkg.in/karalabe/cookiejar.v2/collections/prque"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/ethdb"
 )
 
 // ErrNotRequested is returned by the trie sync when it's requested to process a
@@ -76,7 +59,7 @@ type Sync struct {
 	database ethdb.Database           // Persistent database to check for existing entries
 	membatch *syncMemBatch            // Memory buffer to avoid frequest database writes
 	requests map[common.Hash]*request // Pending requests pertaining to a key hash
-	queue    *prque.Prque             // Priority queue with the pending requests
+	queue    *Prque // Priority queue with the pending requests
 }
 
 // NewTrieSync creates a new trie data download scheduler.
@@ -85,7 +68,7 @@ func NewTrieSync(root common.Hash, database ethdb.Database, callback LeafCallbac
 		database: database,
 		membatch: newSyncMemBatch(),
 		requests: make(map[common.Hash]*request),
-		queue:    prque.New(),
+		queue:    NewPrque(),
 	}
 	ts.AddSubTrie(root, 0, common.Hash{}, callback)
 	return ts

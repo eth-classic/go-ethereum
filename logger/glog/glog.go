@@ -1,104 +1,3 @@
-// Go support for leveled logs, analogous to https://code.google.com/p/google-glog/
-//
-// Copyright 2013 Google Inc. All Rights Reserved.
-// Modifications copyright 2017 ETC Dev Team. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-// Package glog implements logging analogous to the Google-internal C++ INFO/ERROR/V setup.
-// It provides functions Info, Warning, Error, Fatal, plus formatting variants such as
-// Infof. It also provides V-style logging controlled by the -v and -vmodule=file=2 flags.
-//
-// Basic examples:
-//
-//	glog.Info("Prepare to repel boarders")
-//
-//	glog.Fatalf("Initialization failed: %s", err)
-//
-// See the documentation for the V function for an explanation of these examples:
-//
-//	if glog.V(2) {
-//		glog.Info("Starting transaction...")
-//	}
-//
-//	glog.V(2).Infoln("Processed", nItems, "elements")
-//
-// Log output is buffered and written periodically using Flush. Programs
-// should call Flush before exiting to guarantee all log output is written.
-//
-// By default, all log statements write to files in a temporary directory.
-// This package provides several flags that modify this behavior.
-// As a result, flag.Parse must be called before any logging is done.
-//
-//	-logtostderr=false
-//		Logs are written to standard error instead of to files.
-//	-alsologtostderr=false
-//		Logs are written to standard error as well as to files.
-//	-stderrthreshold=ERROR
-//		Log events at or above this severity are logged to standard
-//		error as well as to files.
-//	-log_dir=""
-//		Log files will be written to this directory instead of the
-//		default temporary directory.
-//
-//	Other flags provide aids to debugging.
-//
-//	-log_backtrace_at=""
-//		When set to a file and line number holding a logging statement,
-//		such as
-//			-log_backtrace_at=gopherflakes.go:234
-//		a stack trace will be written to the Info log whenever execution
-//		hits that statement. (Unlike with -vmodule, the ".go" must be
-//		present.)
-//	-v=0
-//		Enable V-leveled logging at the specified level.
-//	-vmodule=""
-//		The syntax of the argument is a comma-separated list of pattern=N,
-//		where pattern is a literal file name or "glob" pattern matching
-//		and N is a V level. For instance,
-//
-//	-vmodule=gopher.go=3
-//		sets the V level to 3 in all Go files named "gopher.go".
-//
-//	-vmodule=foo=3
-//		sets V to 3 in all files of any packages whose import path ends in "foo".
-//
-//	-vmodule=foo/*=3
-//		sets V to 3 in all files of any packages whose import path contains "foo".
-//
-// This fork of original golang/glog adds log rotation functionality.
-// Logs are rotated after reaching file size limit or age limit. Additionally
-// limiting total amount of logs is supported (also by both size and age).
-// To keep it simple, log-rotation is configured with package-level variables:
-//  - MaxSize - maximum file size (in bytes) - default value: 1024 * 1024 * 1800
-//  - MinSize - minimum file size (in bytes) - default 0 (even empty file can be rotated)
-//  - MaxTotalSize - maximum size of all files (in bytes) - default 0 (do not remove old files)
-//  - RotationInterval - how often log should be rotated - default Never
-//  - MaxAge - maximum age (time.Duration) of log file - default 0 (do not remove old files)
-//  - Compress - whether to GZIP compress rotated logs - default - false
-//
-// Default values provide backward-compatibility with golang/glog. If compression is used,
-// all files except the current one are compressed with GZIP.
-//
-// Rotation works like this:
-//  - if MaxSize or RotationInterval is reached, and file size is > MinSize,
-//    current file became old file, and new file is created as a current log file
-//  - all log files older than MaxAge are removed
-//  - if compression is enabled, the old file is compressed
-//  - size of all log files in log_dir is recalculated (to handle external removals of files, etc)
-//  - oldest log files are removed until total size of log files doesn't exceed  MaxTotalSize-MaxSize
-// For sanity, this action is executed only when current file is needs to be rotated
-//
 package glog
 
 import (
@@ -121,7 +20,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/common"
+	"github.com/openether/ethcore/common"
 	"github.com/fatih/color"
 )
 
@@ -227,8 +126,8 @@ var severityName = []string{
 // these path prefixes are trimmed for display, but not when
 // matching vmodule filters.
 var trimPrefixes = []string{
-	"/github.com/ethereumproject/go-ethereum",
-	"/github.com/ethereumproject/ethash",
+	"/github.com/ethereumclassic/go-ethereum",
+	"/github.com/ethereumclassic/ethash",
 }
 
 func trimToImportPath(file string) string {

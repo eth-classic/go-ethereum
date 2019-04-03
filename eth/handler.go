@@ -1,19 +1,3 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
 package eth
 
 import (
@@ -26,19 +10,18 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/eth/downloader"
-	"github.com/ethereumproject/go-ethereum/eth/fetcher"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"github.com/ethereumproject/go-ethereum/event"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/p2p"
-	"github.com/ethereumproject/go-ethereum/p2p/discover"
-	"github.com/ethereumproject/go-ethereum/pow"
-	"github.com/ethereumproject/go-ethereum/rlp"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/eth/downloader"
+	"github.com/openether/ethcore/eth/fetcher"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/p2p"
+	"github.com/openether/ethcore/p2p/discover"
+	"github.com/openether/ethcore/rlp"
 )
 
 const (
@@ -97,7 +80,7 @@ type ProtocolManager struct {
 
 // NewProtocolManager returns a new ethereum sub protocol manager. The Ethereum sub protocol manages peers capable
 // with the ethereum network.
-func NewProtocolManager(config *core.ChainConfig, mode downloader.SyncMode, networkId uint64, mux *event.TypeMux, txpool txPool, pow pow.PoW, blockchain *core.BlockChain, chaindb ethdb.Database) (*ProtocolManager, error) {
+func NewProtocolManager(config *core.ChainConfig, mode downloader.SyncMode, networkId uint64, mux *event.TypeMux, txpool txPool, blockchain *core.BlockChain, chaindb ethdb.Database) (*ProtocolManager, error) {
 	// Create the protocol manager with the base fields
 	manager := &ProtocolManager{
 		networkId:   networkId,
@@ -176,7 +159,7 @@ func NewProtocolManager(config *core.ChainConfig, mode downloader.SyncMode, netw
 		return nil, errIncompatibleConfig
 	}
 	// Construct the different synchronisation mechanisms
-	manager.downloader = downloader.New(mode, chaindb, manager.eventMux, blockchain, nil, manager.removePeer)
+	//manager.downloader = downloader.New(mode, chaindb, manager.eventMux, blockchain, nil, manager.removePeer)
 
 	validator := func(header *types.Header) error {
 		return manager.blockchain.Validator().ValidateHeader(header, manager.blockchain.GetHeader(header.ParentHash), true)
@@ -191,7 +174,7 @@ func NewProtocolManager(config *core.ChainConfig, mode downloader.SyncMode, netw
 		}
 		// Mark initial sync done on any fetcher import
 		atomic.StoreUint32(&manager.acceptsTxs, 1)
-		return manager.blockchain.InsertChain(blocks)
+		return nil
 	}
 	manager.fetcher = fetcher.New(mux, blockchain.GetBlock, validator, manager.BroadcastBlock, heighter, inserter, manager.removePeer)
 

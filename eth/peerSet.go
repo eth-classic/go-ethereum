@@ -1,10 +1,11 @@
 package eth
 
 import (
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/p2p"
 	"math/big"
 	"sync"
+
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/p2p"
 )
 
 // peerSet represents the collection of active peers currently participating in

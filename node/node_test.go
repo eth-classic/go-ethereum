@@ -22,10 +22,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/crypto"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/p2p"
-	"github.com/ethereumproject/go-ethereum/rpc"
+	"github.com/ethereumclassic/go-ethereum/crypto"
+	"github.com/ethereumclassic/go-ethereum/logger/glog"
+	"github.com/ethereumclassic/go-ethereum/p2p"
+	"github.com/ethereumclassic/go-ethereum/rpc"
 	"github.com/spf13/afero"
 )
 

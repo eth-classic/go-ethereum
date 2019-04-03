@@ -1,20 +1,3 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
-// Package metrics centralizes the registration.
 package metrics
 
 import (
@@ -23,10 +6,10 @@ import (
 	"os"
 	"runtime"
 	"time"
-
 	"bytes"
 
-	"github.com/ethereumproject/go-ethereum/logger/glog"
+	"github.com/openether/ethcore/logger/glog"
+	// I FUCKING LOVE HOW WE BOTH IMPLMENET METRICS THEN OPEN A GIANT SECURITY HOLE BY CALLING IN THIS BULLSHIT! SO FUCKIJNG COOL. Its like BTC++ except everyone is fuckinmg stupid
 	"github.com/rcrowley/go-metrics"
 )
 

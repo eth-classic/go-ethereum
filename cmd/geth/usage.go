@@ -88,7 +88,7 @@ var AppHelpFlagAndCommandGroups = []flagGroup{
 		Name: "ACCOUNT",
 		Commands: []cli.Command{
 			accountCommand,
-			walletCommand,
+			//walletCommand,
 			buildAddrTxIndexCommand,
 		},
 		Flags: []cli.Flag{
@@ -141,22 +141,6 @@ var AppHelpFlagAndCommandGroups = []flagGroup{
 		},
 	},
 	{
-		Name: "MINER",
-		Commands: []cli.Command{
-			makeDagCommand,
-		},
-		Flags: []cli.Flag{
-			MiningEnabledFlag,
-			MinerThreadsFlag,
-			MiningGPUFlag,
-			AutoDAGFlag,
-			EtherbaseFlag,
-			TargetGasLimitFlag,
-			GasPriceFlag,
-			ExtraDataFlag,
-		},
-	},
-	{
 		Name: "GAS PRICE ORACLE",
 		Flags: []cli.Flag{
 			GpoMinGasPriceFlag,
@@ -174,8 +158,6 @@ var AppHelpFlagAndCommandGroups = []flagGroup{
 			statusCommand,
 			monitorCommand,
 			makeMlogDocCommand,
-			gpuInfoCommand,
-			gpuBenchCommand,
 		},
 		Flags: []cli.Flag{
 			VerbosityFlag,

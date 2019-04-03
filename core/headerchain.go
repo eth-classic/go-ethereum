@@ -1,19 +1,3 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
 package core
 
 import (
@@ -26,13 +10,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"github.com/ethereumproject/go-ethereum/event"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/pow"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+
 	"github.com/hashicorp/golang-lru"
 )
 
@@ -571,7 +555,7 @@ func (hc *HeaderChain) postChainEvents(events []interface{}) {
 type headerValidator struct {
 	config *ChainConfig
 	hc     *HeaderChain // Canonical header chain
-	Pow    pow.PoW      // Proof of work used for validating
+	//Pow    pow.PoW      // Proof of work used for validating
 }
 
 // ValidateHeader validates the given header and, depending on the pow arg,
@@ -586,5 +570,5 @@ func (v *headerValidator) ValidateHeader(header, parent *types.Header, checkPow 
 	if v.hc.HasHeader(header.Hash()) {
 		return nil
 	}
-	return ValidateHeader(v.config, v.Pow, header, parent, checkPow, false)
+	return ValidateHeader(v.config, header, parent, checkPow, false)
 }

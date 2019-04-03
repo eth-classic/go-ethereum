@@ -1,19 +1,3 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
 package core
 
 import (
@@ -27,21 +11,19 @@ import (
 	"os"
 	"sort"
 	"sync"
-
 	"path/filepath"
 	"reflect"
-
 	"io"
 	"strings"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core/state"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/core/vm"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/p2p/discover"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/state"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/core/vm"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/p2p/discover"
 )
 
 var (
@@ -112,7 +94,7 @@ type StateConfig struct {
 }
 
 // GenesisDump is the geth JSON format.
-// https://github.com/ethereumproject/wiki/wiki/Ethereum-Chain-Spec-Format#subformat-genesis
+// https://github.com/ethereumclassic/wiki/blob/master/Ethereum-Chain-Spec-Format.md#subformat-genesis
 type GenesisDump struct {
 	Nonce      prefixedHex `json:"nonce"`
 	Timestamp  prefixedHex `json:"timestamp"`

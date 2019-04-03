@@ -21,12 +21,12 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core/state"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/crypto"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"github.com/ethereumproject/go-ethereum/event"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/core/state"
+	"github.com/ethereumclassic/go-ethereum/core/types"
+	"github.com/ethereumclassic/go-ethereum/crypto"
+	"github.com/ethereumclassic/go-ethereum/ethdb"
+	"github.com/ethereumclassic/go-ethereum/event"
 )
 
 func transaction(nonce uint64, gaslimit *big.Int, key *ecdsa.PrivateKey) *types.Transaction {

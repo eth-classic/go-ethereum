@@ -31,13 +31,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/core"
-	"github.com/ethereumproject/go-ethereum/eth"
-	"github.com/ethereumproject/go-ethereum/eth/downloader"
-	"github.com/ethereumproject/go-ethereum/eth/fetcher"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
 	"gopkg.in/urfave/cli.v1"
+
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/eth"
+	"github.com/openether/ethcore/eth/downloader"
+	"github.com/openether/ethcore/eth/fetcher"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
 )
 
 var lsModeIcon = []string{

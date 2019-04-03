@@ -1,6 +1,8 @@
 package state
 
-import "github.com/ethereumproject/go-ethereum/logger"
+import (
+	"github.com/openether/ethcore/logger"
+)
 
 var mlogState = logger.MLogRegisterAvailable("state", mlogStateLines)
 

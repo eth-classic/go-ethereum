@@ -1,19 +1,3 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of go-ethereum.
-//
-// go-ethereum is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// go-ethereum is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
-
 package main
 
 import (
@@ -27,28 +11,24 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-
 	"errors"
 
-	"github.com/ethereumproject/ethash"
-	"github.com/ethereumproject/go-ethereum/accounts"
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core"
-	"github.com/ethereumproject/go-ethereum/core/state"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/crypto"
-	"github.com/ethereumproject/go-ethereum/eth"
-	"github.com/ethereumproject/go-ethereum/eth/downloader"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"github.com/ethereumproject/go-ethereum/event"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/miner"
-	"github.com/ethereumproject/go-ethereum/node"
-	"github.com/ethereumproject/go-ethereum/p2p/discover"
-	"github.com/ethereumproject/go-ethereum/p2p/nat"
-	"github.com/ethereumproject/go-ethereum/pow"
-	"github.com/ethereumproject/go-ethereum/whisper"
+	"github.com/openether/ethcore/accounts"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/core/state"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/crypto"
+	"github.com/openether/ethcore/eth"
+	"github.com/openether/ethcore/eth/downloader"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/node"
+	"github.com/openether/ethcore/p2p/discover"
+	"github.com/openether/ethcore/p2p/nat"
+
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -476,7 +456,7 @@ func MakeSystemNode(version string, ctx *cli.Context) *node.Node {
 		if len(s) > types.HeaderExtraMax {
 			log.Fatalf("%s flag %q exceeds size limit of %d", aliasableName(ExtraDataFlag.Name, ctx), s, types.HeaderExtraMax)
 		}
-		miner.HeaderExtra = []byte(s)
+		//miner.HeaderExtra = []byte(s)
 	}
 
 	// Makes sufficient configuration from JSON file or DB pending flags.
@@ -489,22 +469,18 @@ func MakeSystemNode(version string, ctx *cli.Context) *node.Node {
 
 	// Configure node's service container.
 	name := makeNodeName(version, ctx)
-	stackConf, shhEnable := mustMakeStackConf(ctx, name, config)
+	stackConf, _ := mustMakeStackConf(ctx, name, config) // TODO THIS MAKES USE OF WSHIPER WHICH NEEDS TO BE RMEOVED
 
 	// Assemble and return the protocol stack
 	stack, err := node.New(stackConf)
 	if err != nil {
 		glog.Fatalf("%v: failed to create the protocol stack: %v", ErrStackFail, err)
 	}
+
 	if err := stack.Register(func(ctx *node.ServiceContext) (node.Service, error) {
 		return eth.New(ctx, ethConf)
 	}); err != nil {
 		glog.Fatalf("%v: failed to register the Ethereum service: %v", ErrStackFail, err)
-	}
-	if shhEnable {
-		if err := stack.Register(func(*node.ServiceContext) (node.Service, error) { return whisper.New(), nil }); err != nil {
-			glog.Fatalf("%v: failed to register the Whisper service: %v", ErrStackFail, err)
-		}
 	}
 
 	// If --mlog enabled, configure and create mlog dir and file
@@ -598,8 +574,6 @@ func mustMakeEthConf(ctx *cli.Context, sconf *core.SufficientChainConfig) *eth.C
 		NetworkId:               sconf.Network,
 		MaxPeers:                ctx.GlobalInt(aliasableName(MaxPeersFlag.Name, ctx)),
 		AccountManager:          accman,
-		Etherbase:               MakeEtherbase(accman, ctx),
-		MinerThreads:            ctx.GlobalInt(aliasableName(MinerThreadsFlag.Name, ctx)),
 		NatSpec:                 ctx.GlobalBool(aliasableName(NatspecEnabledFlag.Name, ctx)),
 		DocRoot:                 ctx.GlobalString(aliasableName(DocRootFlag.Name, ctx)),
 		GasPrice:                new(big.Int),
@@ -610,7 +584,6 @@ func mustMakeEthConf(ctx *cli.Context, sconf *core.SufficientChainConfig) *eth.C
 		GpobaseStepUp:           ctx.GlobalInt(aliasableName(GpobaseStepUpFlag.Name, ctx)),
 		GpobaseCorrectionFactor: ctx.GlobalInt(aliasableName(GpobaseCorrectionFactorFlag.Name, ctx)),
 		SolcPath:                ctx.GlobalString(aliasableName(SolcPathFlag.Name, ctx)),
-		AutoDAG:                 ctx.GlobalBool(aliasableName(AutoDAGFlag.Name, ctx)) || ctx.GlobalBool(aliasableName(MiningEnabledFlag.Name, ctx)),
 	}
 
 	if ctx.GlobalBool(aliasableName(FastSyncFlag.Name, ctx)) {
@@ -628,11 +601,6 @@ func mustMakeEthConf(ctx *cli.Context, sconf *core.SufficientChainConfig) *eth.C
 	}
 	if _, ok := ethConf.GpoMaxGasPrice.SetString(ctx.GlobalString(aliasableName(GpoMaxGasPriceFlag.Name, ctx)), 0); !ok {
 		log.Fatalf("malformed %s flag value %q", aliasableName(GpoMaxGasPriceFlag.Name, ctx), ctx.GlobalString(aliasableName(GpoMaxGasPriceFlag.Name, ctx)))
-	}
-
-	switch sconf.Consensus {
-	case "ethash-test":
-		ethConf.PowTest = true
 	}
 
 	// Override any default configs in dev mode
@@ -659,10 +627,6 @@ func mustMakeSufficientChainConfig(ctx *cli.Context) *core.SufficientChainConfig
 
 	config := &core.SufficientChainConfig{}
 	defer func() {
-		// Allow flags to override external config file.
-		if ctx.GlobalBool(aliasableName(DevModeFlag.Name, ctx)) {
-			config.Consensus = "ethash-test"
-		}
 		if ctx.GlobalIsSet(aliasableName(BootnodesFlag.Name, ctx)) {
 			config.ParsedBootstrap = MakeBootstrapNodesFromContext(ctx)
 			glog.V(logger.Warn).Warnf(`Overwriting external bootnodes configuration with those from --%s flag. Value set from flag: %v`, aliasableName(BootnodesFlag.Name, ctx), config.ParsedBootstrap)
@@ -838,15 +802,8 @@ func MakeChain(ctx *cli.Context) (chain *core.BlockChain, chainDb ethdb.Database
 	sconf := mustMakeSufficientChainConfig(ctx)
 	chainDb = MakeChainDatabase(ctx)
 
-	pow := pow.PoW(core.FakePow{})
-	if !ctx.GlobalBool(aliasableName(FakePoWFlag.Name, ctx)) {
-		pow = ethash.New()
-	} else {
-		glog.V(logger.Info).Infoln("Consensus: fake")
-		glog.D(logger.Warn).Warnln("Consensus: fake")
-	}
 
-	chain, err = core.NewBlockChain(chainDb, sconf.ChainConfig, pow, new(event.TypeMux))
+	chain, err = core.NewBlockChain(chainDb, sconf.ChainConfig, new(event.TypeMux))
 	if err != nil {
 		glog.Fatal("Could not start chainmanager: ", err)
 	}

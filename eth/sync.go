@@ -1,19 +1,3 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
 package eth
 
 import (
@@ -21,12 +5,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/eth/downloader"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/p2p/discover"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/eth/downloader"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/p2p/discover"
 )
 
 const (

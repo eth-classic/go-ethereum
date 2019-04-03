@@ -6,16 +6,15 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"os"
+	"net"
+	"path/filepath"
 
 	"gopkg.in/urfave/cli.v1"
 
-	"os"
-	"path/filepath"
-
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/p2p/discover"
-	"net"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/p2p/discover"
 )
 
 const defaultStatusLog = "sync=60s"

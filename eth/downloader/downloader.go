@@ -1,20 +1,3 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
-// Package downloader contains the manual full chain synchronisation.
 package downloader
 
 import (
@@ -25,14 +8,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"github.com/ethereumproject/go-ethereum/event"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/metrics"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/metrics"
 )
 
 const (
@@ -319,7 +302,9 @@ func (d *Downloader) GetPeers() *peerSet {
 
 // Synchronising returns whether the downloader is currently retrieving blocks.
 func (d *Downloader) Synchronising() bool {
-	return atomic.LoadInt32(&d.synchronising) > 0
+	// TODO: The fuck? I hate you guys so fucking much it hurts my soul
+	//return atomic.LoadInt32(&d.synchronising) > 0
+	return false // for now until we can actuall use a fucking sane check weather we need to sync
 }
 
 // RegisterPeer injects a new download peer into the set of block source to be
@@ -605,39 +590,39 @@ func (d *Downloader) spawnSync(fetchers []func() error) error {
 // used when cancelling the downloads from inside the downloader.
 func (d *Downloader) cancel() {
 	// Close the current cancel channel
-	d.cancelLock.Lock()
-	if d.cancelCh != nil {
-		select {
-		case <-d.cancelCh:
-			// Channel was already closed
-		default:
-			close(d.cancelCh)
-		}
-	}
-	d.cancelLock.Unlock()
+	//d.cancelLock.Lock()
+	//if d.cancelCh != nil {
+	//	select {
+	//	case <-d.cancelCh:
+	//		// Channel was already closed
+	//	default:
+	//		close(d.cancelCh)
+	//	}
+	//}
+	//d.cancelLock.Unlock()
 }
 
 // Cancel aborts all of the operations and waits for all download goroutines to
 // finish before returning.
 func (d *Downloader) Cancel() {
-	d.cancel()
-	d.cancelWg.Wait()
+	//d.cancel()
+	//d.cancelWg.Wait()
 }
 
 // Terminate interrupts the downloader, canceling all pending operations.
 // The downloader cannot be reused after calling Terminate.
 func (d *Downloader) Terminate() {
 	// Close the termination channel (make sure double close is allowed)
-	d.quitLock.Lock()
-	select {
-	case <-d.quitCh:
-	default:
-		close(d.quitCh)
-	}
-	d.quitLock.Unlock()
+	//d.quitLock.Lock()
+	//select {
+	//case <-d.quitCh:
+	//default:
+	//	close(d.quitCh)
+	//}
+	//d.quitLock.Unlock()
 
 	// Cancel any pending download requests
-	d.Cancel()
+	//d.Cancel()
 }
 
 // fetchHeight retrieves the head header of the remote peer to aid in estimating

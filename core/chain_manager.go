@@ -1,31 +1,15 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
-
 package core
 
 import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core/state"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/ethdb"
-	"github.com/ethereumproject/go-ethereum/event"
-	"github.com/ethereumproject/go-ethereum/pow"
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core/state"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/ethdb"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/pow"
 )
 
 /*
@@ -292,7 +276,7 @@ func newCanonical(config *ChainConfig, n int, full bool) (ethdb.Database, *Block
 		return nil, nil, err
 	}
 
-	blockchain, err := NewBlockChain(db, MakeChainConfig(), FakePow{}, evmux)
+	blockchain, err := NewBlockChain(db, MakeChainConfig(), evmux)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -300,12 +284,6 @@ func newCanonical(config *ChainConfig, n int, full bool) (ethdb.Database, *Block
 	// Create and inject the requested chain
 	if n == 0 {
 		return db, blockchain, nil
-	}
-	if full {
-		// Full block-chain requested
-		blocks := makeBlockChain(config, genesis, n, db, canonicalSeed)
-		res := blockchain.InsertChain(blocks)
-		return db, blockchain, res.Error
 	}
 	// Header-only chain requested
 	headers := makeHeaderChain(config, genesis.Header(), n, db, canonicalSeed)

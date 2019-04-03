@@ -27,8 +27,8 @@ import (
 	"testing/quick"
 	"time"
 
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/crypto"
+	"github.com/ethereumclassic/go-ethereum/common"
+	"github.com/ethereumclassic/go-ethereum/crypto"
 )
 
 // Each time the logdistS1 and logdistS2 are different. We have no

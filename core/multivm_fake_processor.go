@@ -5,9 +5,9 @@ package core
 import (
 	"math/big"
 
-	"github.com/ethereumproject/go-ethereum/core/state"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	evm "github.com/ethereumproject/go-ethereum/core/vm"
+	"github.com/openether/ethcore/core/state"
+	"github.com/openether/ethcore/core/types"
+	evm "github.com/openether/ethcore/core/vm"
 )
 
 const SputnikVMExists = false

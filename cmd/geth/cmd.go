@@ -1,19 +1,3 @@
-// Copyright 2014 The go-ethereum Authors
-// This file is part of go-ethereum.
-//
-// go-ethereum is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// go-ethereum is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with go-ethereum. If not, see <http://www.gnu.org/licenses/>.
-
 package main
 
 import (
@@ -21,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -30,21 +13,20 @@ import (
 	"strings"
 	"syscall"
 	"time"
-
-	"github.com/ethereumproject/ethash"
-	"github.com/ethereumproject/go-ethereum/common"
-	"github.com/ethereumproject/go-ethereum/core"
-	"github.com/ethereumproject/go-ethereum/core/state"
-	"github.com/ethereumproject/go-ethereum/core/types"
-	"github.com/ethereumproject/go-ethereum/eth"
-	"github.com/ethereumproject/go-ethereum/event"
-	"github.com/ethereumproject/go-ethereum/logger"
-	"github.com/ethereumproject/go-ethereum/logger/glog"
-	"github.com/ethereumproject/go-ethereum/node"
-	"github.com/ethereumproject/go-ethereum/pow"
-	"github.com/ethereumproject/go-ethereum/rlp"
-	"gopkg.in/urfave/cli.v1"
 	"math"
+
+	"gopkg.in/urfave/cli.v1"
+
+	"github.com/openether/ethcore/common"
+	"github.com/openether/ethcore/core"
+	"github.com/openether/ethcore/core/state"
+	"github.com/openether/ethcore/core/types"
+	"github.com/openether/ethcore/eth"
+	"github.com/openether/ethcore/event"
+	"github.com/openether/ethcore/logger"
+	"github.com/openether/ethcore/logger/glog"
+	"github.com/openether/ethcore/node"
+	"github.com/openether/ethcore/rlp"
 )
 
 const (
@@ -236,9 +218,6 @@ func ImportChain(chain *core.BlockChain, fn string) error {
 			continue
 		}
 
-		if res := chain.InsertChain(blocks[:i]); res.Error != nil {
-			return fmt.Errorf("invalid block %d: %v", n, res.Error)
-		}
 	}
 	return nil
 }
@@ -387,12 +366,6 @@ func formatEthConfigPretty(ethConfig *eth.Config) (s []string) {
 	ss = append(ss, printable{0, "Database file handles", ethConfig.DatabaseHandles})
 	// NatSpec?
 	ss = append(ss, printable{0, "NAT spec", ethConfig.NatSpec})
-	// AutoDAG?
-	ss = append(ss, printable{0, "Auto DAG", ethConfig.AutoDAG})
-	// PowTest?
-	ss = append(ss, printable{0, "Pow test", ethConfig.PowTest})
-	// PowShared?
-	ss = append(ss, printable{0, "Pow shared", ethConfig.PowShared})
 	// SolcPath
 	ss = append(ss, printable{0, "Solc path", ethConfig.SolcPath})
 
@@ -406,14 +379,10 @@ func formatEthConfigPretty(ethConfig *eth.Config) (s []string) {
 	//		Dir
 	//		ScryptN
 	//		ScryptP
-	// Etherbase (if set)
-	ss = append(ss, printable{0, "Etherbase", ethConfig.Etherbase.Hex()})
 	// GasPrice
 	ss = append(ss, printable{0, "Gas price", ethConfig.GasPrice})
 	ss = append(ss, printable{0, "GPO min gas price", ethConfig.GpoMinGasPrice})
 	ss = append(ss, printable{0, "GPO max gas price", ethConfig.GpoMaxGasPrice})
-	// MinerThreads
-	ss = append(ss, printable{0, "Miner threads", ethConfig.MinerThreads})
 
 	for _, v := range ss {
 		if v.val != nil {
@@ -727,73 +696,12 @@ func startNode(ctx *cli.Context, stack *node.Node) *eth.Ethereum {
 		a.AutoMode = true
 		go core.BuildAddrTxIndex(ethereum.BlockChain(), ethereum.ChainDb(), a.Db, math.MaxUint64, math.MaxUint64, 10000)
 	}
-	if ctx.GlobalBool(aliasableName(MiningEnabledFlag.Name, ctx)) {
-		if err := ethereum.StartMining(ctx.GlobalInt(aliasableName(MinerThreadsFlag.Name, ctx)), ctx.GlobalString(aliasableName(MiningGPUFlag.Name, ctx))); err != nil {
-			glog.Fatalf("Failed to start mining: %v", err)
-		}
-	}
 
 	return ethereum
 }
 
-func makedag(ctx *cli.Context) error {
-	args := ctx.Args()
-	wrongArgs := func() {
-		glog.Fatal(`Usage: geth makedag <block number> <outputdir>`)
-	}
-	switch {
-	case len(args) == 2:
-		blockNum, err := strconv.ParseUint(args[0], 0, 64)
-		dir := args[1]
-		if err != nil {
-			wrongArgs()
-		} else {
-			dir = filepath.Clean(dir)
-			// seems to require a trailing slash
-			if !strings.HasSuffix(dir, "/") {
-				dir = dir + "/"
-			}
-			_, err = ioutil.ReadDir(dir)
-			if err != nil {
-				glog.Fatal("Can't find dir")
-			}
-			glog.V(logger.Info).Infoln("making DAG, this could take awhile...")
-			glog.D(logger.Warn).Infoln("making DAG, this could take awhile...")
-			ethash.MakeDAG(blockNum, dir)
-		}
-	default:
-		wrongArgs()
-	}
-	return nil
-}
-
-func gpuinfo(ctx *cli.Context) error {
-	eth.PrintOpenCLDevices()
-	return nil
-}
-
-func gpubench(ctx *cli.Context) error {
-	args := ctx.Args()
-	wrongArgs := func() {
-		glog.Fatal(`Usage: geth gpubench <gpu number>`)
-	}
-	switch {
-	case len(args) == 1:
-		n, err := strconv.ParseUint(args[0], 0, 64)
-		if err != nil {
-			wrongArgs()
-		}
-		eth.GPUBench(n)
-	case len(args) == 0:
-		eth.GPUBench(0)
-	default:
-		wrongArgs()
-	}
-	return nil
-}
-
 func version(ctx *cli.Context) error {
-	fmt.Println("Geth")
+	fmt.Println("ethcore")
 	fmt.Println("Version:", Version)
 	fmt.Println("Protocol Versions:", eth.ProtocolVersions)
 	fmt.Println("Network Id:", ctx.GlobalInt(aliasableName(NetworkIdFlag.Name, ctx)))
@@ -886,14 +794,7 @@ func recoverChaindata(ctx *cli.Context) error {
 	bcdb := MakeChainDatabase(ctx)
 	defer bcdb.Close()
 
-	pow := pow.PoW(core.FakePow{})
-	if !ctx.GlobalBool(aliasableName(FakePoWFlag.Name, ctx)) {
-		pow = ethash.New()
-	} else {
-		glog.V(logger.Warn).Info("Consensus: fake")
-	}
-
-	bc, err := core.NewBlockChainDryrun(bcdb, sconf.ChainConfig, pow, new(event.TypeMux))
+	bc, err := core.NewBlockChainDryrun(bcdb, sconf.ChainConfig, new(event.TypeMux))
 	if err != nil {
 		glog.Fatal("Could not start chain manager: ", err)
 	}
