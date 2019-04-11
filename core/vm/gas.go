@@ -17,9 +17,13 @@
 package vm
 
 import (
+	"errors"
 	"fmt"
+	"math"
 	"math/big"
 	"reflect"
+
+	"github.com/ethereum/go-ethereum/params"
 )
 
 const stackLimit = 1024 // maximum size of VM stack allowed.
@@ -55,6 +59,41 @@ type GasTable struct {
 	// to call. May be left nil. Nil means
 	// not charged.
 	CreateBySuicide *big.Int
+}
+
+// memoryGasCost calculates the quadratic gas for memory expansion. It does so
+// only for the memory region that is expanded, not the total memory.
+func memoryGasCost(mem *Memory, newMemSize uint64) (uint64, error) {
+
+	if newMemSize == 0 {
+		return 0, nil
+	}
+	// The maximum that will fit in a uint64 is max_word_count - 1
+	// anything above that will result in an overflow.
+	// Additionally, a newMemSize which results in a
+	// newMemSizeWords larger than 0x7ffffffff will cause the square operation
+	// to overflow.
+	// The constant 0xffffffffe0 is the highest number that can be used without
+	// overflowing the gas calculation
+	if newMemSize > 0xffffffffe0 {
+		return 0, errors.New("gas uint64 overflow")
+	}
+
+	newMemSizeWords := toWordSizeUInt64(newMemSize)
+	newMemSize = newMemSizeWords * 32
+
+	if newMemSize > uint64(mem.Len()) {
+		square := newMemSizeWords * newMemSizeWords
+		linCoef := newMemSizeWords * params.MemoryGas
+		quadCoef := square / params.QuadCoeffDiv
+		newTotalFee := linCoef + quadCoef
+
+		fee := newTotalFee - mem.lastGasCost
+		mem.lastGasCost = newTotalFee
+
+		return fee, nil
+	}
+	return 0, nil
 }
 
 // calcGas returns the actual gas cost of the call.
@@ -113,6 +152,15 @@ func toWordSize(size *big.Int) *big.Int {
 	tmp.Add(size, u256(31))
 	tmp.Div(tmp, u256(32))
 	return tmp
+}
+
+// toWordSize returns the ceiled word size required for memory expansion.
+func toWordSizeUInt64(size uint64) uint64 {
+	if size > math.MaxUint64-31 {
+		return math.MaxUint64/32 + 1
+	}
+
+	return (size + 31) / 32
 }
 
 type req struct {
@@ -181,6 +229,7 @@ var _baseCheck = map[OpCode]req{
 	CALL:         {7, new(big.Int), 1},
 	CALLCODE:     {7, new(big.Int), 1},
 	DELEGATECALL: {6, new(big.Int), 1},
+	REVERT:       {2, new(big.Int), 0},
 	SUICIDE:      {1, new(big.Int), 0},
 	JUMPDEST:     {0, big.NewInt(1), 0},
 	RETURN:       {2, new(big.Int), 0},
