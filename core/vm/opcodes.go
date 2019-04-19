@@ -36,6 +36,11 @@ func (op OpCode) IsStaticJump() bool {
 }
 
 const (
+	RETURNDATASIZE OpCode = 0xd0 + iota
+	RETURNDATACOPY
+)
+
+const (
 	// 0x0 range - arithmetic ops
 	STOP OpCode = iota
 	ADD
@@ -349,6 +354,8 @@ var opCodeToString = map[OpCode]string{
 	LOG3:   "LOG3",
 	LOG4:   "LOG4",
 
+	RETURNDATASIZE: "RETURNDATASIZE",
+	RETURNDATACOPY: "RETURNDATACOPY",
 	// 0xf0 range
 	CREATE:       "CREATE",
 	CALL:         "CALL",
@@ -502,6 +509,8 @@ var stringToOp = map[string]OpCode{
 	"RETURN":       RETURN,
 	"CALLCODE":     CALLCODE,
 	"SUICIDE":      SUICIDE,
+	"RETURNDATASIZE": RETURNDATASIZE,
+	"RETURNDATACOPY": RETURNDATACOPY,
 }
 
 func StringToOp(str string) OpCode {

@@ -16,12 +16,17 @@
 
 package vm
 
-import "math/big"
+import (
+	"errors"
+	"math/big"
+)
 
 type jumpPtr struct {
 	fn    instrFn
 	valid bool
 }
+
+var errGasUintOverflow = errors.New("gas uint64 overflow")
 
 type vmJumpTable [256]jumpPtr
 
@@ -164,6 +169,7 @@ func newJumpTable(ruleset RuleSet, blockNumber *big.Int) vmJumpTable {
 	jumpTable[JUMP] = jumpPtr{nil, true}
 	jumpTable[JUMPI] = jumpPtr{nil, true}
 	jumpTable[STOP] = jumpPtr{nil, true}
-
+	jumpTable[RETURNDATASIZE] = jumpPtr{opReturnDataSize, valid:true,}
+	jumpTable[RETURNDATACOPY] = jumpPtr{opReturnDataCopy,valid:true,}
 	return jumpTable
 }

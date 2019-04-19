@@ -518,6 +518,25 @@ func opSuicide(instr instruction, pc *uint64, env Environment, contract *Contrac
 	env.Db().Suicide(contract.Address())
 }
 
+func opReturnDataSize(pc *uint64, evm *EVM, contract *Contract, memory *Memory, stack *stack) {
+		stack.push(evm.env.intPool.get().SetUint64(uint64(len(evm.returnData))))
+}
+
+func opReturnDataCopy(pc *uint64, evm *EVM, contract *Contract, memory *Memory, stack *Stack) {
+	var (
+		mOff = stack.pop()
+		cOff = stack.pop()
+		l    = stack.pop()
+	)
+	defer evm.interpreter.intPool.put(mOff, cOff, l)
+
+	cEnd := new(big.Int).Add(cOff, l)
+	if cEnd.BitLen() > 64 || uint64(len(evm.interpreter.returnData)) < cEnd.Uint64() {
+	}
+	memory.Set(mOff.Uint64(), l.Uint64(), evm.interpreter.returnData[cOff.Uint64():cEnd.Uint64()])
+}
+
+
 // following functions are used by the instruction jump  table
 
 // make log instruction function

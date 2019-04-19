@@ -18,6 +18,7 @@ package vm
 
 import (
 	"fmt"
+	"github.com/eth-classic/go-ethereum/common/math"
 	"math/big"
 	"reflect"
 )
@@ -74,6 +75,63 @@ func callGas(gasTable *GasTable, availableGas, base, callCost *big.Int) *big.Int
 	return callCost
 }
 
+// memoryGasCost calculates the quadratic gas for memory expansion. It does so
+// only for the memory region that is expanded, not the total memory.
+func memoryGasCost(mem *Memory, newMemSize uint64) (uint64, error) {
+	if newMemSize == 0 {
+		return 0, nil
+	}
+	// The maximum that will fit in a uint64 is max_word_count - 1. Anything above
+	// that will result in an overflow. Additionally, a newMemSize which results in
+	// a newMemSizeWords larger than 0xFFFFFFFF will cause the square operation to
+	// overflow. The constant 0x1FFFFFFFE0 is the highest number that can be used
+	// without overflowing the gas calculation.
+	if newMemSize > 0x1FFFFFFFE0 {
+		return 0, errGasUintOverflow
+	}
+	newMemSizeWords := toWordSize2(newMemSize)
+	newMemSize = newMemSizeWords * 32
+
+	if newMemSize > uint64(mem.Len()) {
+		square := newMemSizeWords * newMemSizeWords
+		linCoef := newMemSizeWords * 3
+		quadCoef := square / 512
+		newTotalFee := linCoef + quadCoef
+
+		fee := newTotalFee - mem.lastGasCost
+		mem.lastGasCost = newTotalFee
+
+		return fee, nil
+	}
+	return 0, nil
+}
+
+func gasReturnDataCopy(gt GasTable, evm *EVM, contract *Contract, stack *stack, mem *Memory, memorySize uint64) (uint64, error) {
+	gas, err := memoryGasCost(mem, memorySize)
+	if err != nil {
+		return 0, err
+	}
+
+	var overflow bool
+	if gas, overflow = math.SafeAdd(gas, GasFastestStep.Uint64()); overflow {
+		return 0, errGasUintOverflow
+	}
+
+	words, overflow := bigUint64(stack.Back(2))
+	if overflow {
+		return 0, errGasUintOverflow
+	}
+
+	if words, overflow = math.SafeMul(toWordSize2(words), 3); overflow {
+		return 0, errGasUintOverflow
+	}
+
+	if gas, overflow = math.SafeAdd(gas, words); overflow {
+		return 0, errGasUintOverflow
+	}
+	return gas, nil
+}
+
 // IsEmpty return true if all values are zero values,
 // which useful for checking JSON-decoded empty state.
 func (g *GasTable) IsEmpty() bool {
@@ -113,6 +171,15 @@ func toWordSize(size *big.Int) *big.Int {
 	tmp.Add(size, u256(31))
 	tmp.Div(tmp, u256(32))
 	return tmp
+}
+
+// toWordSize2 returns the ceiled word size required for memory expansion.
+func toWordSize2(size uint64) uint64 {
+	if size > math.MaxUint64-31 {
+		return math.MaxUint64/32 + 1
+	}
+
+	return (size + 31) / 32
 }
 
 type req struct {
@@ -186,4 +253,6 @@ var _baseCheck = map[OpCode]req{
 	RETURN:       {2, new(big.Int), 0},
 	PUSH1:        {0, GasFastestStep, 1},
 	DUP1:         {0, new(big.Int), 1},
+	RETURNDATASIZE: {2, GasQuickStep, 0},
+	RETURNDATACOPY: {3, GasFastestStep, 0},
 }
