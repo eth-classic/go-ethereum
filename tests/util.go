@@ -18,6 +18,7 @@ package tests
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"strconv"
@@ -193,6 +194,141 @@ type stTransaction struct {
 	GasLimit   []string `json:"gasLimit"`
 	Value      []string `json:"value"`
 	PrivateKey string   `json:"secretKey"`
+}
+
+// StateTest checks transaction processing without block context.
+// See https://github.com/ethereum/EIPs/issues/176 for the test format specification.
+type StateTest struct {
+	json stJSON
+}
+
+type stJSON struct {
+	Env stEnv `json:"env"`
+	// Pre map[string]Account `json:"pre"`
+	Pre  GenesisAlloc             `json:"pre"`
+	Tx   stTransaction            `json:"transaction"`
+	Out  string                   `json:"out"`
+	Post map[string][]stPostState `json:"post"`
+}
+
+// GenesisAlloc specifies the initial state that is part of the genesis block.
+type GenesisAlloc map[common.Address]GenesisAccount
+
+func (ga *GenesisAlloc) UnmarshalJSON(data []byte) error {
+	m := make(map[common.UnprefixedAddress]GenesisAccount)
+	if err := json.Unmarshal(data, &m); err != nil {
+		return err
+	}
+	*ga = make(GenesisAlloc)
+	for addr, a := range m {
+		(*ga)[common.Address(addr)] = a
+	}
+	return nil
+}
+
+// GenesisAccount is an account in the state of the genesis block.
+type GenesisAccount struct {
+	Code       []byte                      `json:"code,omitempty"`
+	Storage    map[common.Hash]common.Hash `json:"storage,omitempty"`
+	Balance    *big.Int                    `json:"balance" gencodec:"required"`
+	Nonce      uint64                      `json:"nonce,omitempty"`
+	PrivateKey []byte                      `json:"secretKey,omitempty"` // for tests
+}
+
+type stPostState struct {
+	Root    common.UnprefixedHash `json:"hash"`
+	Logs    common.UnprefixedHash `json:"logs"`
+	Indexes struct {
+		Data  int `json:"data"`
+		Gas   int `json:"gas"`
+		Value int `json:"value"`
+	}
+}
+
+type stEnv struct {
+	Coinbase   string `json:"currentCoinbase"   gencodec:"required"`
+	Difficulty string `json:"currentDifficulty" gencodec:"required"`
+	GasLimit   string `json:"currentGasLimit"   gencodec:"required"`
+	Number     string `json:"currentNumber"     gencodec:"required"`
+	Timestamp  string `json:"currentTimestamp"  gencodec:"required"`
+}
+
+type stTransaction struct {
+	GasPrice   *big.Int `json:"gasPrice"`
+	Nonce      uint64   `json:"nonce"`
+	To         string   `json:"to"`
+	Data       []string `json:"data"`
+	GasLimit   []uint64 `json:"gasLimit"`
+	Value      []string `json:"value"`
+	PrivateKey []byte   `json:"secretKey"`
+}
+
+func ConvertToVMTest(s map[string]StateTest) map[string]VmTest {
+	vmTests := make(map[string]VmTest)
+
+	for k, st := range s {
+		var vt VmTest
+		// Callcreates interface{}
+		// TODO
+
+		// Env           VmEnv
+		vt.Env = VmEnv{
+			CurrentCoinbase:   st.json.Env.Coinbase,
+			CurrentDifficulty: st.json.Env.Difficulty,
+			CurrentGasLimit:   st.json.Env.GasLimit,
+			CurrentNumber:     st.json.Env.Number,
+			CurrentTimestamp:  st.json.Env.Timestamp,
+			PreviousHash:      "", // TODO
+		}
+
+		// Exec          map[string]string
+		vt.Exec = map[string]string{
+			"address":  "", // TODO
+			"origin":   "", // TODO
+			"caller":   "", // TODO
+			"value":    "", // TODO
+			"data":     "", // TODO
+			"code":     "", // TODO
+			"gasPrice": "", // TODO
+			"gas":      "", // TODO
+		}
+
+		// Transaction   map[string]string
+		vt.Transaction = map[string]string{
+			"data":      "", // TODO
+			"gasLimit":  "", // TODO
+			"gasPrice":  "", // TODO
+			"nonce":     "", // TODO
+			"secretKey": "", // TODO
+			"to":        "", // TODO
+			"value":     "", // TODO
+		}
+
+		// Logs          []Log
+		// TODO
+
+		// Gas           string
+		// ? Gas after execution
+		// TODO
+
+		// Out           string
+		vt.Out = st.json.Out
+
+		// Post          map[string]Account
+		// vt.Post = st.json.Post
+		// TODO
+
+		// Pre           map[string]Account
+		// vt.Pre = st.json.Pre`
+		// TODO
+
+		// PostStateRoot string
+		// TODO
+
+		vmTests[k] = vt
+	}
+
+	return vmTests
 }
 
 func (r RuleSet) IsHomestead(n *big.Int) bool {
