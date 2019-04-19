@@ -61,6 +61,27 @@ func RunStateTest(ruleSet RuleSet, p string, skipTests []string) error {
 
 }
 
+func RunETHStateTest(p string, skipTests []string) error {
+	tests := make(map[string]StateTest)
+	if err := readJsonFile(p, &tests); err != nil {
+		return err
+	}
+
+	vmTests := ConvertToVMTest(tests)
+
+	// ? Change rule set from this
+	ruleSet := RuleSet{
+		HomesteadBlock:           new(big.Int),
+		HomesteadGasRepriceBlock: big.NewInt(2457000),
+	}
+
+	if err := runStateTests(ruleSet, vmTests, skipTests); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func BenchStateTest(ruleSet RuleSet, p string, conf bconf, b *testing.B) error {
 	tests := make(map[string]VmTest)
 	if err := readJsonFile(p, &tests); err != nil {
