@@ -23,10 +23,8 @@ import (
 	"math/big"
 	"reflect"
 
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/eth-classic/go-ethereum/params"
 )
-
-const stackLimit = 1024 // maximum size of VM stack allowed.
 
 var (
 	GasQuickStep   = big.NewInt(2)
@@ -137,8 +135,8 @@ func baseCheck(op OpCode, stack *stack, gas *big.Int) error {
 			return err
 		}
 
-		if r.stackPush > 0 && stack.len()-r.stackPop+r.stackPush > stackLimit {
-			return fmt.Errorf("stack length %d exceed limit %d", stack.len(), stackLimit)
+		if r.stackPush > 0 && stack.len()-r.stackPop+r.stackPush > int(params.StackLimit) {
+			return fmt.Errorf("stack length %d exceed limit %d", stack.len(), params.StackLimit)
 		}
 
 		gas.Add(gas, r.gas)
