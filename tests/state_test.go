@@ -670,26 +670,26 @@ func TestEIP150HomesteadBounds(t *testing.T) {
 	}
 }
 
-// func TestETHRevert(t *testing.T) {
-// 	skipTests := make(map[string]string)
+func TestETHRevert(t *testing.T) {
+	skipTests := make(map[string]string)
 
-// 	// Bugs in these tests
-// 	skipTests["RevertPrecompiledTouch.json/Byzantium/0"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch.json/Byzantium/3"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch.json/Constantinople/0"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch.json/Constantinople/3"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch.json/ConstantinopleFix/0"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch.json/ConstantinopleFix/3"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch_storage.json/Byzantium/0"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch_storage.json/Byzantium/3"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch_storage.json/Constantinople/0"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch_storage.json/Constantinople/3"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/0"] = "Bug in Test"
-// 	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/3"] = "Bug in Test"
+	// Bugs in these tests
+	skipTests["RevertPrecompiledTouch.json/Byzantium/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/Byzantium/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/Constantinople/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/Constantinople/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/ConstantinopleFix/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/ConstantinopleFix/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/Byzantium/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/Byzantium/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/Constantinople/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/Constantinople/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/3"] = "Bug in Test"
 
-// 	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stRevertTest", "*"))
-// 	runETHTests(t, fns, skipTests)
-// }
+	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stRevertTest", "*"))
+	runETHTests(t, fns, skipTests)
+}
 
 func TestETHHomestead(t *testing.T) {
 	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stHomesteadSpecific", "*"))
