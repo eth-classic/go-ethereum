@@ -78,6 +78,17 @@ func PrecompiledContracts() map[string]*PrecompiledAccount {
 		string(common.LeftPadBytes([]byte{6}, 20)): {func(l int) *big.Int {
 			return big.NewInt(500)
 		}, bn256Add},
+
+		string(common.LeftPadBytes([]byte{7}, 20)): {func(l int) *big.Int {
+			return big.NewInt(40000)
+		}, bn256ScalarMul},
+
+		string(common.LeftPadBytes([]byte{8}, 20)): {func(l int) *big.Int {
+			n := big.NewInt(100000) 
+			p := big.NewInt(int64(l/192))
+			p.Mul(p, big.NewInt(80000))
+			return n.Add(n, p)
+		}, bn256Pairing},
 	}
 }
 
@@ -125,6 +136,22 @@ func memCpy(in []byte) []byte {
 	return in
 }
 
+// TODO
+func bigModExp(in []byte) []byte {
+	return nil
+}
+
+var (
+	// true32Byte is returned if the bn256 pairing check succeeds.
+	true32Byte = []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}
+
+	// false32Byte is returned if the bn256 pairing check fails.
+	false32Byte = make([]byte, 32)
+
+	// errBadPairingInput is returned if the bn256 pairing input is invalid.
+	//errBadPairingInput = errors.New("bad elliptic curve pairing size")
+)
+
 // newCurvePoint unmarshals a binary blob into a bn256 elliptic curve point,
 // returning it, or an error if the point is invalid.
 func newCurvePoint(blob []byte) (*bn256.G1, error) {
@@ -135,6 +162,65 @@ func newCurvePoint(blob []byte) (*bn256.G1, error) {
 	return p, nil
 }
 
+// newTwistPoint unmarshals a binary blob into a bn256 elliptic curve point,
+// returning it, or an error if the point is invalid.
+func newTwistPoint(blob []byte) (*bn256.G2, error) {
+	p := new(bn256.G2)
+	if _, err := p.Unmarshal(blob); err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
 func bn256Add(in []byte) []byte {
-	return in
+	x, err := newCurvePoint(getData(in, big.NewInt(0), big.NewInt(64)))
+	if err != nil {
+		return nil
+	}
+	y, err := newCurvePoint(getData(in, big.NewInt(64), big.NewInt(64)))
+	if err != nil {
+		return nil
+	}
+	res := new(bn256.G1)
+	res.Add(x, y)
+	return res.Marshal()
+}
+
+func bn256ScalarMul(in []byte) []byte {
+	p, err := newCurvePoint(getData(in, big.NewInt(0), big.NewInt(64)))
+	if err != nil {
+		return nil
+	}
+	res := new(bn256.G1)
+	res.ScalarMult(p, new(big.Int).SetBytes(getData(in, big.NewInt(64), big.NewInt(32))))
+	return res.Marshal()
+}
+
+func bn256Pairing(in []byte) []byte {
+	// Handle some corner cases cheaply
+	if len(in)%192 > 0 {
+		return nil
+	}
+	// Convert the input into a set of coordinates
+	var (
+		cs []*bn256.G1
+		ts []*bn256.G2
+	)
+	for i := 0; i < len(in); i += 192 {
+		c, err := newCurvePoint(in[i : i+64])
+		if err != nil {
+			return nil
+		}
+		t, err := newTwistPoint(in[i+64 : i+192])
+		if err != nil {
+			return nil
+		}
+		cs = append(cs, c)
+		ts = append(ts, t)
+	}
+	// Execute the pairing checks and return the results
+	if bn256.PairingCheck(cs, ts) {
+		return true32Byte
+	}
+	return false32Byte
 }
