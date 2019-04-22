@@ -198,11 +198,11 @@ type stTransaction struct {
 
 // StateTest checks transaction processing without block context.
 // See https://github.com/ethereum/EIPs/issues/176 for the test format specification.
-type StateTest struct {
-	json stJSON
-}
+// type StateTest struct {
+// 	json stJSON
+// }
 
-type stJSON struct {
+type StateTest struct {
 	Env stEnv `json:"env"`
 	// Pre map[string]Account `json:"pre"`
 	Pre  GenesisAlloc             `json:"pre"`
@@ -228,11 +228,11 @@ func (ga *GenesisAlloc) UnmarshalJSON(data []byte) error {
 
 // GenesisAccount is an account in the state of the genesis block.
 type GenesisAccount struct {
-	Code       []byte                      `json:"code,omitempty"`
-	Storage    map[common.Hash]common.Hash `json:"storage,omitempty"`
-	Balance    *big.Int                    `json:"balance" gencodec:"required"`
-	Nonce      uint64                      `json:"nonce,omitempty"`
-	PrivateKey []byte                      `json:"secretKey,omitempty"` // for tests
+	Code       string            `json:"code,omitempty"`
+	Storage    map[string]string `json:"storage,omitempty"`
+	Balance    string            `json:"balance" gencodec:"required"`
+	Nonce      string            `json:"nonce,omitempty"`
+	PrivateKey string            `json:"secretKey,omitempty"` // for tests
 }
 
 type stPostState struct {
@@ -254,13 +254,13 @@ type stEnv struct {
 }
 
 type stTransaction struct {
-	GasPrice   *big.Int `json:"gasPrice"`
-	Nonce      uint64   `json:"nonce"`
+	GasPrice   string   `json:"gasPrice"`
+	Nonce      string   `json:"nonce"`
 	To         string   `json:"to"`
 	Data       []string `json:"data"`
-	GasLimit   []uint64 `json:"gasLimit"`
+	GasLimit   []string `json:"gasLimit"`
 	Value      []string `json:"value"`
-	PrivateKey []byte   `json:"secretKey"`
+	PrivateKey string   `json:"secretKey"`
 }
 
 func ConvertToVMTest(s map[string]StateTest) map[string]VmTest {
@@ -273,11 +273,11 @@ func ConvertToVMTest(s map[string]StateTest) map[string]VmTest {
 
 		// Env           VmEnv
 		vt.Env = VmEnv{
-			CurrentCoinbase:   st.json.Env.Coinbase,
-			CurrentDifficulty: st.json.Env.Difficulty,
-			CurrentGasLimit:   st.json.Env.GasLimit,
-			CurrentNumber:     st.json.Env.Number,
-			CurrentTimestamp:  st.json.Env.Timestamp,
+			CurrentCoinbase:   st.Env.Coinbase,
+			CurrentDifficulty: st.Env.Difficulty,
+			CurrentGasLimit:   st.Env.GasLimit,
+			CurrentNumber:     st.Env.Number,
+			CurrentTimestamp:  st.Env.Timestamp,
 			PreviousHash:      "", // TODO
 		}
 
@@ -312,14 +312,14 @@ func ConvertToVMTest(s map[string]StateTest) map[string]VmTest {
 		// TODO
 
 		// Out           string
-		vt.Out = st.json.Out
+		vt.Out = st.Out
 
 		// Post          map[string]Account
-		// vt.Post = st.json.Post
+		// vt.Post = st.Post
 		// TODO
 
 		// Pre           map[string]Account
-		// vt.Pre = st.json.Pre`
+		// vt.Pre = st.Pre`
 		// TODO
 
 		// PostStateRoot string
