@@ -667,7 +667,7 @@ func TestEIP150HomesteadBounds(t *testing.T) {
 		t.Error(err)
 	}
 }
-  
+
 func TestETHRevert(t *testing.T) {
 	fns, _ := filepath.Glob(filepath.Join(stateTestDir, "stRevertTest", "*"))
 	for _, fn := range fns {
@@ -675,5 +675,4 @@ func TestETHRevert(t *testing.T) {
 			t.Error(err)
 		}
 	}
-
 }
