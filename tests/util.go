@@ -18,7 +18,6 @@ package tests
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"math/big"
 	"strconv"
@@ -203,28 +202,27 @@ type stTransaction struct {
 // }
 
 type StateTest struct {
-	Env stEnv `json:"env"`
-	// Pre map[string]Account `json:"pre"`
-	Pre  GenesisAlloc             `json:"pre"`
+	Env  VmEnv                    `json:"env"`
+	Pre  map[string]Account       `json:"pre"`
 	Tx   stTransaction            `json:"transaction"`
 	Out  string                   `json:"out"`
 	Post map[string][]stPostState `json:"post"`
 }
 
-// GenesisAlloc specifies the initial state that is part of the genesis block.
-type GenesisAlloc map[common.Address]GenesisAccount
+// // GenesisAlloc specifies the initial state that is part of the genesis block.
+// type GenesisAlloc map[common.Address]GenesisAccount
 
-func (ga *GenesisAlloc) UnmarshalJSON(data []byte) error {
-	m := make(map[common.UnprefixedAddress]GenesisAccount)
-	if err := json.Unmarshal(data, &m); err != nil {
-		return err
-	}
-	*ga = make(GenesisAlloc)
-	for addr, a := range m {
-		(*ga)[common.Address(addr)] = a
-	}
-	return nil
-}
+// func (ga *GenesisAlloc) UnmarshalJSON(data []byte) error {
+// 	m := make(map[common.UnprefixedAddress]GenesisAccount)
+// 	if err := json.Unmarshal(data, &m); err != nil {
+// 		return err
+// 	}
+// 	*ga = make(GenesisAlloc)
+// 	for addr, a := range m {
+// 		(*ga)[common.Address(addr)] = a
+// 	}
+// 	return nil
+// }
 
 // GenesisAccount is an account in the state of the genesis block.
 type GenesisAccount struct {
@@ -245,13 +243,13 @@ type stPostState struct {
 	}
 }
 
-type stEnv struct {
-	Coinbase   string `json:"currentCoinbase"   gencodec:"required"`
-	Difficulty string `json:"currentDifficulty" gencodec:"required"`
-	GasLimit   string `json:"currentGasLimit"   gencodec:"required"`
-	Number     string `json:"currentNumber"     gencodec:"required"`
-	Timestamp  string `json:"currentTimestamp"  gencodec:"required"`
-}
+// type stEnv struct {
+// 	Coinbase   string `json:"currentCoinbase"   gencodec:"required"`
+// 	Difficulty string `json:"currentDifficulty" gencodec:"required"`
+// 	GasLimit   string `json:"currentGasLimit"   gencodec:"required"`
+// 	Number     string `json:"currentNumber"     gencodec:"required"`
+// 	Timestamp  string `json:"currentTimestamp"  gencodec:"required"`
+// }
 
 type stTransaction struct {
 	GasPrice   string   `json:"gasPrice"`
@@ -266,20 +264,24 @@ type stTransaction struct {
 func ConvertToVMTest(s map[string]StateTest) map[string]VmTest {
 	vmTests := make(map[string]VmTest)
 
+	// ? remove 0x prefixes if necessary
+
 	for k, st := range s {
+		// StateTest has subtests, loop through each
 		var vt VmTest
 		// Callcreates interface{}
 		// TODO
 
 		// Env           VmEnv
-		vt.Env = VmEnv{
-			CurrentCoinbase:   st.Env.Coinbase,
-			CurrentDifficulty: st.Env.Difficulty,
-			CurrentGasLimit:   st.Env.GasLimit,
-			CurrentNumber:     st.Env.Number,
-			CurrentTimestamp:  st.Env.Timestamp,
-			PreviousHash:      "", // TODO
-		}
+		// vt.Env = VmEnv{
+		// 	CurrentCoinbase:   st.Env.Coinbase,
+		// 	CurrentDifficulty: st.Env.Difficulty,
+		// 	CurrentGasLimit:   st.Env.GasLimit,
+		// 	CurrentNumber:     st.Env.Number,
+		// 	CurrentTimestamp:  st.Env.Timestamp,
+		// 	PreviousHash:      "", // TODO
+		// }
+		vt.Env = st.Env
 
 		// Exec          map[string]string
 		vt.Exec = map[string]string{
@@ -319,8 +321,7 @@ func ConvertToVMTest(s map[string]StateTest) map[string]VmTest {
 		// TODO
 
 		// Pre           map[string]Account
-		// vt.Pre = st.Pre`
-		// TODO
+		vt.Pre = st.Pre
 
 		// PostStateRoot string
 		// TODO
