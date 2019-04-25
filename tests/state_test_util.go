@@ -23,6 +23,7 @@ import (
 	"io"
 	"math/big"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/eth-classic/go-ethereum/common"
@@ -59,6 +60,19 @@ func RunStateTest(ruleSet RuleSet, p string, skipTests []string) error {
 
 	return nil
 
+}
+
+func RunETHStateTest(p string, skipTests []string) error {
+	tests := make(map[string]StateTest)
+	if err := readJsonFile(p, &tests); err != nil {
+		return err
+	}
+
+	if err := runETHStateTests(tests, skipTests); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func BenchStateTest(ruleSet RuleSet, p string, conf bconf, b *testing.B) error {
@@ -123,6 +137,29 @@ func runStateTests(ruleSet RuleSet, tests map[string]VmTest, skipTests []string)
 	}
 	return nil
 
+}
+
+func runETHStateTests(tests map[string]StateTest, skipTests []string) error {
+	skipTest := make(map[string]bool, len(skipTests))
+	for _, name := range skipTests {
+		skipTest[name] = true
+	}
+
+	for name, test := range tests {
+		if skipTest[name] /*|| name != "callcodecallcode_11" */ {
+			glog.Infoln("Skipping state test", name)
+			continue
+		}
+
+		//fmt.Println("StateTest:", name)
+		if err := runETHStateTest(test); err != nil {
+			return fmt.Errorf("%s: %s\n ", name, err.Error())
+		}
+
+		//glog.Infoln("State test passed: ", name)
+		//fmt.Println(string(statedb.Dump()))
+	}
+	return nil
 }
 
 func runStateTest(ruleSet RuleSet, test VmTest) error {
@@ -204,6 +241,80 @@ func runStateTest(ruleSet RuleSet, test VmTest) error {
 	return nil
 }
 
+func runETHStateTest(test StateTest) error {
+	db, _ := ethdb.NewMemDatabase()
+	statedb := makePreState(db, test.Pre)
+
+	env := make(map[string]string)
+	env["currentCoinbase"] = test.Env.CurrentCoinbase
+	env["currentDifficulty"] = test.Env.CurrentDifficulty
+	env["currentGasLimit"] = test.Env.CurrentGasLimit
+	env["currentNumber"] = test.Env.CurrentNumber
+	env["previousHash"] = test.Env.PreviousHash
+	if n, ok := test.Env.CurrentTimestamp.(float64); ok {
+		env["currentTimestamp"] = strconv.Itoa(int(n))
+	} else {
+		env["currentTimestamp"] = test.Env.CurrentTimestamp.(string)
+	}
+
+	var (
+		// ret []byte
+		// gas  *big.Int
+		err  error
+		logs vm.Logs
+	)
+
+	ruleSet := RuleSet{
+		HomesteadBlock:           new(big.Int),
+		HomesteadGasRepriceBlock: big.NewInt(2457000),
+	}
+
+	// check post state
+	// for addr, account := range test.Post {
+	for _, arr := range test.Post {
+		for _, postState := range arr {
+
+			vmTx := map[string]string{
+				"data":      test.Tx.Data[postState.Indexes.Data],
+				"gasLimit":  test.Tx.GasLimit[postState.Indexes.Gas],
+				"gasPrice":  test.Tx.GasPrice,
+				"nonce":     test.Tx.Nonce,
+				"secretKey": strings.TrimPrefix(test.Tx.PrivateKey, "0x"),
+				"to":        strings.TrimPrefix(test.Tx.To, "0x"),
+				"value":     test.Tx.Value[postState.Indexes.Value],
+			}
+
+			_, logs, _, err = RunState(ruleSet, db, statedb, env, vmTx)
+			if err != nil {
+				return fmt.Errorf("Error in running state transaction: %s", err)
+			}
+
+			// // Compare expected and actual return
+			// rexp := common.FromHex(test.Out)
+			// if bytes.Compare(rexp, ret) != 0 {
+			// 	return fmt.Errorf("return failed. Expected %x, got %x\n ", rexp, ret)
+			// }
+
+			// Compare Post state root
+			root, _ := statedb.CommitTo(db, false)
+			if root != common.BytesToHash(postState.Root.Bytes()) {
+				return fmt.Errorf("Post state root error. Expected: %s have: %x", postState.Root, root)
+			}
+
+			// Compare logs
+			if hashedLogs := rlpHash(logs); hashedLogs != common.Hash(postState.Logs) {
+				return fmt.Errorf("post state logs hash mismatch: got %x, want %x", logs, postState.Logs)
+			}
+		}
+	}
+
+	return nil
+}
+
+func runETHSubtest(test StateTest) {
+
+}
+
 func RunState(ruleSet RuleSet, db ethdb.Database, statedb *state.StateDB, env, tx map[string]string) ([]byte, vm.Logs, *big.Int, error) {
 	data := common.FromHex(tx["data"])
 	gas, _ := new(big.Int).SetString(tx["gasLimit"], 0)
@@ -246,4 +357,11 @@ func RunState(ruleSet RuleSet, db ethdb.Database, statedb *state.StateDB, env, t
 	statedb.CommitTo(db, false)
 
 	return ret, vmenv.state.Logs(), vmenv.Gas, err
+}
+
+func rlpHash(x interface{}) (h common.Hash) {
+	// hw := sha3.NewLegacyKeccak256()
+	// rlp.Encode(hw, x)
+	// hw.Sum(h[:0])
+	return h
 }

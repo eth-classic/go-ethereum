@@ -153,6 +153,72 @@ type RuleSet struct {
 	ExplosionBlock           *big.Int
 }
 
+// StateTest checks transaction processing without block context.
+// See https://github.com/ethereum/EIPs/issues/176 for the test format specification.
+// type StateTest struct {
+// 	json stJSON
+// }
+
+type StateTest struct {
+	Env  VmEnv                    `json:"env"`
+	Pre  map[string]Account       `json:"pre"`
+	Tx   stTransaction            `json:"transaction"`
+	Out  string                   `json:"out"`
+	Post map[string][]stPostState `json:"post"`
+}
+
+// // GenesisAlloc specifies the initial state that is part of the genesis block.
+// type GenesisAlloc map[common.Address]GenesisAccount
+
+// func (ga *GenesisAlloc) UnmarshalJSON(data []byte) error {
+// 	m := make(map[common.UnprefixedAddress]GenesisAccount)
+// 	if err := json.Unmarshal(data, &m); err != nil {
+// 		return err
+// 	}
+// 	*ga = make(GenesisAlloc)
+// 	for addr, a := range m {
+// 		(*ga)[common.Address(addr)] = a
+// 	}
+// 	return nil
+// }
+
+// GenesisAccount is an account in the state of the genesis block.
+type GenesisAccount struct {
+	Code       string            `json:"code,omitempty"`
+	Storage    map[string]string `json:"storage,omitempty"`
+	Balance    string            `json:"balance" gencodec:"required"`
+	Nonce      string            `json:"nonce,omitempty"`
+	PrivateKey string            `json:"secretKey,omitempty"` // for tests
+}
+
+type stPostState struct {
+	Root    common.UnprefixedHash `json:"hash"`
+	Logs    common.UnprefixedHash `json:"logs"`
+	Indexes struct {
+		Data  int `json:"data"`
+		Gas   int `json:"gas"`
+		Value int `json:"value"`
+	}
+}
+
+// type stEnv struct {
+// 	Coinbase   string `json:"currentCoinbase"   gencodec:"required"`
+// 	Difficulty string `json:"currentDifficulty" gencodec:"required"`
+// 	GasLimit   string `json:"currentGasLimit"   gencodec:"required"`
+// 	Number     string `json:"currentNumber"     gencodec:"required"`
+// 	Timestamp  string `json:"currentTimestamp"  gencodec:"required"`
+// }
+
+type stTransaction struct {
+	GasPrice   string   `json:"gasPrice"`
+	Nonce      string   `json:"nonce"`
+	To         string   `json:"to"`
+	Data       []string `json:"data"`
+	GasLimit   []string `json:"gasLimit"`
+	Value      []string `json:"value"`
+	PrivateKey string   `json:"secretKey"`
+}
+
 func (r RuleSet) IsHomestead(n *big.Int) bool {
 	return n.Cmp(r.HomesteadBlock) >= 0
 }

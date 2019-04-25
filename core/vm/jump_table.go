@@ -160,6 +160,7 @@ func newJumpTable(ruleset RuleSet, blockNumber *big.Int) vmJumpTable {
 	jumpTable[DUP16] = jumpPtr{makeDup(16), true}
 
 	jumpTable[RETURN] = jumpPtr{nil, true}
+	jumpTable[REVERT] = jumpPtr{nil, true}
 	jumpTable[SUICIDE] = jumpPtr{nil, true}
 	jumpTable[JUMP] = jumpPtr{nil, true}
 	jumpTable[JUMPI] = jumpPtr{nil, true}
