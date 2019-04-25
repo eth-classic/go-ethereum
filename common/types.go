@@ -130,6 +130,8 @@ func (h UnprefixedHash) MarshalText() ([]byte, error) {
 	return []byte(hex.EncodeToString(h[:])), nil
 }
 
+func (h UnprefixedHash) Bytes() []byte { return h[:] }
+
 /////////// Address
 func BytesToAddress(b []byte) Address {
 	var a Address
