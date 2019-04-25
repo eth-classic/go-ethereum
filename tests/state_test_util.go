@@ -155,6 +155,29 @@ func runStateTests(ruleSet RuleSet, tests map[string]VmTest, skipTests []string)
 
 }
 
+func runETHStateTests(tests map[string]StateTest, skipTests []string) error {
+	skipTest := make(map[string]bool, len(skipTests))
+	for _, name := range skipTests {
+		skipTest[name] = true
+	}
+
+	for name, test := range tests {
+		if skipTest[name] /*|| name != "callcodecallcode_11" */ {
+			glog.Infoln("Skipping state test", name)
+			continue
+		}
+
+		//fmt.Println("StateTest:", name)
+		if err := runETHStateTest(test); err != nil {
+			return fmt.Errorf("%s: %s\n ", name, err.Error())
+		}
+
+		//glog.Infoln("State test passed: ", name)
+		//fmt.Println(string(statedb.Dump()))
+	}
+	return nil
+}
+
 func runStateTest(ruleSet RuleSet, test VmTest) error {
 	db, _ := ethdb.NewMemDatabase()
 	statedb := makePreState(db, test.Pre)
