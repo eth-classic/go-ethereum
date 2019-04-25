@@ -33,6 +33,8 @@ import (
 	"github.com/eth-classic/go-ethereum/crypto"
 	"github.com/eth-classic/go-ethereum/ethdb"
 	"github.com/eth-classic/go-ethereum/logger/glog"
+	"github.com/eth-classic/go-ethereum/rlp"
+	"golang.org/x/crypto/sha3"
 )
 
 func RunStateTestWithReader(ruleSet RuleSet, r io.Reader, skipTests []string) error {
@@ -242,8 +244,8 @@ func runStateTest(ruleSet RuleSet, test VmTest) error {
 }
 
 func runETHStateTest(test StateTest) error {
-	db, _ := ethdb.NewMemDatabase()
-	statedb := makePreState(db, test.Pre)
+	// db, _ := ethdb.NewMemDatabase()
+	// statedb := makePreState(db, test.Pre)
 
 	env := make(map[string]string)
 	env["currentCoinbase"] = test.Env.CurrentCoinbase
@@ -269,10 +271,14 @@ func runETHStateTest(test StateTest) error {
 		HomesteadGasRepriceBlock: big.NewInt(2457000),
 	}
 
-	// check post state
-	// for addr, account := range test.Post {
-	for _, arr := range test.Post {
-		for _, postState := range arr {
+	for fork, arr := range test.Post {
+		if fork == "Constantinople" || fork == "ConstantinopleFix" || fork == "EIP158" {
+			continue
+		}
+		for index, postState := range arr {
+
+			db, _ := ethdb.NewMemDatabase()
+			statedb := makePreState(db, test.Pre)
 
 			vmTx := map[string]string{
 				"data":      test.Tx.Data[postState.Indexes.Data],
@@ -298,21 +304,17 @@ func runETHStateTest(test StateTest) error {
 			// Compare Post state root
 			root, _ := statedb.CommitTo(db, false)
 			if root != common.BytesToHash(postState.Root.Bytes()) {
-				return fmt.Errorf("Post state root error. Expected: %s have: %x", postState.Root, root)
+				return fmt.Errorf("Post state root error. Expected: %x have: %x (Fork: %s Index: %x)", postState.Root, root, fork, index)
 			}
 
 			// Compare logs
 			if hashedLogs := rlpHash(logs); hashedLogs != common.Hash(postState.Logs) {
-				return fmt.Errorf("post state logs hash mismatch: got %x, want %x", logs, postState.Logs)
+				return fmt.Errorf("post state logs hash mismatch: Expected: %x have: %x", postState.Logs, logs)
 			}
 		}
 	}
 
 	return nil
-}
-
-func runETHSubtest(test StateTest) {
-
 }
 
 func RunState(ruleSet RuleSet, db ethdb.Database, statedb *state.StateDB, env, tx map[string]string) ([]byte, vm.Logs, *big.Int, error) {
@@ -360,8 +362,8 @@ func RunState(ruleSet RuleSet, db ethdb.Database, statedb *state.StateDB, env, t
 }
 
 func rlpHash(x interface{}) (h common.Hash) {
-	// hw := sha3.NewLegacyKeccak256()
-	// rlp.Encode(hw, x)
-	// hw.Sum(h[:0])
+	hw := sha3.NewLegacyKeccak256()
+	rlp.Encode(hw, x)
+	hw.Sum(h[:0])
 	return h
 }
