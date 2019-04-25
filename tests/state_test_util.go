@@ -262,7 +262,7 @@ func runETHStateTest(test StateTest) error {
 	var (
 		// ret []byte
 		// gas  *big.Int
-		err  error
+		// err  error
 		logs vm.Logs
 	)
 
@@ -290,10 +290,7 @@ func runETHStateTest(test StateTest) error {
 				"value":     test.Tx.Value[postState.Indexes.Value],
 			}
 
-			_, logs, _, err = RunState(ruleSet, db, statedb, env, vmTx)
-			if err != nil {
-				return fmt.Errorf("Error in running state transaction: %s", err)
-			}
+			_, logs, _, _ = RunState(ruleSet, db, statedb, env, vmTx)
 
 			// // Compare expected and actual return
 			// rexp := common.FromHex(test.Out)
