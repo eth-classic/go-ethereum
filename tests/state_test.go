@@ -21,6 +21,7 @@ import (
 	"math/big"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -678,7 +679,7 @@ func TestETHRevert(t *testing.T) {
 			continue
 		}
 
-		t.Run(fn, func(t *testing.T) {
+		t.Run(fn[strings.LastIndex(fn, "/")+1:len(fn)], func(t *testing.T) {
 			for _, test := range stateTests {
 				for _, subtest := range test.Subtests() {
 					key := fmt.Sprintf("%s/%d", subtest.Fork, subtest.Index)
