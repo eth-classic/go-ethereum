@@ -17,6 +17,7 @@
 package tests
 
 import (
+	"fmt"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -671,8 +672,30 @@ func TestEIP150HomesteadBounds(t *testing.T) {
 func TestETHRevert(t *testing.T) {
 	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stRevertTest", "*"))
 	for _, fn := range fns {
-		if err := RunETHStateTest(fn, StateSkipTests); err != nil {
+		stateTests, err := CreateStateTests(fn)
+		if err != nil {
 			t.Error(err)
+			continue
 		}
+
+		t.Run(fn, func(t *testing.T) {
+			for _, test := range stateTests {
+				for _, subtest := range test.Subtests() {
+					key := fmt.Sprintf("%s/%d", subtest.Fork, subtest.Index)
+
+					if subtest.Fork == "Constantinople" || subtest.Fork == "ConstantinopleFix" || subtest.Fork == "EIP158" {
+						// Should change how these tests are skipped
+						continue
+					}
+
+					t.Run(key, func(t *testing.T) {
+						if err := test.runETHSubtest(subtest); err != nil {
+							t.Error(err)
+						}
+					})
+				}
+			}
+		})
+
 	}
 }
