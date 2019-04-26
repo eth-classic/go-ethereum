@@ -37,6 +37,23 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
+// StateSubtest selects a specific configuration of a General State Test.
+type StateSubtest struct {
+	Fork  string
+	Index int
+}
+
+// Subtests returns all valid subtests of the test.
+func (t *StateTest) Subtests() []StateSubtest {
+	var sub []StateSubtest
+	for fork, pss := range t.Post {
+		for i := range pss {
+			sub = append(sub, StateSubtest{fork, i})
+		}
+	}
+	return sub
+}
+
 func RunStateTestWithReader(ruleSet RuleSet, r io.Reader, skipTests []string) error {
 	tests := make(map[string]VmTest)
 	if err := readJson(r, &tests); err != nil {
@@ -64,17 +81,12 @@ func RunStateTest(ruleSet RuleSet, p string, skipTests []string) error {
 
 }
 
-func RunETHStateTest(p string, skipTests []string) error {
-	tests := make(map[string]StateTest)
-	if err := readJsonFile(p, &tests); err != nil {
-		return err
+func CreateStateTests(f string) (map[string]StateTest, error) {
+	stateTest := make(map[string]StateTest)
+	if err := readJsonFile(f, &stateTest); err != nil {
+		return stateTest, err
 	}
-
-	if err := runETHStateTests(tests, skipTests); err != nil {
-		return err
-	}
-
-	return nil
+	return stateTest, nil
 }
 
 func BenchStateTest(ruleSet RuleSet, p string, conf bconf, b *testing.B) error {
@@ -139,29 +151,6 @@ func runStateTests(ruleSet RuleSet, tests map[string]VmTest, skipTests []string)
 	}
 	return nil
 
-}
-
-func runETHStateTests(tests map[string]StateTest, skipTests []string) error {
-	skipTest := make(map[string]bool, len(skipTests))
-	for _, name := range skipTests {
-		skipTest[name] = true
-	}
-
-	for name, test := range tests {
-		if skipTest[name] /*|| name != "callcodecallcode_11" */ {
-			glog.Infoln("Skipping state test", name)
-			continue
-		}
-
-		//fmt.Println("StateTest:", name)
-		if err := runETHStateTest(test); err != nil {
-			return fmt.Errorf("%s: %s\n ", name, err.Error())
-		}
-
-		//glog.Infoln("State test passed: ", name)
-		//fmt.Println(string(statedb.Dump()))
-	}
-	return nil
 }
 
 func runStateTest(ruleSet RuleSet, test VmTest) error {
@@ -243,20 +232,17 @@ func runStateTest(ruleSet RuleSet, test VmTest) error {
 	return nil
 }
 
-func runETHStateTest(test StateTest) error {
-	// db, _ := ethdb.NewMemDatabase()
-	// statedb := makePreState(db, test.Pre)
-
+func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 	env := make(map[string]string)
-	env["currentCoinbase"] = test.Env.CurrentCoinbase
-	env["currentDifficulty"] = test.Env.CurrentDifficulty
-	env["currentGasLimit"] = test.Env.CurrentGasLimit
-	env["currentNumber"] = test.Env.CurrentNumber
-	env["previousHash"] = test.Env.PreviousHash
-	if n, ok := test.Env.CurrentTimestamp.(float64); ok {
+	env["currentCoinbase"] = t.Env.CurrentCoinbase
+	env["currentDifficulty"] = t.Env.CurrentDifficulty
+	env["currentGasLimit"] = t.Env.CurrentGasLimit
+	env["currentNumber"] = t.Env.CurrentNumber
+	env["previousHash"] = t.Env.PreviousHash
+	if n, ok := t.Env.CurrentTimestamp.(float64); ok {
 		env["currentTimestamp"] = strconv.Itoa(int(n))
 	} else {
-		env["currentTimestamp"] = test.Env.CurrentTimestamp.(string)
+		env["currentTimestamp"] = t.Env.CurrentTimestamp.(string)
 	}
 
 	var (
@@ -271,44 +257,61 @@ func runETHStateTest(test StateTest) error {
 		HomesteadGasRepriceBlock: big.NewInt(2457000),
 	}
 
-	for fork, arr := range test.Post {
-		if fork == "Constantinople" || fork == "ConstantinopleFix" || fork == "EIP158" {
-			continue
-		}
-		for index, postState := range arr {
+	db, _ := ethdb.NewMemDatabase()
+	statedb := makePreState(db, t.Pre)
 
-			db, _ := ethdb.NewMemDatabase()
-			statedb := makePreState(db, test.Pre)
+	postState := t.Post[subtest.Fork][subtest.Index]
 
-			vmTx := map[string]string{
-				"data":      test.Tx.Data[postState.Indexes.Data],
-				"gasLimit":  test.Tx.GasLimit[postState.Indexes.Gas],
-				"gasPrice":  test.Tx.GasPrice,
-				"nonce":     test.Tx.Nonce,
-				"secretKey": strings.TrimPrefix(test.Tx.PrivateKey, "0x"),
-				"to":        strings.TrimPrefix(test.Tx.To, "0x"),
-				"value":     test.Tx.Value[postState.Indexes.Value],
-			}
+	vmTx := map[string]string{
+		"data":      t.Tx.Data[postState.Indexes.Data],
+		"gasLimit":  t.Tx.GasLimit[postState.Indexes.Gas],
+		"gasPrice":  t.Tx.GasPrice,
+		"nonce":     t.Tx.Nonce,
+		"secretKey": strings.TrimPrefix(t.Tx.PrivateKey, "0x"),
+		"to":        strings.TrimPrefix(t.Tx.To, "0x"),
+		"value":     t.Tx.Value[postState.Indexes.Value],
+	}
 
-			_, logs, _, _ = RunState(ruleSet, db, statedb, env, vmTx)
+	// fmt.Printf("PRE: %s[%x]\n", subtest.Fork, subtest.Index)
 
-			// // Compare expected and actual return
-			// rexp := common.FromHex(test.Out)
-			// if bytes.Compare(rexp, ret) != 0 {
-			// 	return fmt.Errorf("return failed. Expected %x, got %x\n ", rexp, ret)
-			// }
+	// preAccounts := make(map[string]vm.Account)
+	// for address := range t.Pre {
+	// 	addr := common.HexToAddress(address)
+	// 	account := statedb.GetAccount(addr)
+	// 	preAccounts[address] = account
+	// }
 
-			// Compare Post state root
-			root, _ := statedb.CommitTo(db, false)
-			if root != common.BytesToHash(postState.Root.Bytes()) {
-				return fmt.Errorf("Post state root error. Expected: %x have: %x (Fork: %s Index: %x)", postState.Root, root, fork, index)
-			}
+	_, logs, _, _ = RunState(ruleSet, db, statedb, env, vmTx)
 
-			// Compare logs
-			if hashedLogs := rlpHash(logs); hashedLogs != common.Hash(postState.Logs) {
-				return fmt.Errorf("post state logs hash mismatch: Expected: %x have: %x", postState.Logs, logs)
-			}
-		}
+	// for address := range t.Pre {
+	// 	addr := common.HexToAddress(address)
+	// 	account := statedb.GetAccount(addr)
+	// 	fmt.Printf("\nACCOUNT: %s\n\n", address)
+	// 	fmt.Println("pre transaction:")
+	// 	fmt.Printf("%+v\n\n", account)
+	// 	fmt.Println("post transaction:")
+	// 	fmt.Printf("%+v\n", preAccounts[address])
+	// 	// fmt.Printf("\tbalance: %s --> %x\n\n", value.Balance, common.BigToHash(account.Balance()))
+	// 	// fmt.Printf("\tcode: %s --> %s\n", value.Code, "")
+	// 	// fmt.Printf("\tnonce: %s --> %s\n", value.Nonce, "")
+	// 	// fmt.Printf("\tstorage: %s", value.Storage)
+	// }
+
+	// // Compare expected and actual return
+	// rexp := common.FromHex(test.Out)
+	// if bytes.Compare(rexp, ret) != 0 {
+	// 	return fmt.Errorf("return failed. Expected %x, got %x\n ", rexp, ret)
+	// }
+
+	// Compare Post state root
+	root, _ := statedb.CommitTo(db, false)
+	if root != common.BytesToHash(postState.Root.Bytes()) {
+		return fmt.Errorf("Post state root error. Expected: %x have: %x", postState.Root, root)
+	}
+
+	// Compare logs
+	if hashedLogs := rlpHash(logs); hashedLogs != common.Hash(postState.Logs) {
+		return fmt.Errorf("post state logs hash mismatch: Expected: %x have: %x", postState.Logs, logs)
 	}
 
 	return nil
