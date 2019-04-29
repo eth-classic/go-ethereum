@@ -672,13 +672,19 @@ func TestEIP150HomesteadBounds(t *testing.T) {
 
 func TestETHRevert(t *testing.T) {
 	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stRevertTest", "*"))
-	for _, fn := range fns {
+	runETHTests(t, fns)
+}
+
+func runETHTests(t *testing.T, fileNames []string) {
+	for _, fn := range fileNames {
+		// Fill StateTest mapping with tests from file
 		stateTests, err := CreateStateTests(fn)
 		if err != nil {
 			t.Error(err)
 			continue
 		}
 
+		// JSON file subtest
 		t.Run(fn[strings.LastIndex(fn, "/")+1:len(fn)], func(t *testing.T) {
 			for _, test := range stateTests {
 				for _, subtest := range test.Subtests() {
@@ -689,6 +695,7 @@ func TestETHRevert(t *testing.T) {
 						continue
 					}
 
+					// Subtest within the JSON file
 					t.Run(key, func(t *testing.T) {
 						if err := test.runETHSubtest(subtest); err != nil {
 							t.Error(err)
@@ -697,6 +704,5 @@ func TestETHRevert(t *testing.T) {
 				}
 			}
 		})
-
 	}
 }

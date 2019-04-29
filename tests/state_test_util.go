@@ -233,6 +233,10 @@ func runStateTest(ruleSet RuleSet, test VmTest) error {
 }
 
 func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
+	db, _ := ethdb.NewMemDatabase()
+	statedb := makePreState(db, t.Pre)
+
+	// Putting environment variables into string mapping for running state
 	env := make(map[string]string)
 	env["currentCoinbase"] = t.Env.CurrentCoinbase
 	env["currentDifficulty"] = t.Env.CurrentDifficulty
@@ -245,23 +249,10 @@ func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 		env["currentTimestamp"] = t.Env.CurrentTimestamp.(string)
 	}
 
-	var (
-		// ret []byte
-		// gas  *big.Int
-		// err  error
-		logs vm.Logs
-	)
-
-	ruleSet := RuleSet{
-		HomesteadBlock:           new(big.Int),
-		HomesteadGasRepriceBlock: big.NewInt(2457000),
-	}
-
-	db, _ := ethdb.NewMemDatabase()
-	statedb := makePreState(db, t.Pre)
-
+	// Post state object from StateTest based on subtest
 	postState := t.Post[subtest.Fork][subtest.Index]
 
+	// Transaction data from StateTest object
 	vmTx := map[string]string{
 		"data":      t.Tx.Data[postState.Indexes.Data],
 		"gasLimit":  t.Tx.GasLimit[postState.Indexes.Gas],
@@ -270,6 +261,12 @@ func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 		"secretKey": strings.TrimPrefix(t.Tx.PrivateKey, "0x"),
 		"to":        strings.TrimPrefix(t.Tx.To, "0x"),
 		"value":     t.Tx.Value[postState.Indexes.Value],
+	}
+
+	// Hard coded RuleSet based on previous tests (should change)
+	ruleSet := RuleSet{
+		HomesteadBlock:           new(big.Int),
+		HomesteadGasRepriceBlock: big.NewInt(2457000),
 	}
 
 	// fmt.Printf("PRE: %s[%x]\n", subtest.Fork, subtest.Index)
@@ -281,6 +278,13 @@ func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 	// 	preAccounts[address] = account
 	// }
 
+	var (
+		// ret []byte
+		// gas  *big.Int
+		// err  error
+		logs vm.Logs
+	)
+
 	_, logs, _, _ = RunState(ruleSet, db, statedb, env, vmTx)
 
 	// for address := range t.Pre {
@@ -291,16 +295,6 @@ func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 	// 	fmt.Printf("%+v\n\n", account)
 	// 	fmt.Println("post transaction:")
 	// 	fmt.Printf("%+v\n", preAccounts[address])
-	// 	// fmt.Printf("\tbalance: %s --> %x\n\n", value.Balance, common.BigToHash(account.Balance()))
-	// 	// fmt.Printf("\tcode: %s --> %s\n", value.Code, "")
-	// 	// fmt.Printf("\tnonce: %s --> %s\n", value.Nonce, "")
-	// 	// fmt.Printf("\tstorage: %s", value.Storage)
-	// }
-
-	// // Compare expected and actual return
-	// rexp := common.FromHex(test.Out)
-	// if bytes.Compare(rexp, ret) != 0 {
-	// 	return fmt.Errorf("return failed. Expected %x, got %x\n ", rexp, ret)
 	// }
 
 	// Compare Post state root
