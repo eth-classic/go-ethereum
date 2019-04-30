@@ -675,6 +675,11 @@ func TestETHRevert(t *testing.T) {
 	runETHTests(t, fns)
 }
 
+func TestETHHomestead(t *testing.T) {
+	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stHomesteadSpecific", "*"))
+	runETHTests(t, fns)
+}
+
 func runETHTests(t *testing.T, fileNames []string) {
 	for _, fn := range fileNames {
 		// Fill StateTest mapping with tests from file
