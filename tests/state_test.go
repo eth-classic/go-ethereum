@@ -695,7 +695,7 @@ func runETHTests(t *testing.T, fileNames []string) {
 				for _, subtest := range test.Subtests() {
 					key := fmt.Sprintf("%s/%d", subtest.Fork, subtest.Index)
 
-					if subtest.Fork == "Constantinople" || subtest.Fork == "ConstantinopleFix" || subtest.Fork == "EIP158" {
+					if subtest.Fork == "Constantinople" || subtest.Fork == "ConstantinopleFix" {
 						// Should change how these tests are skipped
 						continue
 					}
