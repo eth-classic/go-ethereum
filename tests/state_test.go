@@ -676,7 +676,7 @@ func TestEIP150HomesteadBounds(t *testing.T) {
 // }
 
 func TestETHHomestead(t *testing.T) {
-	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stTest", "*"))
+	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stHomesteadSpecific", "*"))
 	runETHTests(t, fns)
 }
 
