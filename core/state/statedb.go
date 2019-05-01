@@ -525,13 +525,18 @@ func (s *StateDB) IntermediateRoot(deleteEmptyObjects bool) common.Hash {
 // and clears the journal as well as the refunds.
 func (s *StateDB) Finalise(deleteEmptyObjects bool) {
 	for addr := range s.stateObjectsDirty {
-		stateObject := s.stateObjects[addr]
+		stateObject, exist := s.stateObjects[addr]
+		if !exist {
+			continue
+		}
+
 		if stateObject.suicided || (deleteEmptyObjects && stateObject.empty()) {
 			s.deleteStateObject(stateObject)
 		} else {
 			stateObject.updateRoot(s.db)
 			s.updateStateObject(stateObject)
 		}
+		s.stateObjectsDirty[addr] = struct{}{}
 	}
 	// Invalidate journal because reverting across transactions is not allowed.
 	s.clearJournalAndRefund()
@@ -596,6 +601,7 @@ func (s *StateDB) CommitTo(dbw trie.DatabaseWriter, deleteEmptyObjects bool) (ro
 	// Write trie changes.
 	root, err = s.trie.CommitTo(dbw)
 	glog.V(logger.Debug).Infoln("Trie cache stats after commit", "misses", trie.CacheMisses(), "unloads", trie.CacheUnloads())
+	fmt.Printf("ROOT HASH 1: %x\n", root)
 	return root, err
 }
 

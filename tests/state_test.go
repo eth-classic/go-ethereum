@@ -670,13 +670,13 @@ func TestEIP150HomesteadBounds(t *testing.T) {
 	}
 }
 
-func TestETHRevert(t *testing.T) {
-	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stRevertTest", "*"))
-	runETHTests(t, fns)
-}
+// func TestETHRevert(t *testing.T) {
+// 	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stRevertTest", "*"))
+// 	runETHTests(t, fns)
+// }
 
 func TestETHHomestead(t *testing.T) {
-	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stHomesteadSpecific", "*"))
+	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stTest", "*"))
 	runETHTests(t, fns)
 }
 

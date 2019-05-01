@@ -95,10 +95,13 @@ func (self Log) Topics() [][]byte {
 }
 
 func makePreState(db ethdb.Database, accounts map[string]Account) *state.StateDB {
-	statedb, _ := state.New(common.Hash{}, state.NewDatabase(db))
+	sdb := state.NewDatabase(db)
+	statedb, _ := state.New(common.Hash{}, sdb)
 	for addr, account := range accounts {
 		insertAccount(statedb, addr, account)
 	}
+	root, _ := statedb.CommitTo(db, false)
+	statedb, _ = state.New(root, sdb)
 	return statedb
 }
 

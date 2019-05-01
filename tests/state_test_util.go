@@ -127,6 +127,8 @@ func benchStateTest(ruleSet RuleSet, test VmTest, env map[string]string, b *test
 	b.StartTimer()
 
 	RunState(ruleSet, db, statedb, env, test.Exec)
+
+	statedb.CommitTo(db, false)
 }
 
 func runStateTests(ruleSet RuleSet, tests map[string]VmTest, skipTests []string) error {
@@ -269,15 +271,6 @@ func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 		HomesteadGasRepriceBlock: big.NewInt(2457000),
 	}
 
-	// fmt.Printf("PRE: %s[%x]\n", subtest.Fork, subtest.Index)
-
-	// preAccounts := make(map[string]vm.Account)
-	// for address := range t.Pre {
-	// 	addr := common.HexToAddress(address)
-	// 	account := statedb.GetAccount(addr)
-	// 	preAccounts[address] = account
-	// }
-
 	var (
 		// ret []byte
 		// gas  *big.Int
@@ -287,18 +280,16 @@ func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 
 	_, logs, _, _ = RunState(ruleSet, db, statedb, env, vmTx)
 
-	// for address := range t.Pre {
-	// 	addr := common.HexToAddress(address)
-	// 	account := statedb.GetAccount(addr)
-	// 	fmt.Printf("\nACCOUNT: %s\n\n", address)
-	// 	fmt.Println("pre transaction:")
-	// 	fmt.Printf("%+v\n\n", account)
-	// 	fmt.Println("post transaction:")
-	// 	fmt.Printf("%+v\n", preAccounts[address])
-	// }
+	// Commit block
+	statedb.CommitTo(db, false)
+
+	// 0-value mining reward
+	statedb.AddBalance(common.HexToAddress(t.Env.CurrentCoinbase), new(big.Int))
+
+	// Get state root
+	root := statedb.IntermediateRoot(true)
 
 	// Compare Post state root
-	root, _ := statedb.CommitTo(db, false)
 	if root != common.BytesToHash(postState.Root.Bytes()) {
 		return fmt.Errorf("Post state root error. Expected: %x have: %x", postState.Root, root)
 	}
@@ -350,7 +341,6 @@ func RunState(ruleSet RuleSet, db ethdb.Database, statedb *state.StateDB, env, t
 	if core.IsNonceErr(err) || core.IsInvalidTxErr(err) || core.IsGasLimitErr(err) {
 		statedb.RevertToSnapshot(snapshot)
 	}
-	statedb.CommitTo(db, false)
 
 	return ret, vmenv.state.Logs(), vmenv.Gas, err
 }
