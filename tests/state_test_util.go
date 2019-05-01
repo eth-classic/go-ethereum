@@ -280,14 +280,17 @@ func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 
 	_, logs, _, _ = RunState(ruleSet, db, statedb, env, vmTx)
 
+	// Only tests that are < EIP158 are Homestead
+	deleteEmptyObjects := subtest.Fork != "Homestead"
+
 	// Commit block
-	statedb.CommitTo(db, false)
+	statedb.CommitTo(db, deleteEmptyObjects)
 
 	// 0-value mining reward
 	statedb.AddBalance(common.HexToAddress(t.Env.CurrentCoinbase), new(big.Int))
 
 	// Get state root
-	root := statedb.IntermediateRoot(true)
+	root := statedb.IntermediateRoot(deleteEmptyObjects)
 
 	// Compare Post state root
 	if root != common.BytesToHash(postState.Root.Bytes()) {
