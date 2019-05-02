@@ -156,12 +156,7 @@ type RuleSet struct {
 	ExplosionBlock           *big.Int
 }
 
-// StateTest checks transaction processing without block context.
-// See https://github.com/ethereum/EIPs/issues/176 for the test format specification.
-// type StateTest struct {
-// 	json stJSON
-// }
-
+// StateTest object that matches the General State Test json file
 type StateTest struct {
 	Env  VmEnv                    `json:"env"`
 	Pre  map[string]Account       `json:"pre"`
@@ -169,21 +164,6 @@ type StateTest struct {
 	Out  string                   `json:"out"`
 	Post map[string][]stPostState `json:"post"`
 }
-
-// // GenesisAlloc specifies the initial state that is part of the genesis block.
-// type GenesisAlloc map[common.Address]GenesisAccount
-
-// func (ga *GenesisAlloc) UnmarshalJSON(data []byte) error {
-// 	m := make(map[common.UnprefixedAddress]GenesisAccount)
-// 	if err := json.Unmarshal(data, &m); err != nil {
-// 		return err
-// 	}
-// 	*ga = make(GenesisAlloc)
-// 	for addr, a := range m {
-// 		(*ga)[common.Address(addr)] = a
-// 	}
-// 	return nil
-// }
 
 // GenesisAccount is an account in the state of the genesis block.
 type GenesisAccount struct {
@@ -203,14 +183,6 @@ type stPostState struct {
 		Value int `json:"value"`
 	}
 }
-
-// type stEnv struct {
-// 	Coinbase   string `json:"currentCoinbase"   gencodec:"required"`
-// 	Difficulty string `json:"currentDifficulty" gencodec:"required"`
-// 	GasLimit   string `json:"currentGasLimit"   gencodec:"required"`
-// 	Number     string `json:"currentNumber"     gencodec:"required"`
-// 	Timestamp  string `json:"currentTimestamp"  gencodec:"required"`
-// }
 
 type stTransaction struct {
 	GasPrice   string   `json:"gasPrice"`
