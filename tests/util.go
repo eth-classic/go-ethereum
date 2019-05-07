@@ -196,11 +196,11 @@ type stTransaction struct {
 }
 
 func (r RuleSet) IsHomestead(n *big.Int) bool {
-	return n.Cmp(r.HomesteadBlock) >= 0
+	return r.HomesteadBlock != nil && n.Cmp(r.HomesteadBlock) >= 0
 }
 
 func (r RuleSet) IsAtlantis(n *big.Int) bool {
-	return n.Cmp(r.AtlantisBlock) >= 0
+	return r.AtlantisBlock != nil && n.Cmp(r.AtlantisBlock) >= 0
 }
 
 func (r RuleSet) GasTable(num *big.Int) *vm.GasTable {
