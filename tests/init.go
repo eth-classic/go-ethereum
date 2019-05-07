@@ -131,11 +131,14 @@ var Forks = map[string]RuleSet{
 		HomesteadBlock: big.NewInt(0),
 	},
 	"EIP150": {
-		HomesteadBlock: big.NewInt(0),
+		HomesteadBlock:           big.NewInt(0),
+		HomesteadGasRepriceBlock: big.NewInt(0),
 	},
 	"Byzantium": {
-		HomesteadBlock: big.NewInt(0),
-		AtlantisBlock:  big.NewInt(0),
+		HomesteadBlock:           big.NewInt(0),
+		HomesteadGasRepriceBlock: big.NewInt(0),
+		DiehardBlock:             big.NewInt(0),
+		AtlantisBlock:            big.NewInt(0),
 	},
 }
 
