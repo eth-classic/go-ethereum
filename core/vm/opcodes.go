@@ -202,8 +202,8 @@ const (
 	RETURN
 	DELEGATECALL
 
-	REVERT  = 0xfd
-	SUICIDE = 0xff
+	STATICCALL = 0xfa
+	SUICIDE    = 0xff
 )
 
 // Since the opcodes aren't all in order we can't use a regular slice
@@ -356,7 +356,7 @@ var opCodeToString = map[OpCode]string{
 	RETURN:       "RETURN",
 	CALLCODE:     "CALLCODE",
 	DELEGATECALL: "DELEGATECALL",
-	REVERT:       "REVERT",
+	STATICCALL:   "STATICCALL",
 	SUICIDE:      "SUICIDE",
 
 	PUSH: "PUSH",
@@ -407,6 +407,7 @@ var stringToOp = map[string]OpCode{
 	"CALLDATASIZE": CALLDATASIZE,
 	"CALLDATACOPY": CALLDATACOPY,
 	"DELEGATECALL": DELEGATECALL,
+	"STATICCALL":   STATICCALL,
 	"CODESIZE":     CODESIZE,
 	"CODECOPY":     CODECOPY,
 	"GASPRICE":     GASPRICE,
