@@ -169,6 +169,9 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 					fallthrough
 				case STOP: // Stop the contract
 					return nil, nil
+				case STATICCALL:
+					//Call StaticCall
+					return opStaticCall(nil, evm.env, contract, mem, stack)
 				}
 			}
 		} else {
