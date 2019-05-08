@@ -17,17 +17,20 @@
 package core
 
 import (
+	"errors"
 	"fmt"
 	"math/big"
 
 	"github.com/eth-classic/go-ethereum/common"
 	"github.com/eth-classic/go-ethereum/core/vm"
 	"github.com/eth-classic/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/params"
 )
 
 var (
 	callCreateDepthMax = 1024 // limit call/create stack
 	errCallCreateDepth = fmt.Errorf("Max call depth exceeded (%d)", callCreateDepthMax)
+	ErrDepth           = errors.New("max call depth exceeded")
 )
 
 // Call executes within the given contract
@@ -49,6 +52,13 @@ func DelegateCall(env vm.Environment, caller vm.ContractRef, addr common.Address
 	originAddr := env.Origin()
 	callerValue := caller.Value()
 	ret, _, err = execDelegateCall(env, caller, &originAddr, &callerAddr, &addr, env.Db().GetCodeHash(addr), input, env.Db().GetCode(addr), gas, gasPrice, callerValue)
+	return ret, err
+}
+
+//StaticCall
+func StaticCall(env vm.Environment, caller vm.ContractRef, addr common.Address, input []byte, gas, gasPrice *big.Int) (ret []byte, err error) {
+	callerAddr := caller.Address()
+	ret, err = execStaticCall(env, caller, &callerAddr, input, gas, gasPrice)
 	return ret, err
 }
 
@@ -172,6 +182,52 @@ func execDelegateCall(env vm.Environment, caller vm.ContractRef, originAddr, toA
 	}
 
 	return ret, addr, err
+}
+
+// StaticCall executes the contract associated with the addr with the given input
+// as parameters while disallowing any modifications to the state during the call.
+// Opcodes that attempt to perform such modifications will result in exceptions
+// instead of performing the modifications.
+func execStaticCall(env vm.Environment, caller vm.ContractRef, addr *common.Address, input []byte, gas, gasPrice *big.Int) (ret []byte, err error) {
+	evm := env.Vm()
+
+	//evm.vmConfig.NoRecursion not necessary?
+	if env.Depth() > 0 {
+		return nil, nil
+	}
+
+	// Fail if we're trying to execute above the call depth limit
+	if env.Depth() > int(params.CallCreateDepth) {
+		return nil, ErrDepth
+	}
+
+	//Account Ref Correct?
+	var (
+		to       = env.Db().GetAccount(*addr)
+		snapshot = env.SnapshotDatabase()
+	)
+	// Initialise a new contract and set the code that is to be used by the EVM.
+	// The contract is a scoped environment for this execution context only.
+	contract := vm.NewContract(caller, to, new(big.Int), gas, gasPrice).AsDelegates
+	contract.SetCallCode(&addr, evm.StateDB.GetCodeHash(addr), evm.StateDB.GetCode(addr))
+
+	// We do an AddBalance of zero here, just in order to trigger a touch.
+	// This doesn't matter on Mainnet, where all empties are gone at the time of Byzantium,
+	// but is the correct thing to do and matters on other networks, in tests, and potential
+	// future scenarios
+	evm.StateDB.AddBalance(addr, bigZero)
+
+	// When an error was returned by the EVM or when setting the creation code
+	// above we revert to the snapshot and consume any gas remaining. Additionally
+	// when we're in Homestead this also counts for code storage gas errors.
+	ret, err = run(evm, contract, input, true)
+	if err != nil {
+		evm.StateDB.RevertToSnapshot(snapshot)
+		if err != errExecutionReverted {
+			contract.UseGas(contract.Gas)
+		}
+	}
+	return ret, contract.Gas, err
 }
 
 // generic transfer method

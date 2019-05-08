@@ -696,6 +696,11 @@ func TestETHHomestead(t *testing.T) {
 	runETHTests(t, fns, make(map[string]string))
 }
 
+func TestETHStaticCall(t *testing.T) {
+	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stStaticCall", "*"))
+	runETHTests(t, fns, make(map[string]string))
+}
+
 func runETHTests(t *testing.T, fileNames []string, skipTests map[string]string) {
 	unsupportedForkConfigs := map[string]bool{
 		"Constantinople":               true,
