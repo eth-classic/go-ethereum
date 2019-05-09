@@ -17,17 +17,13 @@
 package vm
 
 import (
-	"errors"
 	"math/big"
 
 	"github.com/eth-classic/go-ethereum/common"
 	"github.com/eth-classic/go-ethereum/crypto"
 )
 
-var (
-	callStipend          = big.NewInt(2300) // Free gas given at beginning of call.
-	errExecutionReverted = errors.New("evm: execution reverted")
-)
+var callStipend = big.NewInt(2300) // Free gas given at beginning of call.
 
 type instrFn func(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack)
 
@@ -517,23 +513,23 @@ func opDelegateCall(instr instruction, pc *uint64, env Environment, contract *Co
 	if err == nil || err == ErrRevert {
 		memory.Set(outOffset.Uint64(), outSize.Uint64(), ret)
 	}
+
 }
 
-func opStaticCall(pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
+func opStaticCall(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) {
 	// Pop other call parameters.
 	gas, addr, inOffset, inSize, outOffset, outSize := stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop()
 	toAddr := common.BigToAddress(addr)
 	// Get arguments from the memory.
 	args := memory.Get(inOffset.Int64(), inSize.Int64())
 
-	ret, err := env.StaticCall(contract, toAddr, args, gas)
+	ret, err := env.StaticCall(contract, toAddr, args, gas, contract.Price)
 	if err != nil {
 		stack.push(new(big.Int))
 	} else {
 		stack.push(big.NewInt(1))
 		memory.Set(outOffset.Uint64(), outSize.Uint64(), ret)
 	}
-	return ret, nil
 }
 
 func opSuicide(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) {

@@ -167,7 +167,7 @@ func newJumpTable(ruleset RuleSet, blockNumber *big.Int) vmJumpTable {
 	jumpTable[JUMP] = jumpPtr{nil, true}
 	jumpTable[JUMPI] = jumpPtr{nil, true}
 	jumpTable[STOP] = jumpPtr{nil, true}
-	jumpTable[STATICCALL] = jumpPtr{nil, true}
+	jumpTable[STATICCALL] = jumpPtr{opStaticCall, true}
 
 	return jumpTable
 }

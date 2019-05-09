@@ -17,7 +17,6 @@
 package core
 
 import (
-	"errors"
 	"fmt"
 	"math/big"
 
@@ -28,9 +27,9 @@ import (
 )
 
 var (
+	bigZero            = new(big.Int)
 	callCreateDepthMax = 1024 // limit call/create stack
 	errCallCreateDepth = fmt.Errorf("Max call depth exceeded (%d)", callCreateDepthMax)
-	ErrDepth           = errors.New("max call depth exceeded")
 )
 
 // Call executes within the given contract
@@ -223,7 +222,7 @@ func execStaticCall(env vm.Environment, caller vm.ContractRef, addr *common.Addr
 
 	// Fail if we're trying to execute above the call depth limit
 	if env.Depth() > int(params.CallCreateDepth) {
-		return nil, ErrDepth
+		return nil, errCallCreateDepth
 	}
 
 	//Account Ref Correct?
@@ -233,26 +232,26 @@ func execStaticCall(env vm.Environment, caller vm.ContractRef, addr *common.Addr
 	)
 	// Initialise a new contract and set the code that is to be used by the EVM.
 	// The contract is a scoped environment for this execution context only.
-	contract := vm.NewContract(caller, to, new(big.Int), gas, gasPrice).AsDelegates
-	contract.SetCallCode(&addr, evm.StateDB.GetCodeHash(addr), evm.StateDB.GetCode(addr))
+	contract := vm.NewContract(caller, to, new(big.Int), gas, gasPrice).AsDelegate()
+	contract.SetCallCode(addr, env.Db().GetCodeHash(*addr), env.Db().GetCode(*addr))
 
 	// We do an AddBalance of zero here, just in order to trigger a touch.
 	// This doesn't matter on Mainnet, where all empties are gone at the time of Byzantium,
 	// but is the correct thing to do and matters on other networks, in tests, and potential
 	// future scenarios
-	evm.StateDB.AddBalance(addr, bigZero)
+	env.Db().AddBalance(*addr, bigZero)
 
 	// When an error was returned by the EVM or when setting the creation code
 	// above we revert to the snapshot and consume any gas remaining. Additionally
 	// when we're in Homestead this also counts for code storage gas errors.
-	ret, err = run(evm, contract, input, true)
+	ret, err = evm.Run(contract, input)
 	if err != nil {
-		evm.StateDB.RevertToSnapshot(snapshot)
-		if err != errExecutionReverted {
-			contract.UseGas(contract.Gas)
-		}
+		env.RevertToSnapshot(snapshot)
+		// if err != errExecutionReverted {
+		contract.UseGas(contract.Gas)
+		// }
 	}
-	return ret, contract.Gas, err
+	return ret, err
 }
 
 // generic transfer method
