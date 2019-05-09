@@ -77,7 +77,7 @@ type Environment interface {
 	// Create a new contract
 	Create(me ContractRef, data []byte, gas, price, value *big.Int) ([]byte, common.Address, error)
 	// Static call
-	StaticCall(caller ContractRef, addr common.Address, input []byte, gas *big.Int) (ret []byte, err error)
+	StaticCall(caller ContractRef, addr common.Address, input []byte, gas *big.Int, gasPrice *big.Int) (ret []byte, err error)
 }
 
 // Vm is the basic interface for an implementation of the EVM.

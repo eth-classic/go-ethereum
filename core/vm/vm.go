@@ -169,9 +169,6 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 					fallthrough
 				case STOP: // Stop the contract
 					return nil, nil
-				case STATICCALL:
-					//Call StaticCall
-					return opStaticCall(nil, evm.env, contract, mem, stack)
 				}
 			}
 		} else {
@@ -370,6 +367,24 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 		stack.data[stack.len()-1] = cg
 		gas.Add(gas, cg)
 
+	case STATICCALL:
+		gas.Set(gasTable.Calls)
+
+		x := calcMemSize(stack.data[stack.len()-5], stack.data[stack.len()-6])
+		y := calcMemSize(stack.data[stack.len()-3], stack.data[stack.len()-4])
+
+		newMemSize = common.BigMax(x, y)
+
+		quadMemGas(mem, newMemSize, gas)
+
+		cg := callGas(gasTable, contract.Gas, gas, stack.data[stack.len()-1])
+		// Replace the stack item with the new gas calculation. This means that
+		// either the original item is left on the stack or the item is replaced by:
+		// (availableGas - gas) * 63 / 64
+		// We replace the stack item so that it's available when the opCall instruction is
+		// called.
+		stack.data[stack.len()-1] = cg
+		gas.Add(gas, cg)
 	}
 
 	return newMemSize, gas, nil
