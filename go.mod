@@ -6,8 +6,6 @@ require (
 	github.com/denisbrodbeck/machineid v0.8.0 //mark
 	github.com/eth-classic/benchmark v0.0.0-20190401191651-0f5bf26f7cd8
 	github.com/eth-classic/ethash v0.0.0-20190401191819-b3fdb17512de
-	github.com/eth-classic/go-ethereum/accounts/abi/bind v0.0.0-20190521151733-aaaa9d2e032a
-	github.com/ethereum/go-ethereum v1.8.27 // indirect
 	github.com/fatih/color v1.7.0
 	github.com/gizak/termui v2.2.0+incompatible
 	github.com/hashicorp/golang-lru v0.5.1
