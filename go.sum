@@ -9,8 +9,6 @@ github.com/eth-classic/benchmark v0.0.0-20190401191651-0f5bf26f7cd8 h1:GIDGsatfT
 github.com/eth-classic/benchmark v0.0.0-20190401191651-0f5bf26f7cd8/go.mod h1:/HC5hx0QxBbuFLsGiesBHuu8bAvHcGHA6ELxY8UCwBE=
 github.com/eth-classic/ethash v0.0.0-20190401191819-b3fdb17512de h1:pITmUG7+V+zKZuytaz1p92qJafw5tQDOdp5ir5L9Eic=
 github.com/eth-classic/ethash v0.0.0-20190401191819-b3fdb17512de/go.mod h1:W/nJfwtfsIfe4wL6cn4/MB251HfunQ+2YspZFvQ1lXA=
-github.com/ethereum/go-ethereum v1.8.27 h1:d+gkiLaBDk5fn3Pe/xNVaMrB/ozI+AUB2IlVBp29IrY=
-github.com/ethereum/go-ethereum v1.8.27/go.mod h1:PwpWDrCLZrV+tfrhqqF6kPknbISMHaJv9Ln3kPCZLwY=
 github.com/fatih/color v1.7.0 h1:DkWD4oS2D8LGGgTQ6IvwJJXSL5Vp2ffcQg58nFV38Ys=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
