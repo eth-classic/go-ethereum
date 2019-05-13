@@ -385,6 +385,15 @@ func (self *Env) Create(caller vm.ContractRef, data []byte, gas, price, value *b
 	}
 }
 
+func (self *Env) StaticCall(caller vm.ContractRef, addr common.Address, data []byte, gas *big.Int, price *big.Int) (ret []byte, err error) {
+	if self.vmTest && self.depth > 0 {
+		caller.ReturnGas(gas, price)
+
+		return nil, nil
+	}
+	return core.StaticCall(self, caller, addr, data, gas, price)
+}
+
 type Message struct {
 	from              common.Address
 	to                *common.Address
