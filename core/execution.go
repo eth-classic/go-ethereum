@@ -140,12 +140,12 @@ func exec(env vm.Environment, caller vm.ContractRef, address, codeAddr *common.A
 	// When an error was returned by the EVM or when setting the creation code
 	// above we revert to the snapshot and consume any gas remaining. Additionally
 	// when we're in homestead this also counts for code storage gas errors.
-	if maxCodeSizeExceeded ||(err != nil && (env.RuleSet().IsHomestead(env.BlockNumber()) || err != vm.CodeStoreOutOfGasError)) {
+	if createAccount && maxCodeSizeExceeded ||(err != nil && (env.RuleSet().IsHomestead(env.BlockNumber()) || err != vm.CodeStoreOutOfGasError)) {
 		contract.UseGas(contract.Gas)
 		env.RevertToSnapshot(snapshotPreTransfer)
 	}
 
-	// when there are no errors but the maxCodeSize is still exceeded, makes more sense than just failing
+	// When there are no errors but the maxCodeSize is still exceeded, makes more sense than just failing
 	if maxCodeSizeExceeded && err == nil {
 		err = errMaxCodeSizeExceeded
 	}
