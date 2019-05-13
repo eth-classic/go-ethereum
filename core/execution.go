@@ -28,6 +28,7 @@ import (
 var (
 	callCreateDepthMax = 1024 // limit call/create stack
 	errCallCreateDepth = fmt.Errorf("Max call depth exceeded (%d)", callCreateDepthMax)
+	maxCodeSize = 24576
 )
 
 // Call executes within the given contract
@@ -57,7 +58,9 @@ func Create(env vm.Environment, caller vm.ContractRef, code []byte, gas, gasPric
 	ret, address, err = exec(env, caller, nil, nil, crypto.Keccak256Hash(code), nil, code, gas, gasPrice, value)
 	// Here we get an error if we run into maximum stack depth,
 	// See: https://github.com/ethereum/yellowpaper/pull/131
-	// and YP definitions for CREATE instruction
+	// and YP definitions for CREATE
+
+	//if there's an error we return nothing
 	if err != nil {
 		return nil, address, err
 	}
@@ -114,11 +117,12 @@ func exec(env vm.Environment, caller vm.ContractRef, address, codeAddr *common.A
 	defer contract.Finalise()
 
 	ret, err = evm.Run(contract, input)
+	maxCodeSizeExceeded := len(ret) > maxCodeSize
 	// if the contract creation ran successfully and no errors were returned
 	// calculate the gas required to store the code. If the code could not
 	// be stored due to not enough gas set an error and let it be handled
 	// by the error checking condition below.
-	if err == nil && createAccount {
+	if err == nil && createAccount && !maxCodeSizeExceeded {
 		dataGas := big.NewInt(int64(len(ret)))
 		// create data gas
 		dataGas.Mul(dataGas, big.NewInt(200))
@@ -132,9 +136,8 @@ func exec(env vm.Environment, caller vm.ContractRef, address, codeAddr *common.A
 	// When an error was returned by the EVM or when setting the creation code
 	// above we revert to the snapshot and consume any gas remaining. Additionally
 	// when we're in homestead this also counts for code storage gas errors.
-	if err != nil && (env.RuleSet().IsHomestead(env.BlockNumber()) || err != vm.CodeStoreOutOfGasError) {
+	if maxCodeSizeExceeded ||(err != nil && (env.RuleSet().IsHomestead(env.BlockNumber()) || err != vm.CodeStoreOutOfGasError)) {
 		contract.UseGas(contract.Gas)
-
 		env.RevertToSnapshot(snapshotPreTransfer)
 	}
 
@@ -165,9 +168,9 @@ func execDelegateCall(env vm.Environment, caller vm.ContractRef, originAddr, toA
 	defer contract.Finalise()
 
 	ret, err = evm.Run(contract, input)
+
 	if err != nil {
 		contract.UseGas(contract.Gas)
-
 		env.RevertToSnapshot(snapshot)
 	}
 
