@@ -198,8 +198,14 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 		// if suicide is not nil: homestead gas fork
 		if gasTable.CreateBySuicide != nil {
 			gas.Set(gasTable.Suicide)
-			if !env.Db().Exist(common.BigToAddress(stack.data[len(stack.data)-1])) {
-				gas.Add(gas, gasTable.CreateBySuicide)
+
+			if env.RuleSet().IsAtlantis(env.BlockNumber()) {
+				if !env.Db().Empty(common.BigToAddress(stack.data[len(stack.data)-1])) && statedb.GetBalance(contract.Address()).BitLen() > 0 {
+					gas.Add(gas, gasTable.CreateBySuicide)
+
+				} else if !env.Db().Exist(common.BigToAddress(stack.data[len(stack.data)-1])) {
+					gas.Add(gas, gasTable.CreateBySuicide)
+				}
 			}
 		}
 
@@ -324,8 +330,12 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 		gas.Set(gasTable.Calls)
 
 		if op == CALL {
-			if !env.Db().Exist(common.BigToAddress(stack.data[stack.len()-2])) {
-				gas.Add(gas, big.NewInt(25000))
+			if env.RuleSet().IsAtlantis(env.BlockNumber()){
+				if ((env.Db().Empty(common.BigToAddress(stack.data[stack.len()-2]))) && (len(stack.data[stack.len()-3].Bytes()) > 0)) {
+					gas.Add(gas, big.NewInt(25000))
+				}
+			} else if !env.Db().Exist(common.BigToAddress(stack.data[stack.len()-2])) {
+					gas.Add(gas, big.NewInt(25000))
 			}
 		}
 		if len(stack.data[stack.len()-3].Bytes()) > 0 {
