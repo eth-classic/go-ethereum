@@ -26,9 +26,39 @@ import (
 	"github.com/eth-classic/go-ethereum/logger/glog"
 )
 
+var (
+	big0      = big.NewInt(0)
+	big1      = big.NewInt(1)
+	big4      = big.NewInt(4)
+	big8      = big.NewInt(8)
+	big16     = big.NewInt(16)
+	big32     = big.NewInt(32)
+	big64     = big.NewInt(64)
+	big96     = big.NewInt(96)
+	big480    = big.NewInt(480)
+	big1024   = big.NewInt(1024)
+	big3072   = big.NewInt(3072)
+	big199680 = big.NewInt(199680)
+)
+
+const (
+	EcrecoverGas            uint64 = 3000   // Elliptic curve sender recovery gas price
+	Sha256BaseGas           uint64 = 60     // Base price for a SHA256 operation
+	Sha256PerWordGas        uint64 = 12     // Per-word price for a SHA256 operation
+	Ripemd160BaseGas        uint64 = 600    // Base price for a RIPEMD160 operation
+	Ripemd160PerWordGas     uint64 = 120    // Per-word price for a RIPEMD160 operation
+	IdentityBaseGas         uint64 = 15     // Base price for a data copy operation
+	IdentityPerWordGas      uint64 = 3      // Per-work price for a data copy operation
+	ModExpQuadCoeffDiv      uint64 = 20     // Divisor for the quadratic particle of the big int modular exponentiation
+	Bn256AddGas             uint64 = 500    // Gas needed for an elliptic curve addition
+	Bn256ScalarMulGas       uint64 = 40000  // Gas needed for an elliptic curve scalar multiplication
+	Bn256PairingBaseGas     uint64 = 100000 // Base price for an elliptic curve pairing check
+	Bn256PairingPerPointGas uint64 = 80000  // Per-point price for an elliptic curve pairing check
+)
+
 // PrecompiledAccount represents a native ethereum contract
 type PrecompiledAccount struct {
-	Gas func(l int) *big.Int
+	Gas func(in []byte) *big.Int
 	fn  func(in []byte) []byte
 }
 
@@ -45,45 +75,102 @@ var Precompiled = PrecompiledContracts()
 func PrecompiledContracts() map[string]*PrecompiledAccount {
 	return map[string]*PrecompiledAccount{
 		// ECRECOVER
-		string(common.LeftPadBytes([]byte{1}, 20)): {func(l int) *big.Int {
+		string(common.LeftPadBytes([]byte{1}, 20)): {func(in []byte) *big.Int {
 			return big.NewInt(3000)
 		}, ecrecoverFunc},
 
 		// SHA256
-		string(common.LeftPadBytes([]byte{2}, 20)): {func(l int) *big.Int {
+		string(common.LeftPadBytes([]byte{2}, 20)): {func(in []byte) *big.Int {
+			l := len(in)
 			n := big.NewInt(int64(l+31) / 32)
 			n.Mul(n, big.NewInt(12))
 			return n.Add(n, big.NewInt(60))
 		}, sha256Func},
 
 		// RIPEMD160
-		string(common.LeftPadBytes([]byte{3}, 20)): {func(l int) *big.Int {
+		string(common.LeftPadBytes([]byte{3}, 20)): {func(in []byte) *big.Int {
+			l := len(in)
 			n := big.NewInt(int64(l+31) / 32)
 			n.Mul(n, big.NewInt(120))
 			return n.Add(n, big.NewInt(600))
 		}, ripemd160Func},
 
-		string(common.LeftPadBytes([]byte{4}, 20)): {func(l int) *big.Int {
+		string(common.LeftPadBytes([]byte{4}, 20)): {func(in []byte) *big.Int {
+			l := len(in)
 			n := big.NewInt(int64(l+31) / 32)
 			n.Mul(n, big.NewInt(3))
 			return n.Add(n, big.NewInt(15))
 		}, memCpy},
 
-		// string(common.LeftPadBytes([]byte{5}, 20)): {func(l int) *big.Int {
-		// 	n := big.NewInt(int64(l+31) / 32)
-		// 	n.Mul(n, big.NewInt(3))
-		// 	return n.Add(n, big.NewInt(20))
-		// }, bigModExp},
+		string(common.LeftPadBytes([]byte{5}, 20)): {func(in []byte) *big.Int {
+			var (
+				baseLen = new(big.Int).SetBytes(getData(in, big.NewInt(0), big32))
+				expLen  = new(big.Int).SetBytes(getData(in, big32, big32))
+				modLen  = new(big.Int).SetBytes(getData(in, big64, big32))
+			)
+			if len(in) > 96 {
+				in = in[96:]
+			} else {
+				in = in[:0]
+			}
+			// Retrieve the head 32 bytes of exp for the adjusted exponent length
+			var expHead *big.Int
+			if big.NewInt(int64(len(in))).Cmp(baseLen) <= 0 {
+				expHead = new(big.Int)
+			} else {
+				if expLen.Cmp(big32) > 0 {
+					expHead = new(big.Int).SetBytes(getData(in, baseLen, big32))
+				} else {
+					expHead = new(big.Int).SetBytes(getData(in, baseLen, expLen))
+				}
+			}
+			// Calculate the adjusted exponent length
+			var msb int
+			if bitlen := expHead.BitLen(); bitlen > 0 {
+				msb = bitlen - 1
+			}
+			adjExpLen := new(big.Int)
+			if expLen.Cmp(big32) > 0 {
+				adjExpLen.Sub(expLen, big32)
+				adjExpLen.Mul(big8, adjExpLen)
+			}
+			adjExpLen.Add(adjExpLen, big.NewInt(int64(msb)))
 
-		string(common.LeftPadBytes([]byte{6}, 20)): {func(l int) *big.Int {
+			// Calculate the gas cost of the operation
+			gas := new(big.Int).Set(common.BigMax(modLen, baseLen))
+			switch {
+			case gas.Cmp(big64) <= 0:
+				gas.Mul(gas, gas)
+			case gas.Cmp(big1024) <= 0:
+				gas = new(big.Int).Add(
+					new(big.Int).Div(new(big.Int).Mul(gas, gas), big4),
+					new(big.Int).Sub(new(big.Int).Mul(big96, gas), big3072),
+				)
+			default:
+				gas = new(big.Int).Add(
+					new(big.Int).Div(new(big.Int).Mul(gas, gas), big16),
+					new(big.Int).Sub(new(big.Int).Mul(big480, gas), big199680),
+				)
+			}
+			gas.Mul(gas, common.BigMax(adjExpLen, big1))
+			gas.Div(gas, new(big.Int).SetUint64(ModExpQuadCoeffDiv))
+
+			if gas.BitLen() > 64 {
+				return big.NewInt(1 << 63 - 1)
+			}
+			return gas
+		}, bigModExp},
+
+		string(common.LeftPadBytes([]byte{6}, 20)): {func(in []byte) *big.Int {
 			return big.NewInt(500)
 		}, bn256Add},
 
-		string(common.LeftPadBytes([]byte{7}, 20)): {func(l int) *big.Int {
+		string(common.LeftPadBytes([]byte{7}, 20)): {func(in []byte) *big.Int {
 			return big.NewInt(40000)
 		}, bn256ScalarMul},
 
-		string(common.LeftPadBytes([]byte{8}, 20)): {func(l int) *big.Int {
+		string(common.LeftPadBytes([]byte{8}, 20)): {func(in []byte) *big.Int {
+			l := len(in)
 			n := big.NewInt(100000) 
 			p := big.NewInt(int64(l/192))
 			p.Mul(p, big.NewInt(80000))
@@ -138,7 +225,33 @@ func memCpy(in []byte) []byte {
 
 // TODO
 func bigModExp(in []byte) []byte {
-	return nil
+	var (
+		baseLen = new(big.Int).SetBytes(getData(in, big0, big32))
+		expLen  = new(big.Int).SetBytes(getData(in, big32, big32))
+		modLen  = new(big.Int).SetBytes(getData(in, big64, big32))
+	)
+
+	if len(in) > 96 {
+		in = in[96:]
+	} else {
+		in = in[:0]
+	}
+
+	// Handle a special case when both the base and mod length is zero
+	if baseLen.Cmp(big0) == 0 && modLen.Cmp(big0) == 0 {
+		return []byte{}
+	}
+	// Retrieve the operands and execute the exponentiation
+	var (
+		base = new(big.Int).SetBytes(getData(in, big0, baseLen))
+		exp  = new(big.Int).SetBytes(getData(in, baseLen, expLen))
+		mod  = new(big.Int).SetBytes(getData(in, big.NewInt(0).Add(baseLen, expLen), modLen))
+	)
+	if mod.BitLen() == 0 {
+		// Modulo 0 is undefined, return zero
+		return common.LeftPadBytes([]byte{}, int(modLen.Int64()))
+	}
+	return common.LeftPadBytes(base.Exp(base, exp, mod).Bytes(), int(modLen.Int64()))
 }
 
 var (

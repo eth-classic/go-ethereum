@@ -336,18 +336,18 @@ var bn256PairingTests = []precompiledTest{
 	},
 }
 
-func testPrecompiled(addr string, test precompiledTest, t *testing.T) {
-	p := PrecompiledContracts()[addr]
-	in := common.Hex2Bytes(test.input)
-	contract := NewContract(ContractRef(common.HexToAddress("1337")), nil, new(big.Int), p.RequiredGas(in), big.NewInt(100))
-	t.Run(fmt.Sprintf("%s-Gas=%d", test.name, contract.Gas), func(t *testing.T) {
-		if res, err := RunPrecompiledContract(p, in, contract); err != nil {
-			t.Error(err)
-		} else if common.Bytes2Hex(res) != test.expected {
-			t.Errorf("Expected %v, got %v", test.expected, common.Bytes2Hex(res))
-		}
-	})
-}
+// func testPrecompiled(addr string, test precompiledTest, t *testing.T) {
+// 	p := PrecompiledContracts()[addr]
+// 	in := common.Hex2Bytes(test.input)
+// 	contract := NewContract(ContractRef(common.HexToAddress("1337")), nil, new(big.Int), p.RequiredGas(in), big.NewInt(100))
+// 	t.Run(fmt.Sprintf("%s-Gas=%d", test.name, contract.Gas), func(t *testing.T) {
+// 		if res, err := RunPrecompiledContract(p, in, contract); err != nil {
+// 			t.Error(err)
+// 		} else if common.Bytes2Hex(res) != test.expected {
+// 			t.Errorf("Expected %v, got %v", test.expected, common.Bytes2Hex(res))
+// 		}
+// 	})
+// }
 
 // func benchmarkPrecompiled(addr string, test precompiledTest, bench *testing.B) {
 // 	if test.noBenchmark {
