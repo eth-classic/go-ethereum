@@ -28,7 +28,9 @@ import (
 var (
 	callCreateDepthMax = 1024 // limit call/create stack
 	errCallCreateDepth = fmt.Errorf("Max call depth exceeded (%d)", callCreateDepthMax)
+
 	maxCodeSize = 24576
+	errMaxCodeSizeExceeded = fmt.Errorf("Max Code Size exceeded (%d)", maxCodeSize)
 )
 
 // Call executes within the given contract
@@ -117,6 +119,8 @@ func exec(env vm.Environment, caller vm.ContractRef, address, codeAddr *common.A
 	defer contract.Finalise()
 
 	ret, err = evm.Run(contract, input)
+
+	//will need to add  && env.RuleSet().isAtlantis(evm.Blocknumber) to this after that gets merged
 	maxCodeSizeExceeded := len(ret) > maxCodeSize
 	// if the contract creation ran successfully and no errors were returned
 	// calculate the gas required to store the code. If the code could not
@@ -139,6 +143,11 @@ func exec(env vm.Environment, caller vm.ContractRef, address, codeAddr *common.A
 	if maxCodeSizeExceeded ||(err != nil && (env.RuleSet().IsHomestead(env.BlockNumber()) || err != vm.CodeStoreOutOfGasError)) {
 		contract.UseGas(contract.Gas)
 		env.RevertToSnapshot(snapshotPreTransfer)
+	}
+
+	// when there are no errors but the maxCodeSize is still exceeded, makes more sense than just failing
+	if maxCodeSizeExceeded && err == nil {
+		err = errMaxCodeSizeExceeded
 	}
 
 	return ret, addr, err
