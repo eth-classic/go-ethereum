@@ -95,6 +95,7 @@ func PrecompiledContracts() map[string]*PrecompiledAccount {
 			return n.Add(n, big.NewInt(600))
 		}, ripemd160Func},
 
+		// memCpy
 		string(common.LeftPadBytes([]byte{4}, 20)): {func(in []byte) *big.Int {
 			l := len(in)
 			n := big.NewInt(int64(l+31) / 32)
@@ -102,6 +103,7 @@ func PrecompiledContracts() map[string]*PrecompiledAccount {
 			return n.Add(n, big.NewInt(15))
 		}, memCpy},
 
+		// bigModExp
 		string(common.LeftPadBytes([]byte{5}, 20)): {func(in []byte) *big.Int {
 			var (
 				baseLen = new(big.Int).SetBytes(getData(in, big.NewInt(0), big32))
@@ -161,14 +163,17 @@ func PrecompiledContracts() map[string]*PrecompiledAccount {
 			return gas
 		}, bigModExp},
 
+		// bn256Add
 		string(common.LeftPadBytes([]byte{6}, 20)): {func(in []byte) *big.Int {
 			return big.NewInt(500)
 		}, bn256Add},
 
+		// bn256ScalarMul
 		string(common.LeftPadBytes([]byte{7}, 20)): {func(in []byte) *big.Int {
 			return big.NewInt(40000)
 		}, bn256ScalarMul},
 
+		// bn256Pairing
 		string(common.LeftPadBytes([]byte{8}, 20)): {func(in []byte) *big.Int {
 			l := len(in)
 			n := big.NewInt(100000) 
@@ -223,7 +228,6 @@ func memCpy(in []byte) []byte {
 	return in
 }
 
-// TODO
 func bigModExp(in []byte) []byte {
 	var (
 		baseLen = new(big.Int).SetBytes(getData(in, big0, big32))
