@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build-linux-go-1.12:
     docker:
       - image: circleci/golang:1.12
     steps:
@@ -15,7 +15,7 @@ jobs:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-  tests:
+  tests-linux-go-1.12:
     docker:
       - image: circleci/golang:1.12
     steps:
