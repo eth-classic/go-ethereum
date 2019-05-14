@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.12
-    parallelism: 2
     steps:
       - checkout
       - restore_cache:
@@ -19,7 +18,6 @@ jobs:
   tests:
     docker:
       - image: circleci/golang:1.12
-    parallelism: 2
     steps:
       - checkout
       - restore_cache:
