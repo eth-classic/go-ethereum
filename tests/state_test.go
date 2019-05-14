@@ -610,7 +610,7 @@ func TestEIP150HomesteadQuadraticComplexity(t *testing.T) {
 	ruleSet := RuleSet{
 		HomesteadBlock:           new(big.Int),
 		HomesteadGasRepriceBlock: big.NewInt(2457000),
-	}
+	} -
 
 	if os.Getenv("TEST_VM_COMPLEX") == "" {
 		t.Skip()
@@ -693,6 +693,11 @@ func TestEIP150HomesteadBounds(t *testing.T) {
 
 func TestETHHomestead(t *testing.T) {
 	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stHomesteadSpecific", "*"))
+	runETHTests(t, fns, make(map[string]string))
+}
+
+func TestETHCodeSizeLimit(t *testing.T) {
+	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stCodeSizeLimit", "*"))
 	runETHTests(t, fns, make(map[string]string))
 }
 

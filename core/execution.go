@@ -121,7 +121,8 @@ func exec(env vm.Environment, caller vm.ContractRef, address, codeAddr *common.A
 	ret, err = evm.Run(contract, input)
 
 	//will need to add  && env.RuleSet().isAtlantis(evm.Blocknumber) to this after that gets merged
-	maxCodeSizeExceeded := len(ret) > maxCodeSize
+
+	maxCodeSizeExceeded := len(ret) > maxCodeSize && env.RuleSet().IsAtlantis(env.BlockNumber())
 	// if the contract creation ran successfully and no errors were returned
 	// calculate the gas required to store the code. If the code could not
 	// be stored due to not enough gas set an error and let it be handled
