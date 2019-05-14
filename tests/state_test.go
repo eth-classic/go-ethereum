@@ -610,7 +610,7 @@ func TestEIP150HomesteadQuadraticComplexity(t *testing.T) {
 	ruleSet := RuleSet{
 		HomesteadBlock:           new(big.Int),
 		HomesteadGasRepriceBlock: big.NewInt(2457000),
-	} -
+	}
 
 	if os.Getenv("TEST_VM_COMPLEX") == "" {
 		t.Skip()
