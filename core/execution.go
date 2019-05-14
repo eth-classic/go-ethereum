@@ -18,11 +18,12 @@ package core
 
 import (
 	"fmt"
+	"github.com/eth-classic/go-ethereum/crypto"
 	"math/big"
 
 	"github.com/eth-classic/go-ethereum/common"
 	"github.com/eth-classic/go-ethereum/core/vm"
-	"github.com/eth-classic/go-ethereum/crypto"
+	//"github.com/eth-classic/go-ethereum/crypto"
 )
 
 var (
@@ -40,6 +41,7 @@ func Call(env vm.Environment, caller vm.ContractRef, addr common.Address, input 
 
 		return nil, errCallCreateDepth
 	}
+
 
 	if !env.CanTransfer(caller.Address(), value) {
 		caller.ReturnGas(gas, gasPrice)
@@ -104,7 +106,7 @@ func CallCode(env vm.Environment, caller vm.ContractRef, addr common.Address, in
 	}
 
 	snapshotPreTransfer := env.SnapshotDatabase()
-	var to vm.Account
+	var to = env.Db().GetAccount(addr)
 
 	// initialise a new contract and set the code that is to be used by the
 	// EVM. The contract is a scoped environment for this execution context
@@ -148,12 +150,8 @@ func DelegateCall(env vm.Environment, caller vm.ContractRef, addr common.Address
 
 	snapshot := env.SnapshotDatabase()
 
-	var to vm.Account
-	if !env.Db().Exist(caller.Address()) {
-		to = env.Db().CreateAccount(caller.Address())
-	} else {
-		to = env.Db().GetAccount(caller.Address())
-	}
+	var to = env.Db().GetAccount(caller.Address())
+
 
 	// Iinitialise a new contract and make initialise the delegate values
 	contract := vm.NewContract(caller, to, caller.Value(), gas, gasPrice).AsDelegate()
@@ -239,7 +237,7 @@ func Create(env vm.Environment, caller vm.ContractRef, code []byte, gas, gasPric
 		return nil, addr, err
 	}
 
-	return ret, addr, err
+	return ret, caller.Address(), err
 }
 
 // //do i need to keep it like this because this is pretty cancer imo
