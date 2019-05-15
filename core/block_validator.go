@@ -235,7 +235,7 @@ func ValidateHeader(config *ChainConfig, pow pow.PoW, header *types.Header, pare
 		return BlockEqualTSErr
 	}
 
-	expd := CalcDifficulty(config, header.Time.Uint64(), parent.Time.Uint64(), parent.Number, parent.Difficulty)
+	expd := CalcDifficulty(config, header.Time.Uint64(), parent)
 	if expd.Cmp(header.Difficulty) != 0 {
 		return fmt.Errorf("Difficulty check failed for header %v != %v at %v", header.Difficulty, expd, header.Number)
 	}
@@ -268,18 +268,18 @@ func ValidateHeader(config *ChainConfig, pow pow.PoW, header *types.Header, pare
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
-func CalcDifficulty(config *ChainConfig, time, parentTime uint64, parentNumber, parentDiff *big.Int) *big.Int {
+func CalcDifficulty(config *ChainConfig, time uint64, parent *types.Header) *big.Int {
 	if config == nil {
 		glog.Fatalln("missing chain configuration, cannot calculate difficulty")
 	}
-	if parentDiff == nil {
-		parentDiff = big.NewInt(0)
+	if parent.Difficulty == nil {
+		parent.Difficulty = big.NewInt(0)
 	}
-	num := new(big.Int).Add(parentNumber, common.Big1) // increment block number to current
+	num := new(big.Int).Add(parent.Number, common.Big1) // increment block number to current
 
 	f, fork, configured := config.GetFeature(num, "difficulty")
 	if !configured {
-		return calcDifficultyFrontier(time, parentTime, parentNumber, parentDiff)
+		return calcDifficultyFrontier(time, parent.Time.Uint64(), parent.Number, parent.Difficulty)
 	}
 	name, ok := f.GetString("type")
 	if !ok {
@@ -287,24 +287,26 @@ func CalcDifficulty(config *ChainConfig, time, parentTime uint64, parentNumber, 
 	} // will fall to default panic
 	switch name {
 	case "defused":
-		return calcDifficultyDefused(time, parentTime, parentNumber, parentDiff)
+		return calcDifficultyDefused(time, parent.Time.Uint64(), parent.Number, parent.Difficulty)
+	case "atlantis":
+		return calcDifficultyAtlantis(time, parent)
 	case "ecip1010":
 		if length, ok := f.GetBigInt("length"); ok {
 			explosionBlock := big.NewInt(0).Add(fork.Block, length)
 			if num.Cmp(explosionBlock) < 0 {
-				return calcDifficultyDiehard(time, parentTime, parentDiff,
+				return calcDifficultyDiehard(time, parent.Time.Uint64(), parent.Difficulty,
 					fork.Block)
 			} else {
-				return calcDifficultyExplosion(time, parentTime, parentNumber, parentDiff,
+				return calcDifficultyExplosion(time, parent.Time.Uint64(), parent.Number, parent.Difficulty,
 					fork.Block, explosionBlock)
 			}
 		} else {
 			panic(fmt.Sprintf("Length is not set for diehard difficulty at %v", num))
 		}
 	case "homestead":
-		return calcDifficultyHomestead(time, parentTime, parentNumber, parentDiff)
+		return calcDifficultyHomestead(time, parent.Time.Uint64(), parent.Number, parent.Difficulty)
 	case "frontier":
-		return calcDifficultyFrontier(time, parentTime, parentNumber, parentDiff)
+		return calcDifficultyFrontier(time, parent.Time.Uint64(), parent.Number, parent.Difficulty)
 	default:
 		panic(fmt.Sprintf("Unsupported difficulty '%v' for block: %v", name, num))
 	}
@@ -483,6 +485,51 @@ func calcDifficultyHomestead(time, parentTime uint64, parentNumber, parentDiff *
 
 	// for the exponential factor
 	periodCount := new(big.Int).Add(parentNumber, common.Big1)
+	periodCount.Div(periodCount, ExpDiffPeriod)
+
+	// the exponential factor, commonly referred to as "the bomb"
+	// diff = diff + 2^(periodCount - 2)
+	if periodCount.Cmp(common.Big1) > 0 {
+		y.Sub(periodCount, common.Big2)
+		y.Exp(common.Big2, y, nil)
+		x.Add(x, y)
+	}
+
+	return x
+}
+
+func calcDifficultyAtlantis(time uint64, parent *types.Header) *big.Int {
+	bigTime := new(big.Int).SetUint64(time)
+	bigParentTime := new(big.Int).Set(parent.Time)
+
+	// adj_factor = max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // 9), -99)
+	var x *big.Int
+	if parent.UncleHash == types.EmptyUncleHash {
+		x = big.NewInt(1)
+	} else {
+		x = big.NewInt(2)
+	}
+	z := new(big.Int).Sub(bigTime, bigParentTime)
+	z.Div(x, big.NewInt(9))
+	x.Sub(x, z)
+
+	// max(1 - (block_timestamp - parent_timestamp) // 10, -99)))
+	if x.Cmp(bigMinus99) < 0 {
+		x.Set(bigMinus99)
+	}
+
+	// (parent_diff + parent_diff // 2048 * max(1 - (block_timestamp - parent_timestamp) // 10, -99))
+	y := new(big.Int).Div(parent.Difficulty, DifficultyBoundDivisor)
+	x.Mul(y, x)
+	x.Add(parent.Difficulty, x)
+
+	// minimum difficulty can ever be (before exponential factor)
+	if x.Cmp(MinimumDifficulty) < 0 {
+		x.Set(MinimumDifficulty)
+	}
+
+	// for the exponential factor
+	periodCount := new(big.Int).Add(parent.Number, common.Big1)
 	periodCount.Div(periodCount, ExpDiffPeriod)
 
 	// the exponential factor, commonly referred to as "the bomb"
