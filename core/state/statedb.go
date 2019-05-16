@@ -194,7 +194,7 @@ func (self *StateDB) AddRefund(gas *big.Int) {
 //Empty returns if the account address is considered non-existant or empty
 //(balance, nonce, and code all equal 0)
 func (self *StateDB) Empty(addr common.Address) bool {
-return self.getStateObject(addr) == nil || self.getStateObject(addr).empty()
+	return self.getStateObject(addr) == nil || self.getStateObject(addr).empty()
 }
 
 // Exist reports whether the given account address exists in the state.
