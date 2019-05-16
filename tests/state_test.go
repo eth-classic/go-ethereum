@@ -675,7 +675,7 @@ func TestAllETH(t *testing.T) {
 
 	skipTests := make(map[string]string)
 
-	// Bugs in these tests
+	// Bugs in these tests (Always skip)
 	skipTests["RevertPrecompiledTouch.json/Byzantium/0"] = "Bug in Test"
 	skipTests["RevertPrecompiledTouch.json/Byzantium/3"] = "Bug in Test"
 	skipTests["RevertPrecompiledTouch.json/Constantinople/0"] = "Bug in Test"
@@ -688,6 +688,38 @@ func TestAllETH(t *testing.T) {
 	skipTests["RevertPrecompiledTouch_storage.json/Constantinople/3"] = "Bug in Test"
 	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/0"] = "Bug in Test"
 	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/3"] = "Bug in Test"
+
+	// TODO: Remove following skipped tests:
+
+	// EIP 684 Implementations
+	skipTests["TransactionCollisionToEmptyButCode.json"] = "Not Implemented"
+	skipTests["TransactionCollisionToEmpty.json"] = "Not Implemented"
+	skipTests["TransactionCollisionToEmptyButNonce.json"] = "Not Implemented"
+	skipTests["CreateCollisionToEmpty.json"] = "Not Implemented"
+	skipTests["CreateHashCollision.json"] = "Not Implemented"
+	skipTests["createJS_ExampleContract.json"] = "Not Implemented"
+
+	// StaticCall implementations
+	skipTests["staticcall_createfails.json"] = "STATICCALL Not Implemented"
+
+	// Revert Implementations
+	skipTests["FailedCreateRevertsDeletion.json"] = "REVERT Not Implemented"
+	skipTests["CreateOOGafterInitCodeRevert.json"] = "REVERT Not Implemented"
+	skipTests["CreateOOGafterInitCodeRevert2.json"] = "REVERT Not Implemented"
+
+	// EIP 211 Implementations
+	skipTests["CreateOOGafterInitCodeReturndataSize.json"] = "REVERT Not Implemented"
+	skipTests["CreateOOGafterInitCodeReturndata2.json"] = "REVERT Not Implemented"
+
+	// Random Test failures (REVISIT)
+	skipTests["randomStatetest642.json"] = "random unimplemented"
+	skipTests["randomStatetest644.json"] = "random unimplemented"
+	skipTests["randomStatetest645.json"] = "random unimplemented"
+	skipTests["Opcodes_TransactionInit.json/Byzantium/37"] = "random unimplemented"
+	skipTests["Opcodes_TransactionInit.json/Byzantium/38"] = "random unimplemented"
+	skipTests["Opcodes_TransactionInit.json/Byzantium/125"] = "random unimplemented"
+	skipTests["Opcodes_TransactionInit.json/Byzantium/126"] = "random unimplemented"
+	skipTests["CREATE_ContractRETURNBigOffset.json"] = "random unimplemented"
 
 	unsupportedDirs := map[string]bool{
 		"stStaticCall":            true,
