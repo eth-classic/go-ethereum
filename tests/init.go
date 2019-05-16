@@ -36,6 +36,7 @@ var (
 	transactionTestDir = filepath.Join(baseDir, "TransactionTests")
 	vmTestDir          = filepath.Join(baseDir, "VMTests")
 	rlpTestDir         = filepath.Join(baseDir, "RLPTests")
+	basicTestDir       = filepath.Join(baseDir, "BasicTests")
 	ethDir             = filepath.Join(".", "testData")
 	ethGeneralStateDir = filepath.Join(ethDir, "GeneralStateTests")
 
