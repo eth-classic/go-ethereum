@@ -57,7 +57,9 @@ func DelegateCall(env vm.Environment, caller vm.ContractRef, addr common.Address
 //StaticCall
 func StaticCall(env vm.Environment, caller vm.ContractRef, addr common.Address, input []byte, gas, gasPrice *big.Int) (ret []byte, err error) {
 	callerAddr := caller.Address()
-	ret, err = execStaticCall(env, caller, &callerAddr, input, gas, gasPrice)
+	originAddr := env.Origin()
+	callerValue := caller.Value()
+	ret, err = execStaticCall(env, caller, &originAddr, &callerAddr, &addr, env.Db().GetCodeHash(addr), input, env.Db().GetCode(addr), gas, gasPrice, callerValue)
 	return ret, err
 }
 
@@ -212,28 +214,35 @@ func execDelegateCall(env vm.Environment, caller vm.ContractRef, originAddr, toA
 // as parameters while disallowing any modifications to the state during the call.
 // Opcodes that attempt to perform such modifications will result in exceptions
 // instead of performing the modifications.
-func execStaticCall(env vm.Environment, caller vm.ContractRef, addr *common.Address, input []byte, gas, gasPrice *big.Int) (ret []byte, err error) {
+func execStaticCall(env vm.Environment, caller vm.ContractRef, originAddr, addr, codeAddr *common.Address, codeHash common.Hash, input, code []byte, gas, gasPrice, value *big.Int) (ret []byte, err error) {
 	evm := env.Vm()
 
 	//evm.vmConfig.NoRecursion not necessary?
-	if env.Depth() > 0 {
-		return nil, nil
-	}
+	// if env.Depth() > 0 {
+	// 	return nil, nil
+	// }
 
 	// Fail if we're trying to execute above the call depth limit
 	if env.Depth() > int(params.CallCreateDepth) {
+		caller.ReturnGas(gas, gasPrice)
 		return nil, errCallCreateDepth
 	}
 
 	//Account Ref Correct?
-	var (
-		to       = env.Db().GetAccount(*addr)
-		snapshot = env.SnapshotDatabase()
-	)
+	var snapshot = env.SnapshotDatabase()
+
+	var to vm.Account
+	if !env.Db().Exist(*addr) {
+		to = env.Db().CreateAccount(*addr)
+	} else {
+		to = env.Db().GetAccount(*addr)
+	}
+
 	// Initialise a new contract and set the code that is to be used by the EVM.
 	// The contract is a scoped environment for this execution context only.
-	contract := vm.NewContract(caller, to, new(big.Int), gas, gasPrice).AsDelegate()
-	contract.SetCallCode(addr, env.Db().GetCodeHash(*addr), env.Db().GetCode(*addr))
+	contract := vm.NewContract(caller, to, new(big.Int), gas, gasPrice)
+	contract.SetCallCode(addr, codeHash, code)
+	defer contract.Finalise()
 
 	// We do an AddBalance of zero here, just in order to trigger a touch.
 	// This doesn't matter on Mainnet, where all empties are gone at the time of Byzantium,
@@ -241,14 +250,14 @@ func execStaticCall(env vm.Environment, caller vm.ContractRef, addr *common.Addr
 	// future scenarios
 	env.Db().AddBalance(*addr, bigZero)
 
-	// When an error was returned by the EVM or when setting the creation code
+	// When an error was retur2ned by the EVM or when setting the creation code
 	// above we revert to the snapshot and consume any gas remaining. Additionally
 	// when we're in Homestead this also counts for code storage gas errors.
 	ret, err = evm.Run(contract, input)
 	if err != nil {
+		contract.UseGas(contract.Gas)
 		env.RevertToSnapshot(snapshot)
 		// if err != errExecutionReverted {
-		contract.UseGas(contract.Gas)
 		// }
 	}
 	return ret, err

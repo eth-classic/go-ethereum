@@ -518,8 +518,8 @@ func opDelegateCall(instr instruction, pc *uint64, env Environment, contract *Co
 
 func opStaticCall(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) {
 	// Pop other call parameters.
-	gas, addr, inOffset, inSize, outOffset, outSize := stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop()
-	toAddr := common.BigToAddress(addr)
+	gas, to, inOffset, inSize, outOffset, outSize := stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop()
+	toAddr := common.BigToAddress(to)
 	// Get arguments from the memory.
 	args := memory.Get(inOffset.Int64(), inSize.Int64())
 
