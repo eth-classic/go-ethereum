@@ -31,7 +31,7 @@ import (
 var (
 	OutOfGasError          = errors.New("Out of gas")
 	CodeStoreOutOfGasError = errors.New("Contract creation code storage out of gas")
-	errRevert              = errors.New("Execution reverted")
+	ErrRevert              = errors.New("Execution reverted")
 )
 
 // VirtualMachine is an EVM interface
@@ -168,9 +168,7 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 					offset, size := stack.pop(), stack.pop()
 					ret := mem.GetPtr(offset.Int64(), size.Int64())
 
-					stack.push(big.NewInt(1))
-					mem.Set(offset.Uint64(), size.Uint64(), ret)
-					return ret, errRevert
+					return ret, ErrRevert
 				case SUICIDE:
 					opSuicide(instruction{}, nil, evm.env, contract, mem, stack)
 
@@ -204,17 +202,8 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 	// stack Check, memory resize & gas phase
 	switch op {
 	case REVERT:
-		// Should refactor to either use either Uint64 or big.Int
-		// and not switch between the two
-		mSize, mStart := stack.data[stack.len()-2], stack.data[stack.len()-1]
-		newMemSize = calcMemSize(mStart, mSize)
-
-		newMemSizeUint64 := newMemSize.Uint64()
-		gasCost, err := memoryGasCost(mem, newMemSizeUint64)
-		if err != nil {
-			return nil, nil, err
-		}
-		gas.Set(new(big.Int).SetUint64(gasCost))
+		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-2])
+		quadMemGas(mem, newMemSize, gas)
 	case SUICIDE:
 		address := common.BigToAddress(stack.data[len(stack.data)-1])
 		// if suicide is not nil: homestead gas fork
