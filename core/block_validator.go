@@ -560,7 +560,7 @@ func calcDifficultyFrontier(time, parentTime uint64, parentNumber, parentDiff *b
 	if diff.Cmp(MinimumDifficulty) < 0 {
 		diff.Set(MinimumDifficulty)
 	}
-
+ 
 	periodCount := new(big.Int).Add(parentNumber, common.Big1)
 	periodCount.Div(periodCount, ExpDiffPeriod)
 	if periodCount.Cmp(common.Big1) > 0 {
