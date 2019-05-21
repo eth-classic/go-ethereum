@@ -702,11 +702,6 @@ func TestAllETH(t *testing.T) {
 	// StaticCall implementations
 	skipTests["staticcall_createfails.json"] = "STATICCALL Not Implemented"
 
-	// Revert Implementations
-	skipTests["FailedCreateRevertsDeletion.json"] = "REVERT Not Implemented"
-	skipTests["CreateOOGafterInitCodeRevert.json"] = "REVERT Not Implemented"
-	skipTests["CreateOOGafterInitCodeRevert2.json"] = "REVERT Not Implemented"
-
 	// EIP 211 Implementations
 	skipTests["CreateOOGafterInitCodeReturndataSize.json"] = "REVERT Not Implemented"
 	skipTests["CreateOOGafterInitCodeReturndata2.json"] = "REVERT Not Implemented"
@@ -721,11 +716,14 @@ func TestAllETH(t *testing.T) {
 	skipTests["Opcodes_TransactionInit.json/Byzantium/126"] = "random unimplemented"
 	skipTests["CREATE_ContractRETURNBigOffset.json"] = "random unimplemented"
 
+	skipTests["RevertPrecompiledTouch.json"] = "precompiled unimplemented"
+	skipTests["RevertPrecompiledTouch_nonce.json"] = "precompiled unimplemented"
+	skipTests["RevertPrecompiledTouch_storage.json"] = "precompiled unimplemented"
+
 	unsupportedDirs := map[string]bool{
 		"stStaticCall":            true,
 		"stZeroKnowledge":         true,
 		"stZeroKnowledge2":        true,
-		"stRevertTest":            true,
 		"stReturnDataTest":        true,
 		"stPreCompiledContracts":  true,
 		"stPreCompiledContracts2": true,
