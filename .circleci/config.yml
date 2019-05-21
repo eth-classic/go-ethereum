@@ -11,7 +11,7 @@ jobs:
       - run:
           name: Compile
           command: go build ./...
-          working_directory: ~/go_ethereum
+          working_directory: $CIRCLE_WORKING_DIRECTORY/go_ethereum
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Run tests
           command: go test ./...
-          working_directory: ~/go_ethereum
+          working_directory: $CIRCLE_WORKING_DIRECTORY/go_ethereum
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
