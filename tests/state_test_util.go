@@ -235,6 +235,12 @@ func runStateTest(ruleSet RuleSet, test VmTest) error {
 }
 
 func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
+	// Ruleset mapping from ETH network to ETC
+	ruleSet, ok := Forks[subtest.Fork]
+	if !ok {
+		return UnsupportedForkError{subtest.Fork}
+	}
+
 	db, _ := ethdb.NewMemDatabase()
 	statedb := makePreState(db, t.Pre)
 
@@ -265,12 +271,6 @@ func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 		"value":     t.Tx.Value[postState.Indexes.Value],
 	}
 
-	// Hard coded RuleSet based on previous tests (should change)
-	ruleSet := RuleSet{
-		HomesteadBlock:           new(big.Int),
-		HomesteadGasRepriceBlock: big.NewInt(2457000),
-	}
-
 	var (
 		// ret []byte
 		// gas  *big.Int
@@ -280,8 +280,9 @@ func (t *StateTest) runETHSubtest(subtest StateSubtest) error {
 
 	_, logs, _, _ = RunState(ruleSet, db, statedb, env, vmTx)
 
-	// Only tests that are < EIP158 are Homestead
-	deleteEmptyObjects := subtest.Fork != "Homestead"
+	// Only delete empty objects for forks which have not implemented EIP158/161
+	blockNum, _ := new(big.Int).SetString(t.Env.CurrentNumber, 0)
+	deleteEmptyObjects := ruleSet.IsAtlantis(blockNum)
 
 	// Commit block
 	statedb.CommitTo(db, deleteEmptyObjects)
