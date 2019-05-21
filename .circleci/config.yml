@@ -12,6 +12,7 @@ jobs:
           name: working directory
           command: mkdir ./go-ethereum && cd ./go-ethereum
       - run:
+          working_directory: ~/go-ethereum
           name: Compile
           command: go build ./...
       - save_cache:
@@ -27,9 +28,7 @@ jobs:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
       - run:
-          name: working directory
-          command: cd ./go-ethereum
-      - run:
+          working_directory: ~/go-ethereum
           name: Run tests
           command: go test ./...
       - save_cache:
