@@ -698,9 +698,11 @@ func TestAllETH(t *testing.T) {
 	skipTests["CreateCollisionToEmpty.json"] = "Not Implemented"
 	skipTests["CreateHashCollision.json"] = "Not Implemented"
 	skipTests["createJS_ExampleContract.json"] = "Not Implemented"
+	skipTests["RevertDepthCreateAddressCollision.json"] = "Not Implemented"
 
 	// StaticCall implementations
 	skipTests["staticcall_createfails.json"] = "STATICCALL Not Implemented"
+	skipTests["TestAllETH/stRevertTest/RevertInStaticCall.json"] = "STATICCALL Not Implemented"
 
 	// EIP 211 Implementations
 	skipTests["CreateOOGafterInitCodeReturndataSize.json"] = "REVERT Not Implemented"
@@ -719,6 +721,7 @@ func TestAllETH(t *testing.T) {
 	skipTests["RevertPrecompiledTouch.json"] = "precompiled unimplemented"
 	skipTests["RevertPrecompiledTouch_nonce.json"] = "precompiled unimplemented"
 	skipTests["RevertPrecompiledTouch_storage.json"] = "precompiled unimplemented"
+	skipTests["RevertPrecompiledTouch_noncestorage.json"] = "precompiled unimplemented"
 
 	unsupportedDirs := map[string]bool{
 		"stStaticCall":            true,
