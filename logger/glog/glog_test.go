@@ -219,7 +219,14 @@ func TestHeader1ErrorLog(t *testing.T) {
 	pid = 1234
 	Error("test")
 	line := lineNumber() - 1 // the line directly above
-	format := "E" + "0102 15:04:05.067890 logger/glog/glog_test.go:%d] test\n"
+	CI := os.Getenv("CI")
+	var format string
+	if CI == "true" {
+		format = "E" + "0102 15:04:05.067890 me/circleci/project/logger/glog/glog_test.go:%d] test\n"
+	} else {
+		format = "E" + "0102 15:04:05.067890 logger/glog/glog_test.go:%d] test\n"
+	}
+
 	n, err := fmt.Sscanf(loggingContents(errorLog), format, &line)
 	if n != 1 || err != nil {
 		t.Errorf("log format error: %d elements, error %s:\n%s", n, err, loggingContents(errorLog))
@@ -245,7 +252,15 @@ func TestHeader2InfoLog(t *testing.T) {
 	defer logging.verbosityTraceThreshold.set(s)
 	pid = 1234
 	Info("test")
-	format := "I" + "0102 15:04:05.067890 logger/glog/glog_test.go:" + strconv.Itoa(lineNumber()-1) + "] test\n"
+
+	CI := os.Getenv("CI")
+	var format string
+	if CI == "true" {
+		format = "I" + "0102 15:04:05.067890 me/circleci/project/logger/glog/glog_test.go:" + strconv.Itoa(lineNumber()-5) + "] test\n"
+	} else {
+		format = "I" + "0102 15:04:05.067890 logger/glog/glog_test.go:" + strconv.Itoa(lineNumber()-7) + "] test\n"
+	}
+
 	n, err := fmt.Sscanf(loggingContents(infoLog), format)
 	if err != nil {
 		t.Errorf("log format error: %d elements, error %s:\n%s", n, err, loggingContents(infoLog))
