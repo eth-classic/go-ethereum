@@ -65,6 +65,20 @@ func TestStatePreCompiledContracts(t *testing.T) {
 	}
 }
 
+<<<<<<< Updated upstream
+=======
+// func TestStatePreCompiledContracts2(t *testing.T) {
+// 	ruleSet := RuleSet{
+// 		HomesteadBlock: big.NewInt(1000000),
+// 	}
+
+// 	fn := filepath.Join(stateTestDir, "stPreCompiledContracts2.json")
+// 	if err := RunStateTest(ruleSet, fn, StateSkipTests); err != nil {
+// 		t.Error(err)
+// 	}
+// }
+
+>>>>>>> Stashed changes
 func TestStateRecursiveCreate(t *testing.T) {
 	ruleSet := RuleSet{
 		HomesteadBlock: big.NewInt(1000000),
