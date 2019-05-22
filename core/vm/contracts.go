@@ -68,11 +68,48 @@ func (self PrecompiledAccount) Call(in []byte) []byte {
 }
 
 // Precompiled contains the default set of ethereum contracts
-var Precompiled = PrecompiledContracts()
+var PrecompiledPreAtlantis = PrecompiledContractsPreAtlantis()
+var PrecompiledAtlantis = PrecompiledContractsAtlantis()
 
-// PrecompiledContracts returns the default set of precompiled ethereum
-// contracts defined by the ethereum yellow paper.
-func PrecompiledContracts() map[string]*PrecompiledAccount {
+// PrecompiledContractsPreAtlantis returns the default set of precompiled ethereum
+// contracts defined by the ethereum yellow paper pre-Atlantis.
+func PrecompiledContractsPreAtlantis() map[string]*PrecompiledAccount {
+	return map[string]*PrecompiledAccount{
+		// ECRECOVER
+		string(common.LeftPadBytes([]byte{1}, 20)): {func(in []byte) *big.Int {
+			return big.NewInt(3000)
+		}, ecrecoverFunc},
+
+		// SHA256
+		string(common.LeftPadBytes([]byte{2}, 20)): {func(in []byte) *big.Int {
+			l := len(in)
+			n := big.NewInt(int64(l+31) / 32)
+			n.Mul(n, big.NewInt(12))
+			return n.Add(n, big.NewInt(60))
+		}, sha256Func},
+
+		// RIPEMD160
+		string(common.LeftPadBytes([]byte{3}, 20)): {func(in []byte) *big.Int {
+			l := len(in)
+			n := big.NewInt(int64(l+31) / 32)
+			n.Mul(n, big.NewInt(120))
+			return n.Add(n, big.NewInt(600))
+		}, ripemd160Func},
+
+		// memCpy
+		string(common.LeftPadBytes([]byte{4}, 20)): {func(in []byte) *big.Int {
+			l := len(in)
+			n := big.NewInt(int64(l+31) / 32)
+			n.Mul(n, big.NewInt(3))
+			return n.Add(n, big.NewInt(15))
+		}, memCpy},
+	}
+}
+
+// PrecompiledContractsAtlantis returns the default set of precompiled ethereum
+// contracts defined by the ethereum yellow paper plus bigModExp and bn256 add, 
+// scalar mul, and pairing
+func PrecompiledContractsAtlantis() map[string]*PrecompiledAccount {
 	return map[string]*PrecompiledAccount{
 		// ECRECOVER
 		string(common.LeftPadBytes([]byte{1}, 20)): {func(in []byte) *big.Int {
