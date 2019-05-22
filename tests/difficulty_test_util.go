@@ -25,6 +25,7 @@ import (
 	"github.com/eth-classic/go-ethereum/core"
 )
 
+// DifficultyTest is the structure of JSON from test files
 type DifficultyTest struct {
 	ParentTimestamp    string      `json:"parentTimestamp"`
 	ParentDifficulty   string      `json:"parentDifficulty"`
@@ -35,13 +36,14 @@ type DifficultyTest struct {
 }
 
 func (test *DifficultyTest) runDifficulty(config *core.ChainConfig) error {
-	parentNumber, _ := new(big.Int).SetString(test.CurrentBlockNumber, 10)
-	parentTimestamp, _ := strconv.ParseUint(test.ParentTimestamp, 10, 64)
-	parentDifficulty, _ := new(big.Int).SetString(test.ParentDifficulty, 10)
-	currentTimestamp, _ := strconv.ParseUint(test.CurrentTimestamp, 10, 64)
+	currentNumber, _ := ParseBigInt(test.CurrentBlockNumber)
+	parentNumber := new(big.Int).Sub(currentNumber, big.NewInt(1))
+	parentTimestamp, _ := ParseUint64(test.ParentTimestamp)
+	parentDifficulty, _ := ParseBigInt(test.ParentDifficulty)
+	currentTimestamp, _ := ParseUint64(test.CurrentTimestamp)
 
 	actual := core.CalcDifficulty(config, currentTimestamp, parentTimestamp, parentNumber, parentDifficulty)
-	exp, _ := new(big.Int).SetString(test.CurrentDifficulty, 10)
+	exp, _ := ParseBigInt(test.CurrentDifficulty)
 
 	if actual.Cmp(exp) != 0 {
 		return fmt.Errorf("parent[time %v diff %v unclehash:%x] child[time %v number %v] diff %v != expected %v",
@@ -50,4 +52,35 @@ func (test *DifficultyTest) runDifficulty(config *core.ChainConfig) error {
 	}
 	return nil
 
+}
+
+// ParseUint64 parses ambiguous string of hex/decimal into *big.Int
+func ParseUint64(s string) (uint64, bool) {
+	if s == "" {
+		return 0, true
+	}
+	if len(s) >= 2 && (s[:2] == "0x" || s[:2] == "0X") {
+		v, err := strconv.ParseUint(s[2:], 16, 64)
+		return v, err == nil
+	}
+	v, err := strconv.ParseUint(s, 10, 64)
+	return v, err == nil
+}
+
+// ParseBigInt parses ambiguous string of hex/decimal into *big.Int
+func ParseBigInt(s string) (*big.Int, bool) {
+	if s == "" {
+		return new(big.Int), true
+	}
+	var bigint *big.Int
+	var ok bool
+	if len(s) >= 2 && (s[:2] == "0x" || s[:2] == "0X") {
+		bigint, ok = new(big.Int).SetString(s[2:], 16)
+	} else {
+		bigint, ok = new(big.Int).SetString(s, 10)
+	}
+	if ok && bigint.BitLen() > 256 {
+		bigint, ok = nil, false
+	}
+	return bigint, ok
 }
