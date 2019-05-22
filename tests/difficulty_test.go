@@ -26,9 +26,9 @@ func TestETHDifficulty(t *testing.T) {
 	fileNames, _ := filepath.Glob(filepath.Join(ethBasicTestDir, "*"))
 
 	supportedTests := map[string]bool{
-		"difficulty.json": true,
-		// "difficultyHomestead.json": true,
-		// "difficultyByzantium.json": true,
+		"difficulty.json":          true,
+		"difficultyHomestead.json": true,
+		"difficultyByzantium.json": true,
 	}
 
 	// Loop through each file
@@ -41,7 +41,6 @@ func TestETHDifficulty(t *testing.T) {
 
 		t.Run(fileName, func(t *testing.T) {
 			config := ChainConfigs[fileName]
-
 			tests := make(map[string]DifficultyTest)
 
 			if err := readJsonFile(fn, &tests); err != nil {
@@ -52,11 +51,6 @@ func TestETHDifficulty(t *testing.T) {
 			for key, test := range tests {
 				// Subtest within the JSON file
 				t.Run(key, func(t *testing.T) {
-					// // Check if subtest is skipped
-					// if skipTests[fileName+"/"+key] != "" {
-					// 	t.Skipf("subtest %s skipped: %s", key, skipTests[fileName+"/"+key])
-					// }
-
 					if err := test.runDifficulty(&config); err != nil {
 						t.Error(err)
 					}
