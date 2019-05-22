@@ -702,11 +702,19 @@ func TestAllETH(t *testing.T) {
 
 	// StaticCall implementations
 	skipTests["staticcall_createfails.json"] = "STATICCALL Not Implemented"
-	skipTests["TestAllETH/stRevertTest/RevertInStaticCall.json"] = "STATICCALL Not Implemented"
+	skipTests["RevertInStaticCall.json"] = "STATICCALL Not Implemented"
 
 	// EIP 211 Implementations
 	skipTests["CreateOOGafterInitCodeReturndataSize.json"] = "REVERT Not Implemented"
 	skipTests["CreateOOGafterInitCodeReturndata2.json"] = "REVERT Not Implemented"
+
+	// EIP 214 Implementations
+	skipTests["RevertOpcodeInCallsOnNonEmptyReturnData.json"] = "EIP214 Not Implemented"
+	skipTests["RevertInCallCode.json"] = "EIP214 Not Implemented"
+	skipTests["RevertInCreateInInit.json"] = "EIP214 Not Implemented"
+	skipTests["RevertInDelegateCall.json"] = "EIP214 Not Implemented"
+	skipTests["RevertOpcodeInCreateReturns.json"] = "EIP214 Not Implemented"
+	skipTests["PythonRevertTestTue201814-1430.json"] = "EIP214 Not Implemented"
 
 	// Random Test failures (REVISIT)
 	skipTests["randomStatetest642.json"] = "random unimplemented"
@@ -722,6 +730,10 @@ func TestAllETH(t *testing.T) {
 	skipTests["RevertPrecompiledTouch_nonce.json"] = "precompiled unimplemented"
 	skipTests["RevertPrecompiledTouch_storage.json"] = "precompiled unimplemented"
 	skipTests["RevertPrecompiledTouch_noncestorage.json"] = "precompiled unimplemented"
+
+	// EIP 158/161 skipped tests
+	skipTests["RevertPrefoundEmptyOOG.json"] = "State trie clearing unimplemented"
+	skipTests["FailedCreateRevertsDeletion.json"] = "State trie clearing unimplemented"
 
 	unsupportedDirs := map[string]bool{
 		"stStaticCall":            true,
