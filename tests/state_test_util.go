@@ -330,7 +330,7 @@ func RunState(ruleSet RuleSet, db ethdb.Database, statedb *state.StateDB, env, t
 		to = &t
 	}
 	// Set pre compiled contracts
-	vm.Precompiled = vm.PrecompiledContracts()
+	vm.PrecompiledAtlantis = vm.PrecompiledContractsAtlantis()
 	snapshot := statedb.Snapshot()
 	currentGasLimit, ok := new(big.Int).SetString(env["currentGasLimit"], 0)
 	if !ok {
