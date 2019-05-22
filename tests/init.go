@@ -38,6 +38,7 @@ var (
 	rlpTestDir         = filepath.Join(baseDir, "RLPTests")
 	ethDir             = filepath.Join(".", "testData")
 	ethGeneralStateDir = filepath.Join(ethDir, "GeneralStateTests")
+	ethBasicTestDir    = filepath.Join(ethDir, "BasicTests")
 
 	BlockSkipTests = initBlockSkipTests()
 
@@ -139,6 +140,27 @@ var Forks = map[string]RuleSet{
 		HomesteadGasRepriceBlock: big.NewInt(0),
 		DiehardBlock:             big.NewInt(0),
 		AtlantisBlock:            big.NewInt(0),
+	},
+}
+
+// ChainConfigs table used to map configs to difficulty test files
+var ChainConfigs = map[string]core.ChainConfig{
+	"difficultyFrontier.json": {},
+	"difficultyHomestead.json": {
+		Forks: []*core.Fork{
+			{
+				Name:  "Homestead",
+				Block: big.NewInt(0),
+			},
+		},
+	},
+	"difficultyByzantium.json": {
+		Forks: []*core.Fork{
+			{
+				Name:  "Atlantis",
+				Block: big.NewInt(0),
+			},
+		},
 	},
 }
 
