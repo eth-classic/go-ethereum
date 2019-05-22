@@ -311,9 +311,14 @@ func RunState(ruleSet RuleSet, db ethdb.Database, statedb *state.StateDB, env, t
 	gas, _ := new(big.Int).SetString(tx["gasLimit"], 0)
 	price, _ := new(big.Int).SetString(tx["gasPrice"], 0)
 	value, _ := new(big.Int).SetString(tx["value"], 0)
-	if gas == nil || price == nil || value == nil {
-		panic("malformed gas, price or value")
+	if gas == nil || price == nil {
+		panic("malformed gas or price")
 	}
+
+	if value == nil {
+		value = big.NewInt(0)
+	}
+
 	nonce, err := strconv.ParseUint(tx["nonce"], 0, 64)
 	if err != nil {
 		panic(err)
