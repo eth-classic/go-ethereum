@@ -68,9 +68,16 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 	evm.env.SetReturnData(nil)
 
 	if contract.CodeAddr != nil {
-		if p := Precompiled[contract.CodeAddr.Str()]; p != nil {
-			return evm.RunPrecompiled(p, input, contract)
+		if evm.env.RuleSet().IsAtlantis(evm.env.BlockNumber()) {
+			if p := PrecompiledAtlantis[contract.CodeAddr.Str()]; p != nil {
+				return evm.RunPrecompiled(p, input, contract)
+			}
+		} else {
+			if p := PrecompiledPreAtlantis[contract.CodeAddr.Str()]; p != nil {
+				return evm.RunPrecompiled(p, input, contract)		
+			}
 		}
+
 	}
 
 	// Don't bother with the execution if there's no code.
