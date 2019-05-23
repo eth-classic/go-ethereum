@@ -729,7 +729,6 @@ func TestAllETH(t *testing.T) {
 		"stReturnDataTest":        true,
 		"stPreCompiledContracts":  true,
 		"stPreCompiledContracts2": true,
-		"stCodeSizeLimit":         true,
 		"stCreate2":               true,
 	}
 
@@ -746,10 +745,6 @@ func TestAllETH(t *testing.T) {
 	}
 }
 
-func TestETHCodeSizeLimit(t *testing.T) {
-	fns, _ := filepath.Glob(filepath.Join(ethGeneralStateDir, "stCodeSizeLimit", "*"))
-	runETHTests(t, fns, make(map[string]string))
-}
 
 func runETHTests(t *testing.T, fileNames []string, skipTests map[string]string) {
 	unsupportedForkConfigs := map[string]bool{
