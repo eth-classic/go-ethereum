@@ -26,7 +26,8 @@ func TestETHDifficulty(t *testing.T) {
 	fileNames, _ := filepath.Glob(filepath.Join(ethBasicTestDir, "*"))
 
 	supportedTests := map[string]bool{
-		"difficulty.json":          true,
+		// "difficulty.json":          true, // Testing ETH mainnet config
+		"difficultyFrontier.json":  true,
 		"difficultyHomestead.json": true,
 		"difficultyByzantium.json": true,
 	}
@@ -51,7 +52,7 @@ func TestETHDifficulty(t *testing.T) {
 			for key, test := range tests {
 				// Subtest within the JSON file
 				t.Run(key, func(t *testing.T) {
-					if err := test.runDifficulty(&config); err != nil {
+					if err := test.runDifficulty(t, &config); err != nil {
 						t.Error(err)
 					}
 				})

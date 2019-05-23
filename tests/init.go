@@ -145,12 +145,27 @@ var Forks = map[string]RuleSet{
 
 // ChainConfigs table used to map configs to difficulty test files
 var ChainConfigs = map[string]core.ChainConfig{
+	// "difficulty":              {},
 	"difficultyFrontier.json": {},
 	"difficultyHomestead.json": {
 		Forks: []*core.Fork{
 			{
 				Name:  "Homestead",
 				Block: big.NewInt(0),
+				Features: []*core.ForkFeature{
+					{
+						ID: "difficulty",
+						Options: core.ChainFeatureConfigOptions{
+							"type": "homestead",
+						},
+					},
+					{
+						ID: "gastable",
+						Options: core.ChainFeatureConfigOptions{
+							"type": "homestead",
+						},
+					},
+				},
 			},
 		},
 	},
@@ -159,6 +174,15 @@ var ChainConfigs = map[string]core.ChainConfig{
 			{
 				Name:  "Atlantis",
 				Block: big.NewInt(0),
+				Features: []*core.ForkFeature{
+					{
+						ID: "difficulty",
+						Options: core.ChainFeatureConfigOptions{
+							"type":   "atlantis",
+							"length": 3000000,
+						},
+					},
+				},
 			},
 		},
 	},

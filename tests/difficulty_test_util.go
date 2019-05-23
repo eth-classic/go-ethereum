@@ -20,9 +20,11 @@ import (
 	"fmt"
 	"math/big"
 	"strconv"
+	"testing"
 
 	"github.com/eth-classic/go-ethereum/common"
 	"github.com/eth-classic/go-ethereum/core"
+	"github.com/eth-classic/go-ethereum/core/types"
 )
 
 // DifficultyTest is the structure of JSON from test files
@@ -35,14 +37,27 @@ type DifficultyTest struct {
 	CurrentDifficulty  string      `json:"currentDifficulty"`
 }
 
-func (test *DifficultyTest) runDifficulty(config *core.ChainConfig) error {
+func (test *DifficultyTest) runDifficulty(t *testing.T, config *core.ChainConfig) error {
 	currentNumber, _ := ParseBigInt(test.CurrentBlockNumber)
 	parentNumber := new(big.Int).Sub(currentNumber, big.NewInt(1))
-	parentTimestamp, _ := ParseUint64(test.ParentTimestamp)
+	parentTimestamp, _ := ParseBigInt(test.ParentTimestamp)
 	parentDifficulty, _ := ParseBigInt(test.ParentDifficulty)
 	currentTimestamp, _ := ParseUint64(test.CurrentTimestamp)
 
-	actual := core.CalcDifficulty(config, currentTimestamp, parentTimestamp, parentNumber, parentDifficulty)
+	parent := &types.Header{
+		Number:     parentNumber,
+		Time:       parentTimestamp,
+		Difficulty: parentDifficulty,
+		UncleHash:  test.UncleHash,
+	}
+
+	// Check to make sure difficulty is above minimum
+	if parentDifficulty.Cmp(big.NewInt(131072)) < 0 {
+		t.Skip("difficulty below minimum")
+		return nil
+	}
+
+	actual := core.CalcDifficulty(config, currentTimestamp, parent)
 	exp, _ := ParseBigInt(test.CurrentDifficulty)
 
 	if actual.Cmp(exp) != 0 {
