@@ -25,6 +25,7 @@ import (
 	"github.com/eth-classic/go-ethereum/core/state"
 	"github.com/eth-classic/go-ethereum/core/types"
 	"github.com/eth-classic/go-ethereum/logger/glog"
+	"github.com/eth-classic/go-ethereum/params"
 	"github.com/eth-classic/go-ethereum/pow"
 	"gopkg.in/fatih/set.v0"
 )
@@ -37,11 +38,6 @@ var (
 	TargetGasLimit         = big.NewInt(4712388) // The artificial target
 	DifficultyBoundDivisor = big.NewInt(2048)    // The bound divisor of the difficulty, used in the update calculations.
 	GasLimitBoundDivisor   = big.NewInt(1024)    // The bound divisor of the gas limit, used in update calculations.
-)
-
-var (
-	big10      = big.NewInt(10)
-	bigMinus99 = big.NewInt(-99)
 )
 
 // Difficulty allows passing configurable options to a given difficulty algorithm.
@@ -316,8 +312,18 @@ func CalcDifficulty(config *ChainConfig, time uint64, parent *types.Header) *big
 	}
 }
 
+// Some weird constants to avoid constant memory allocs for them.
+var (
+	expDiffPeriod = big.NewInt(100000)
+	big1          = big.NewInt(1)
+	big2          = big.NewInt(2)
+	big9          = big.NewInt(9)
+	big10         = big.NewInt(10)
+	bigMinus99    = big.NewInt(-99)
+)
+
 func calcDifficultyAtlantis(time uint64, parent *types.Header) *big.Int {
-	bombDelayFromParent := new(big.Int).Sub(big.NewInt(3000000), big.NewInt(1))
+	bombDelayFromParent := new(big.Int).Sub(big.NewInt(3000000), big1)
 	// https://github.com/ethereum/EIPs/issues/100.
 	// algorithm:
 	// diff = (parent_diff +
@@ -333,24 +339,24 @@ func calcDifficultyAtlantis(time uint64, parent *types.Header) *big.Int {
 
 	// (2 if len(parent_uncles) else 1) - (block_timestamp - parent_timestamp) // 9
 	x.Sub(bigTime, bigParentTime)
-	x.Div(x, big.NewInt(9))
+	x.Div(x, big9)
 	if parent.UncleHash == types.EmptyUncleHash {
-		x.Sub(big.NewInt(1), x)
+		x.Sub(big1, x)
 	} else {
-		x.Sub(big.NewInt(2), x)
+		x.Sub(big2, x)
 	}
 	// max((2 if len(parent_uncles) else 1) - (block_timestamp - parent_timestamp) // 9, -99)
 	if x.Cmp(bigMinus99) < 0 {
 		x.Set(bigMinus99)
 	}
 	// parent_diff + (parent_diff / 2048 * max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // 9), -99))
-	y.Div(parent.Difficulty, big.NewInt(2048))
+	y.Div(parent.Difficulty, params.DifficultyBoundDivisor)
 	x.Mul(y, x)
 	x.Add(parent.Difficulty, x)
 
 	// minimum difficulty can ever be (before exponential factor)
-	if x.Cmp(big.NewInt(131072)) < 0 {
-		x.Set(big.NewInt(131072))
+	if x.Cmp(params.MinimumDifficulty) < 0 {
+		x.Set(params.MinimumDifficulty)
 	}
 	// calculate a fake block number for the ice-age delay
 	// Specification: https://eips.ethereum.org/EIPS/eip-1234
@@ -360,13 +366,13 @@ func calcDifficultyAtlantis(time uint64, parent *types.Header) *big.Int {
 	}
 	// for the exponential factor
 	periodCount := fakeBlockNumber
-	periodCount.Div(periodCount, big.NewInt(100000))
+	periodCount.Div(periodCount, expDiffPeriod)
 
 	// the exponential factor, commonly referred to as "the bomb"
 	// diff = diff + 2^(periodCount - 2)
-	if periodCount.Cmp(big.NewInt(1)) > 0 {
-		y.Sub(periodCount, big.NewInt(2))
-		y.Exp(big.NewInt(2), y, nil)
+	if periodCount.Cmp(big1) > 0 {
+		y.Sub(periodCount, big2)
+		y.Exp(big2, y, nil)
 		x.Add(x, y)
 	}
 	return x

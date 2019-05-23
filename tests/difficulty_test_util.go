@@ -25,6 +25,7 @@ import (
 	"github.com/eth-classic/go-ethereum/common"
 	"github.com/eth-classic/go-ethereum/core"
 	"github.com/eth-classic/go-ethereum/core/types"
+	"github.com/eth-classic/go-ethereum/params"
 )
 
 // DifficultyTest is the structure of JSON from test files
@@ -52,7 +53,7 @@ func (test *DifficultyTest) runDifficulty(t *testing.T, config *core.ChainConfig
 	}
 
 	// Check to make sure difficulty is above minimum
-	if parentDifficulty.Cmp(big.NewInt(131072)) < 0 {
+	if parentDifficulty.Cmp(params.MinimumDifficulty) < 0 {
 		t.Skip("difficulty below minimum")
 		return nil
 	}
