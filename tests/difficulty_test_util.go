@@ -19,10 +19,10 @@ package tests
 import (
 	"fmt"
 	"math/big"
-	"strconv"
 	"testing"
 
 	"github.com/eth-classic/go-ethereum/common"
+	"github.com/eth-classic/go-ethereum/common/hexutil"
 	"github.com/eth-classic/go-ethereum/core"
 	"github.com/eth-classic/go-ethereum/core/types"
 	"github.com/eth-classic/go-ethereum/params"
@@ -39,11 +39,11 @@ type DifficultyTest struct {
 }
 
 func (test *DifficultyTest) runDifficulty(t *testing.T, config *core.ChainConfig) error {
-	currentNumber, _ := ParseBigInt(test.CurrentBlockNumber)
+	currentNumber, _ := hexutil.HexOrDecimalToBigInt(test.CurrentBlockNumber)
 	parentNumber := new(big.Int).Sub(currentNumber, big.NewInt(1))
-	parentTimestamp, _ := ParseBigInt(test.ParentTimestamp)
-	parentDifficulty, _ := ParseBigInt(test.ParentDifficulty)
-	currentTimestamp, _ := ParseUint64(test.CurrentTimestamp)
+	parentTimestamp, _ := hexutil.HexOrDecimalToBigInt(test.ParentTimestamp)
+	parentDifficulty, _ := hexutil.HexOrDecimalToBigInt(test.ParentDifficulty)
+	currentTimestamp, _ := hexutil.HexOrDecimalToUint64(test.CurrentTimestamp)
 
 	parent := &types.Header{
 		Number:     parentNumber,
@@ -59,7 +59,7 @@ func (test *DifficultyTest) runDifficulty(t *testing.T, config *core.ChainConfig
 	}
 
 	actual := core.CalcDifficulty(config, currentTimestamp, parent)
-	exp, _ := ParseBigInt(test.CurrentDifficulty)
+	exp, _ := hexutil.HexOrDecimalToBigInt(test.CurrentDifficulty)
 
 	if actual.Cmp(exp) != 0 {
 		return fmt.Errorf("parent[time %v diff %v unclehash:%x] child[time %v number %v] diff %v != expected %v",
@@ -68,35 +68,4 @@ func (test *DifficultyTest) runDifficulty(t *testing.T, config *core.ChainConfig
 	}
 	return nil
 
-}
-
-// ParseUint64 parses ambiguous string of hex/decimal into *big.Int
-func ParseUint64(s string) (uint64, bool) {
-	if s == "" {
-		return 0, true
-	}
-	if len(s) >= 2 && (s[:2] == "0x" || s[:2] == "0X") {
-		v, err := strconv.ParseUint(s[2:], 16, 64)
-		return v, err == nil
-	}
-	v, err := strconv.ParseUint(s, 10, 64)
-	return v, err == nil
-}
-
-// ParseBigInt parses ambiguous string of hex/decimal into *big.Int
-func ParseBigInt(s string) (*big.Int, bool) {
-	if s == "" {
-		return new(big.Int), true
-	}
-	var bigint *big.Int
-	var ok bool
-	if len(s) >= 2 && (s[:2] == "0x" || s[:2] == "0X") {
-		bigint, ok = new(big.Int).SetString(s[2:], 16)
-	} else {
-		bigint, ok = new(big.Int).SetString(s, 10)
-	}
-	if ok && bigint.BitLen() > 256 {
-		bigint, ok = nil, false
-	}
-	return bigint, ok
 }
