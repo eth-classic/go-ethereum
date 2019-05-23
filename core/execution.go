@@ -153,7 +153,6 @@ func exec(env vm.Environment, caller vm.ContractRef, address, codeAddr *common.A
 	// above we revert to the snapshot and consume any gas remaining. Additionally
 	// when we're in homestead this also counts for code storage gas errors.
 	if createAccount && maxCodeSizeExceeded ||(err != nil && (env.RuleSet().IsHomestead(env.BlockNumber()) || err != vm.CodeStoreOutOfGasError)) {
-		contract.UseGas(contract.Gas)
 		env.RevertToSnapshot(snapshotPreTransfer)
 		if err != vm.ErrRevert {
 			contract.UseGas(contract.Gas)
