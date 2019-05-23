@@ -31,6 +31,7 @@ import (
 var (
 	OutOfGasError          = errors.New("Out of gas")
 	CodeStoreOutOfGasError = errors.New("Contract creation code storage out of gas")
+	ErrRevert              = errors.New("Execution reverted")
 )
 
 // VirtualMachine is an EVM interface
@@ -170,6 +171,11 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 					ret := mem.GetPtr(offset.Int64(), size.Int64())
 
 					return ret, nil
+				case REVERT:
+					offset, size := stack.pop(), stack.pop()
+					ret := mem.GetPtr(offset.Int64(), size.Int64())
+
+					return ret, ErrRevert
 				case SUICIDE:
 					opSuicide(instruction{}, nil, evm.env, contract, mem, stack)
 
@@ -202,6 +208,9 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 
 	// stack Check, memory resize & gas phase
 	switch op {
+	case REVERT:
+		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-2])
+		quadMemGas(mem, newMemSize, gas)
 	case SUICIDE:
 		address := common.BigToAddress(stack.data[len(stack.data)-1])
 		// if suicide is not nil: homestead gas fork
