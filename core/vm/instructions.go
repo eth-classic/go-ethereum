@@ -533,22 +533,6 @@ func opStaticCall(instr instruction, pc *uint64, env Environment, contract *Cont
 
 }
 
-func opStaticCall(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) {
-	// Pop other call parameters.
-	gas, to, inOffset, inSize, outOffset, outSize := stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop()
-	toAddr := common.BigToAddress(to)
-	// Get arguments from the memory.
-	args := memory.Get(inOffset.Int64(), inSize.Int64())
-
-	ret, err := env.StaticCall(contract, toAddr, args, gas, contract.Price)
-	if err != nil {
-		stack.push(new(big.Int))
-	} else {
-		stack.push(big.NewInt(1))
-		memory.Set(outOffset.Uint64(), outSize.Uint64(), ret)
-	}
-}
-
 func opSuicide(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) {
 	balance := env.Db().GetBalance(contract.Address())
 	env.Db().AddBalance(common.BigToAddress(stack.pop()), balance)
