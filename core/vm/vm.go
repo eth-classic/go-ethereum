@@ -131,6 +131,7 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 		}
 
 		res, err := operation.fn(instruction{}, &pc, evm.env, contract, mem, stack)
+
 		if operation.returns {
 			evm.env.SetReturnData(res)
 		}
@@ -163,6 +164,13 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 
 	// stack Check, memory resize & gas phase
 	switch op {
+	case RETURNDATACOPY:
+		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-3])
+
+		words := toWordSize(stack.data[stack.len()-3])
+		gas.Add(gas, words.Mul(words, big.NewInt(3)))
+
+		quadMemGas(mem, newMemSize, gas)
 	case REVERT:
 		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-2])
 		quadMemGas(mem, newMemSize, gas)

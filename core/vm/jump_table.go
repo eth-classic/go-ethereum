@@ -37,29 +37,27 @@ func newJumpTable(ruleset RuleSet, blockNumber *big.Int) vmJumpTable {
 	// changes.
 	if ruleset.IsHomestead(blockNumber) {
 		jumpTable[DELEGATECALL] = jumpPtr{
-			fn:    opDelegateCall,
-			valid: true,
-
+			fn:      opDelegateCall,
+			valid:   true,
 			returns: true,
 		}
 	}
 
 	if ruleset.IsAtlantis(blockNumber) {
 		jumpTable[REVERT] = jumpPtr{
-			fn:    opRevert,
-			valid: true,
-
+			fn:      opRevert,
+			valid:   true,
 			reverts: true,
 			returns: true,
 		}
-		// jumpTable[RETURNDATASIZE] = jumpPtr{
-		// 	fn:    opReturnDataSize,
-		// 	valid: false,
-		// }
-		// jumpTable[RETURNDATACOPY] = jumpPtr{
-		// 	fn:    nil,
-		// 	valid: false,
-		// }
+		jumpTable[RETURNDATASIZE] = jumpPtr{
+			fn:    opReturnDataSize,
+			valid: false,
+		}
+		jumpTable[RETURNDATACOPY] = jumpPtr{
+			fn:    opReturnDataCopy,
+			valid: false,
+		}
 	}
 
 	return jumpTable
@@ -276,21 +274,18 @@ func newFrontierInstructionSet() vmJumpTable {
 			valid: true,
 		},
 		CREATE: {
-			fn:    opCreate,
-			valid: true,
-
+			fn:      opCreate,
+			valid:   true,
 			returns: true,
 		},
 		CALL: {
-			fn:    opCall,
-			valid: true,
-
+			fn:      opCall,
+			valid:   true,
 			returns: true,
 		},
 		CALLCODE: {
-			fn:    opCallCode,
-			valid: true,
-
+			fn:      opCallCode,
+			valid:   true,
 			returns: true,
 		},
 		LOG0: {
@@ -572,31 +567,26 @@ func newFrontierInstructionSet() vmJumpTable {
 		RETURN: {
 			fn:    opReturn,
 			valid: true,
-
 			halts: true,
 		},
 		SUICIDE: {
 			fn:    opSuicide,
 			valid: true,
-
 			halts: true,
 		},
 		JUMP: {
 			fn:    opJump,
 			valid: true,
-
 			jumps: true,
 		},
 		JUMPI: {
 			fn:    opJumpi,
 			valid: true,
-
 			jumps: true,
 		},
 		STOP: {
 			fn:    opStop,
 			valid: true,
-
 			halts: true,
 		},
 	}

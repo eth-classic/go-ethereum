@@ -42,7 +42,8 @@ type instruction struct {
 }
 
 var (
-	errInvalidJump = errors.New("invalid jump destination")
+	errReturnDataOutOfBounds = errors.New("evm: return data out of bounds")
+	errInvalidJump           = errors.New("evm: invalid jump destination")
 )
 
 func (instr instruction) halts() bool {
@@ -629,6 +630,24 @@ func opSuicide(instr instruction, pc *uint64, env Environment, contract *Contrac
 func opReturnDataSize(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
 	returnDataSize := new(big.Int).SetUint64((uint64(len(env.ReturnData()))))
 	stack.push(returnDataSize)
+	return nil, nil
+}
+
+func opReturnDataCopy(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
+	var (
+		memOffset  = stack.pop()
+		dataOffset = stack.pop()
+		length     = stack.pop()
+
+		end = new(big.Int).Add(dataOffset, length)
+	)
+
+	if !end.IsUint64() || uint64(len(env.ReturnData())) < end.Uint64() {
+		return nil, errReturnDataOutOfBounds
+	}
+
+	memory.Set(memOffset.Uint64(), length.Uint64(), env.ReturnData()[dataOffset.Uint64():end.Uint64()])
+
 	return nil, nil
 }
 
