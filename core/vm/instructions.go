@@ -17,6 +17,7 @@
 package vm
 
 import (
+	"errors"
 	"math/big"
 
 	"github.com/eth-classic/go-ethereum/common"
@@ -39,6 +40,10 @@ type instruction struct {
 
 	returns bool
 }
+
+var (
+	errInvalidJump = errors.New("invalid jump destination")
+)
 
 func (instr instruction) halts() bool {
 	return instr.returns
@@ -438,6 +443,30 @@ func opSstore(instr instruction, pc *uint64, env Environment, contract *Contract
 	loc := common.BigToHash(stack.pop())
 	val := stack.pop()
 	env.Db().SetState(contract.Address(), loc, common.BigToHash(val))
+	return nil, nil
+}
+
+func opJump(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
+	pos := stack.pop()
+	if !contract.isValidJump(pc, pos) {
+		return nil, errInvalidJump
+	}
+
+	*pc = pos.Uint64()
+	return nil, nil
+}
+
+func opJumpi(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
+	pos, cond := stack.pop(), stack.pop()
+	if cond.Sign() != 0 {
+		if !contract.isValidJump(pc, pos) {
+			return nil, errInvalidJump
+		}
+
+		*pc = pos.Uint64()
+		return nil, nil
+	}
+	*pc++
 	return nil, nil
 }
 

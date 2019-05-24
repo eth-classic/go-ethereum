@@ -22,6 +22,7 @@ type jumpPtr struct {
 	fn    instrFn
 	valid bool
 
+	jumps   bool // indicates whether the program counter should not increment
 	halts   bool // indicates whether the operation should halt further execution
 	reverts bool // determines whether the operation reverts state (implicitly halts)
 	returns bool // Indicates whether return data should be overwritten
@@ -51,14 +52,14 @@ func newJumpTable(ruleset RuleSet, blockNumber *big.Int) vmJumpTable {
 			reverts: true,
 			returns: true,
 		}
-		jumpTable[RETURNDATASIZE] = jumpPtr{
-			fn:    opReturnDataSize,
-			valid: false,
-		}
-		jumpTable[RETURNDATACOPY] = jumpPtr{
-			fn:    nil,
-			valid: false,
-		}
+		// jumpTable[RETURNDATASIZE] = jumpPtr{
+		// 	fn:    opReturnDataSize,
+		// 	valid: false,
+		// }
+		// jumpTable[RETURNDATACOPY] = jumpPtr{
+		// 	fn:    nil,
+		// 	valid: false,
+		// }
 	}
 
 	return jumpTable
@@ -581,12 +582,16 @@ func newFrontierInstructionSet() vmJumpTable {
 			halts: true,
 		},
 		JUMP: {
-			fn:    nil,
+			fn:    opJump,
 			valid: true,
+
+			jumps: true,
 		},
 		JUMPI: {
-			fn:    nil,
+			fn:    opJumpi,
 			valid: true,
+
+			jumps: true,
 		},
 		STOP: {
 			fn:    opStop,

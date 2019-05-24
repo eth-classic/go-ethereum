@@ -85,7 +85,6 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 
 	var (
 		caller     = contract.caller
-		code       = contract.Code
 		instrCount = 0
 
 		op      OpCode         // current opcode
@@ -95,19 +94,6 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 		// For optimisation reason we're using uint64 as the program counter.
 		// It's theoretically possible to go above 2^64. The YP defines the PC to be uint256. Practically much less so feasible.
 		pc = uint64(0) // program counter
-
-		// jump evaluates and checks whether the given jump destination is a valid one
-		// if valid move the `pc` otherwise return an error.
-		jump = func(from uint64, to *big.Int) error {
-			if !contract.jumpdests.has(codehash, code, to) {
-				nop := contract.GetOp(to.Uint64())
-				return fmt.Errorf("invalid jump destination (%v) %v", nop, to)
-			}
-
-			pc = to.Uint64()
-
-			return nil
-		}
 
 		newMemSize *big.Int
 		cost       *big.Int
@@ -143,26 +129,6 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 		if !operation.valid {
 			return nil, fmt.Errorf("Invalid opcode %x", op)
 		}
-		if operation.fn == nil {
-			switch op {
-			case JUMP:
-				if err := jump(pc, stack.pop()); err != nil {
-					return nil, err
-				}
-				continue
-			case JUMPI:
-				pos, cond := stack.pop(), stack.pop()
-
-				if cond.Sign() != 0 {
-					if err := jump(pc, pos); err != nil {
-						return nil, err
-					}
-					continue
-				}
-			}
-			pc++
-			continue
-		}
 
 		res, err := operation.fn(instruction{}, &pc, evm.env, contract, mem, stack)
 		if operation.returns {
@@ -176,10 +142,9 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 			return res, ErrRevert
 		case operation.halts:
 			return res, nil
+		case !operation.jumps:
+			pc++
 		}
-
-		pc++
-
 	}
 }
 
