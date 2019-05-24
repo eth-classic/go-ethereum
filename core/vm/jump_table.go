@@ -21,6 +21,8 @@ import "math/big"
 type jumpPtr struct {
 	fn    instrFn
 	valid bool
+
+	returns bool // Indicates whether return data should be overwritten
 }
 
 type vmJumpTable [256]jumpPtr
@@ -34,11 +36,23 @@ func newJumpTable(ruleset RuleSet, blockNumber *big.Int) vmJumpTable {
 		jumpTable[DELEGATECALL] = jumpPtr{
 			fn:    opDelegateCall,
 			valid: true,
+
+			returns: true,
 		}
 	}
 
 	if ruleset.IsAtlantis(blockNumber) {
 		jumpTable[REVERT] = jumpPtr{
+			fn:    nil,
+			valid: true,
+
+			returns: true,
+		}
+		jumpTable[RETURNDATASIZE] = jumpPtr{
+			fn:    opReturnDataSize,
+			valid: true,
+		}
+		jumpTable[RETURNDATACOPY] = jumpPtr{
 			fn:    nil,
 			valid: true,
 		}
@@ -260,14 +274,20 @@ func newFrontierInstructionSet() vmJumpTable {
 		CREATE: {
 			fn:    opCreate,
 			valid: true,
+
+			returns: true,
 		},
 		CALL: {
 			fn:    opCall,
 			valid: true,
+
+			returns: true,
 		},
 		CALLCODE: {
 			fn:    opCallCode,
 			valid: true,
+
+			returns: true,
 		},
 		LOG0: {
 			fn:    makeLog(0),
