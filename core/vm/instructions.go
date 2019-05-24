@@ -446,7 +446,7 @@ func opJumpdest(instr instruction, pc *uint64, env Environment, contract *Contra
 }
 
 func opPc(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
-	stack.push(new(big.Int).Set(instr.data))
+	stack.push(new(big.Int).SetUint64(*pc))
 	return nil, nil
 }
 

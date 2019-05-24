@@ -50,11 +50,11 @@ func newJumpTable(ruleset RuleSet, blockNumber *big.Int) vmJumpTable {
 		}
 		jumpTable[RETURNDATASIZE] = jumpPtr{
 			fn:    opReturnDataSize,
-			valid: true,
+			valid: false,
 		}
 		jumpTable[RETURNDATACOPY] = jumpPtr{
 			fn:    nil,
-			valid: true,
+			valid: false,
 		}
 	}
 
@@ -260,7 +260,7 @@ func newFrontierInstructionSet() vmJumpTable {
 			valid: true,
 		},
 		PC: {
-			fn:    nil,
+			fn:    opPc,
 			valid: true,
 		},
 		MSIZE: {

@@ -145,8 +145,6 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 				opPtr.fn(instruction{}, &pc, evm.env, contract, mem, stack)
 			} else {
 				switch op {
-				case PC:
-					opPc(instruction{data: new(big.Int).SetUint64(pc)}, &pc, evm.env, contract, mem, stack)
 				case JUMP:
 					if err := jump(pc, stack.pop()); err != nil {
 						return nil, err
