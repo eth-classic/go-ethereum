@@ -503,7 +503,7 @@ func opCreate(instr instruction, pc *uint64, env Environment, contract *Contract
 	}
 
 	contract.UseGas(gas)
-	_, addr, suberr := env.Create(contract, input, gas, contract.Price, value)
+	ret, addr, suberr := env.Create(contract, input, gas, contract.Price, value)
 	// Push item on the stack based on the returned error. If the ruleset is
 	// homestead we must check for CodeStoreOutOfGasError (homestead only
 	// rule) and treat as an error, if the ruleset is frontier we must
@@ -515,7 +515,7 @@ func opCreate(instr instruction, pc *uint64, env Environment, contract *Contract
 	} else {
 		stack.push(addr.Big())
 	}
-	return nil, nil
+	return ret, nil
 }
 
 func opCall(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
@@ -548,7 +548,7 @@ func opCall(instr instruction, pc *uint64, env Environment, contract *Contract, 
 	if err == nil || err == ErrRevert {
 		memory.Set(retOffset.Uint64(), retSize.Uint64(), ret)
 	}
-	return nil, nil
+	return ret, nil
 }
 
 func opCallCode(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
@@ -581,7 +581,7 @@ func opCallCode(instr instruction, pc *uint64, env Environment, contract *Contra
 	if err == nil || err == ErrRevert {
 		memory.Set(retOffset.Uint64(), retSize.Uint64(), ret)
 	}
-	return nil, nil
+	return ret, nil
 }
 
 func opDelegateCall(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
@@ -598,7 +598,7 @@ func opDelegateCall(instr instruction, pc *uint64, env Environment, contract *Co
 	if err == nil || err == ErrRevert {
 		memory.Set(outOffset.Uint64(), outSize.Uint64(), ret)
 	}
-	return nil, nil
+	return ret, nil
 }
 
 func opReturn(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {

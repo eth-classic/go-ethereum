@@ -52,11 +52,11 @@ func newJumpTable(ruleset RuleSet, blockNumber *big.Int) vmJumpTable {
 		}
 		jumpTable[RETURNDATASIZE] = jumpPtr{
 			fn:    opReturnDataSize,
-			valid: false,
+			valid: true,
 		}
 		jumpTable[RETURNDATACOPY] = jumpPtr{
 			fn:    opReturnDataCopy,
-			valid: false,
+			valid: true,
 		}
 	}
 
