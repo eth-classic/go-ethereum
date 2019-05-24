@@ -6,12 +6,12 @@ require (
 	github.com/denisbrodbeck/machineid v0.8.0 //mark
 	github.com/eth-classic/benchmark v0.0.0-20190401191651-0f5bf26f7cd8
 	github.com/eth-classic/ethash v0.0.0-20190401191819-b3fdb17512de
-	github.com/eth-classic/go-ethereum/accounts/abi/bind v0.0.0-20190521151733-08ef773e6c79
 	github.com/ethereum/go-ethereum v1.8.27
 	github.com/fatih/color v1.7.0
 	github.com/gizak/termui v2.2.0+incompatible
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
+	github.com/golang/snappy v0.0.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.1
 	github.com/huin/goupnp v1.0.0
 	github.com/jackpal/go-nat-pmp v1.0.1
