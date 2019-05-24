@@ -139,48 +139,43 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 
 		// Resize the memory calculated previously
 		mem.Resize(newMemSize.Uint64())
+		operation := evm.jumpTable[op]
+		if !operation.valid {
+			return nil, fmt.Errorf("Invalid opcode %x", op)
+		}
+		if operation.fn == nil {
+			switch op {
+			case JUMP:
+				if err := jump(pc, stack.pop()); err != nil {
+					return nil, err
+				}
+				continue
+			case JUMPI:
+				pos, cond := stack.pop(), stack.pop()
 
-		if opPtr := evm.jumpTable[op]; opPtr.valid {
-			if opPtr.fn != nil {
-				opPtr.fn(instruction{}, &pc, evm.env, contract, mem, stack)
-			} else {
-				switch op {
-				case JUMP:
-					if err := jump(pc, stack.pop()); err != nil {
+				if cond.Sign() != 0 {
+					if err := jump(pc, pos); err != nil {
 						return nil, err
 					}
-
 					continue
-				case JUMPI:
-					pos, cond := stack.pop(), stack.pop()
-
-					if cond.Sign() != 0 {
-						if err := jump(pc, pos); err != nil {
-							return nil, err
-						}
-
-						continue
-					}
-				case RETURN:
-					offset, size := stack.pop(), stack.pop()
-					ret := mem.GetPtr(offset.Int64(), size.Int64())
-
-					return ret, nil
-				case REVERT:
-					offset, size := stack.pop(), stack.pop()
-					ret := mem.GetPtr(offset.Int64(), size.Int64())
-
-					return ret, ErrRevert
-				case SUICIDE:
-					opSuicide(instruction{}, nil, evm.env, contract, mem, stack)
-
-					fallthrough
-				case STOP: // Stop the contract
-					return nil, nil
 				}
 			}
-		} else {
-			return nil, fmt.Errorf("Invalid opcode %x", op)
+			pc++
+			continue
+		}
+
+		res, err := operation.fn(instruction{}, &pc, evm.env, contract, mem, stack)
+		if operation.returns {
+			evm.env.SetReturnData(res)
+		}
+
+		switch {
+		case err != nil:
+			return nil, err
+		case operation.reverts:
+			return res, ErrRevert
+		case operation.halts:
+			return res, nil
 		}
 
 		pc++

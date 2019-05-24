@@ -22,6 +22,8 @@ type jumpPtr struct {
 	fn    instrFn
 	valid bool
 
+	halts   bool // indicates whether the operation should halt further execution
+	reverts bool // determines whether the operation reverts state (implicitly halts)
 	returns bool // Indicates whether return data should be overwritten
 }
 
@@ -43,9 +45,10 @@ func newJumpTable(ruleset RuleSet, blockNumber *big.Int) vmJumpTable {
 
 	if ruleset.IsAtlantis(blockNumber) {
 		jumpTable[REVERT] = jumpPtr{
-			fn:    nil,
+			fn:    opRevert,
 			valid: true,
 
+			reverts: true,
 			returns: true,
 		}
 		jumpTable[RETURNDATASIZE] = jumpPtr{
@@ -566,12 +569,16 @@ func newFrontierInstructionSet() vmJumpTable {
 			valid: true,
 		},
 		RETURN: {
-			fn:    nil,
+			fn:    opReturn,
 			valid: true,
+
+			halts: true,
 		},
 		SUICIDE: {
-			fn:    nil,
+			fn:    opSuicide,
 			valid: true,
+
+			halts: true,
 		},
 		JUMP: {
 			fn:    nil,
@@ -582,8 +589,10 @@ func newFrontierInstructionSet() vmJumpTable {
 			valid: true,
 		},
 		STOP: {
-			fn:    nil,
+			fn:    opStop,
 			valid: true,
+
+			halts: true,
 		},
 	}
 }

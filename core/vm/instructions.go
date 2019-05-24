@@ -571,6 +571,24 @@ func opDelegateCall(instr instruction, pc *uint64, env Environment, contract *Co
 	return nil, nil
 }
 
+func opReturn(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
+	offset, size := stack.pop(), stack.pop()
+	ret := memory.GetPtr(offset.Int64(), size.Int64())
+
+	return ret, nil
+}
+
+func opRevert(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
+	offset, size := stack.pop(), stack.pop()
+	ret := memory.GetPtr(offset.Int64(), size.Int64())
+
+	return ret, nil
+}
+
+func opStop(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
+	return nil, nil
+}
+
 func opSuicide(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
 	balance := env.Db().GetBalance(contract.Address())
 	env.Db().AddBalance(common.BigToAddress(stack.pop()), balance)
