@@ -165,17 +165,17 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 	// stack Check, memory resize & gas phase
 	switch op {
 	case RETURNDATACOPY:
-		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-3])
+		newMemSize = calcMemSize(stack.back(0), stack.back(2))
 
-		words := toWordSize(stack.data[stack.len()-3])
+		words := toWordSize(stack.back(2))
 		gas.Add(gas, words.Mul(words, big.NewInt(3)))
 
 		quadMemGas(mem, newMemSize, gas)
 	case REVERT:
-		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-2])
+		newMemSize = calcMemSize(stack.back(0), stack.back(1))
 		quadMemGas(mem, newMemSize, gas)
 	case SUICIDE:
-		address := common.BigToAddress(stack.data[len(stack.data)-1])
+		address := common.BigToAddress(stack.back(0))
 		// if suicide is not nil: homestead gas fork
 		if gasTable.CreateBySuicide != nil {
 			gas.Set(gasTable.Suicide)
@@ -218,7 +218,7 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 			return nil, nil, err
 		}
 
-		mSize, mStart := stack.data[stack.len()-2], stack.data[stack.len()-1]
+		mSize, mStart := stack.back(1), stack.back(0)
 
 		// log gas
 		gas.Add(gas, big.NewInt(375))
@@ -231,7 +231,7 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 
 		quadMemGas(mem, newMemSize, gas)
 	case EXP:
-		expByteLen := int64(len(stack.data[stack.len()-2].Bytes()))
+		expByteLen := int64(len(stack.back(1).Bytes()))
 		gas.Add(gas, new(big.Int).Mul(big.NewInt(expByteLen), gasTable.ExpByte))
 	case SSTORE:
 		err := stack.require(2)
@@ -240,7 +240,7 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 		}
 
 		var g *big.Int
-		y, x := stack.data[stack.len()-2], stack.data[stack.len()-1]
+		y, x := stack.back(1), stack.back(0)
 		val := statedb.GetState(contract.Address(), common.BigToHash(x))
 
 		// This checks for 3 scenario's and calculates gas accordingly
@@ -260,57 +260,57 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 		gas.Set(g)
 
 	case MLOAD:
-		newMemSize = calcMemSize(stack.peek(), u256(32))
+		newMemSize = calcMemSize(stack.back(0), u256(32))
 		quadMemGas(mem, newMemSize, gas)
 	case MSTORE8:
-		newMemSize = calcMemSize(stack.peek(), u256(1))
+		newMemSize = calcMemSize(stack.back(0), u256(1))
 		quadMemGas(mem, newMemSize, gas)
 	case MSTORE:
-		newMemSize = calcMemSize(stack.peek(), u256(32))
+		newMemSize = calcMemSize(stack.back(0), u256(32))
 		quadMemGas(mem, newMemSize, gas)
 	case RETURN:
-		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-2])
+		newMemSize = calcMemSize(stack.back(0), stack.back(1))
 		quadMemGas(mem, newMemSize, gas)
 	case SHA3:
-		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-2])
+		newMemSize = calcMemSize(stack.back(0), stack.back(1))
 
-		words := toWordSize(stack.data[stack.len()-2])
+		words := toWordSize(stack.back(1))
 		gas.Add(gas, words.Mul(words, big.NewInt(6)))
 
 		quadMemGas(mem, newMemSize, gas)
 	case CALLDATACOPY:
-		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-3])
+		newMemSize = calcMemSize(stack.back(0), stack.back(2))
 
-		words := toWordSize(stack.data[stack.len()-3])
+		words := toWordSize(stack.back(2))
 		gas.Add(gas, words.Mul(words, big.NewInt(3)))
 
 		quadMemGas(mem, newMemSize, gas)
 	case CODECOPY:
-		newMemSize = calcMemSize(stack.peek(), stack.data[stack.len()-3])
+		newMemSize = calcMemSize(stack.back(0), stack.back(2))
 
-		words := toWordSize(stack.data[stack.len()-3])
+		words := toWordSize(stack.back(2))
 		gas.Add(gas, words.Mul(words, big.NewInt(3)))
 
 		quadMemGas(mem, newMemSize, gas)
 	case EXTCODECOPY:
 		gas.Set(gasTable.ExtcodeCopy)
 
-		newMemSize = calcMemSize(stack.data[stack.len()-2], stack.data[stack.len()-4])
+		newMemSize = calcMemSize(stack.back(1), stack.back(3))
 
-		words := toWordSize(stack.data[stack.len()-4])
+		words := toWordSize(stack.back(3))
 		gas.Add(gas, words.Mul(words, big.NewInt(3)))
 
 		quadMemGas(mem, newMemSize, gas)
 	case CREATE:
-		newMemSize = calcMemSize(stack.data[stack.len()-2], stack.data[stack.len()-3])
+		newMemSize = calcMemSize(stack.back(1), stack.back(2))
 
 		quadMemGas(mem, newMemSize, gas)
 	case CALL, CALLCODE:
 		gas.Set(gasTable.Calls)
 
 		if op == CALL {
-			address := common.BigToAddress(stack.data[stack.len()-2])
-			transfersValue := stack.data[stack.len()-3].Sign() != 0
+			address := common.BigToAddress(stack.back(1))
+			transfersValue := stack.back(2).Sign() != 0
 			if isAtlantis {
 				if transfersValue && env.Db().Empty(address) {
 					gas.Add(gas, big.NewInt(25000))
@@ -319,17 +319,17 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 				gas.Add(gas, big.NewInt(25000))
 			}
 		}
-		if len(stack.data[stack.len()-3].Bytes()) > 0 {
+		if len(stack.back(2).Bytes()) > 0 {
 			gas.Add(gas, big.NewInt(9000))
 		}
-		x := calcMemSize(stack.data[stack.len()-6], stack.data[stack.len()-7])
-		y := calcMemSize(stack.data[stack.len()-4], stack.data[stack.len()-5])
+		x := calcMemSize(stack.back(5), stack.back(6))
+		y := calcMemSize(stack.back(3), stack.back(4))
 
 		newMemSize = common.BigMax(x, y)
 
 		quadMemGas(mem, newMemSize, gas)
 
-		cg := callGas(gasTable, contract.Gas, gas, stack.data[stack.len()-1])
+		cg := callGas(gasTable, contract.Gas, gas, stack.back(0))
 		// Replace the stack item with the new gas calculation. This means that
 		// either the original item is left on the stack or the item is replaced by:
 		// (availableGas - gas) * 63 / 64
@@ -342,14 +342,14 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 	case DELEGATECALL:
 		gas.Set(gasTable.Calls)
 
-		x := calcMemSize(stack.data[stack.len()-5], stack.data[stack.len()-6])
-		y := calcMemSize(stack.data[stack.len()-3], stack.data[stack.len()-4])
+		x := calcMemSize(stack.back(4), stack.back(5))
+		y := calcMemSize(stack.back(2), stack.back(3))
 
 		newMemSize = common.BigMax(x, y)
 
 		quadMemGas(mem, newMemSize, gas)
 
-		cg := callGas(gasTable, contract.Gas, gas, stack.data[stack.len()-1])
+		cg := callGas(gasTable, contract.Gas, gas, stack.back(0))
 		// Replace the stack item with the new gas calculation. This means that
 		// either the original item is left on the stack or the item is replaced by:
 		// (availableGas - gas) * 63 / 64
