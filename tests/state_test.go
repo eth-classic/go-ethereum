@@ -742,10 +742,9 @@ func TestAllETH(t *testing.T) {
 	skipTests["FailedCreateRevertsDeletion.json"] = "State trie clearing unimplemented"
 
 	unsupportedDirs := map[string]bool{
-		"stStaticCall":     true,
-		"stZeroKnowledge":  true,
-		"stZeroKnowledge2": true,
-		// "stReturnDataTest":        true,
+		"stStaticCall":            true,
+		"stZeroKnowledge":         true,
+		"stZeroKnowledge2":        true,
 		"stPreCompiledContracts":  true,
 		"stPreCompiledContracts2": true,
 		"stCreate2":               true,

@@ -515,7 +515,11 @@ func opCreate(instr instruction, pc *uint64, env Environment, contract *Contract
 	} else {
 		stack.push(addr.Big())
 	}
-	return ret, nil
+
+	if suberr == ErrRevert {
+		return ret, nil
+	}
+	return nil, nil
 }
 
 func opCall(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {

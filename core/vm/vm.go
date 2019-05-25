@@ -108,6 +108,10 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 		}()
 	}
 
+	// defer func() {
+	// 	fmt.Printf("\t\tpc: %v, gas: %s, memSize: %v, stack: %v, depth: %v, opName: %s, err: %s\n", pc, common.ToHex(contract.Gas.Bytes()), mem.Len(), stack.Data(), evm.env.Depth(), op.String(), err)
+	// }()
+
 	for ; ; instrCount++ {
 		// Get the memory location of pc
 		op = contract.GetOp(pc)
@@ -116,6 +120,8 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 		if err != nil {
 			return nil, err
 		}
+
+		// fmt.Printf("\t\tpc: %v, gas: %s, memSize: %v, stack: %v, depth: %v, opName: %s, err: %s\n", pc, common.ToHex(contract.Gas.Bytes()), mem.Len(), stack.Data(), evm.env.Depth(), op.String(), err)
 
 		// Use the calculated gas. When insufficient gas is present, use all gas and return an
 		// Out Of Gas error
@@ -168,6 +174,7 @@ func calculateGasAndSize(gasTable *GasTable, env Environment, contract *Contract
 		newMemSize = calcMemSize(stack.back(0), stack.back(2))
 
 		words := toWordSize(stack.back(2))
+		gas.Add(gas, GasFastestStep)
 		gas.Add(gas, words.Mul(words, big.NewInt(3)))
 
 		quadMemGas(mem, newMemSize, gas)
