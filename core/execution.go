@@ -63,7 +63,7 @@ func Create(env vm.Environment, caller vm.ContractRef, code []byte, gas, gasPric
 	// and YP definitions for CREATE
 
 	//if there's an error we return nothing
-	if err != nil {
+	if err != nil && err != vm.ErrRevert {
 		return nil, address, err
 	}
 	return ret, address, err

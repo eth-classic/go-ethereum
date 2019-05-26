@@ -650,7 +650,7 @@ func opReturnDataCopy(instr instruction, pc *uint64, env Environment, contract *
 		return nil, errReturnDataOutOfBounds
 	}
 
-	memory.Set(memOffset.Uint64(), length.Uint64(), getData(contract.Input, dataOffset, length))
+	memory.Set(memOffset.Uint64(), length.Uint64(), getData(env.ReturnData(), dataOffset, length))
 
 	return nil, nil
 }
