@@ -136,7 +136,7 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 			return nil, fmt.Errorf("Invalid opcode %x", op)
 		}
 
-		res, err := operation.fn(instruction{}, &pc, evm.env, contract, mem, stack)
+		res, err := operation.fn(&pc, evm.env, contract, mem, stack)
 
 		if operation.returns {
 			evm.env.SetReturnData(res)
