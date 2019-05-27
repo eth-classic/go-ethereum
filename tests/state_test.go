@@ -700,18 +700,6 @@ func TestAllETH(t *testing.T) {
 	skipTests["createJS_ExampleContract.json"] = "Not Implemented"
 	skipTests["RevertDepthCreateAddressCollision.json"] = "Not Implemented"
 
-	// StaticCall implementations
-	skipTests["staticcall_createfails.json"] = "STATICCALL Not Implemented"
-	skipTests["RevertInStaticCall.json"] = "STATICCALL Not Implemented"
-	skipTests["returndatasize_after_successful_staticcall.json"] = "STATICCALL Not Implemented"
-	skipTests["returndatacopy_after_revert_in_staticcall.json"] = "STATICCALL Not Implemented"
-	skipTests["returndatacopy_after_successful_staticcall.json"] = "STATICCALL Not Implemented"
-	skipTests["returndatasize_after_failing_staticcall.json"] = "STATICCALL Not Implemented"
-
-	// EIP 211 Implementations
-	// skipTests["CreateOOGafterInitCodeReturndataSize.json"] = "REVERT Not Implemented"
-	// skipTests["CreateOOGafterInitCodeReturndata2.json"] = "REVERT Not Implemented"
-
 	// EIP 214 Implementations
 	skipTests["RevertOpcodeInCallsOnNonEmptyReturnData.json"] = "EIP214 Not Implemented"
 	skipTests["RevertInCallCode.json"] = "EIP214 Not Implemented"
@@ -736,13 +724,16 @@ func TestAllETH(t *testing.T) {
 	skipTests["RevertPrecompiledTouch_noncestorage.json"] = "precompiled unimplemented"
 	skipTests["create_callprecompile_returndatasize.json"] = "precompiled unimplemented"
 	skipTests["modexp_modsize0_returndatasize.json"] = "precompiled unimplemented"
+	skipTests["static_CallEcrecover0_0input.json/Byzantium/5"] = "precompiled unimplemented"
+	skipTests["static_CallEcrecover0_0input.json/Byzantium/6"] = "precompiled unimplemented"
+	skipTests["static_CallEcrecover0_0input.json/Byzantium/7"] = "precompiled unimplemented"
+	skipTests["static_CallEcrecover0_0input.json/Byzantium/8"] = "precompiled unimplemented"
 
 	// EIP 158/161 skipped tests
 	skipTests["RevertPrefoundEmptyOOG.json"] = "State trie clearing unimplemented"
 	skipTests["FailedCreateRevertsDeletion.json"] = "State trie clearing unimplemented"
 
 	unsupportedDirs := map[string]bool{
-		"stStaticCall":            true,
 		"stZeroKnowledge":         true,
 		"stZeroKnowledge2":        true,
 		"stPreCompiledContracts":  true,
