@@ -700,23 +700,10 @@ func TestAllETH(t *testing.T) {
 	skipTests["createJS_ExampleContract.json"] = "Not Implemented"
 	skipTests["RevertDepthCreateAddressCollision.json"] = "Not Implemented"
 
-	// EIP 214 Implementations
-	skipTests["RevertOpcodeInCallsOnNonEmptyReturnData.json"] = "EIP214 Not Implemented"
-	skipTests["RevertInCallCode.json"] = "EIP214 Not Implemented"
-	skipTests["RevertInCreateInInit.json"] = "EIP214 Not Implemented"
-	skipTests["RevertInDelegateCall.json"] = "EIP214 Not Implemented"
-	skipTests["RevertOpcodeInCreateReturns.json"] = "EIP214 Not Implemented"
-	skipTests["PythonRevertTestTue201814-1430.json"] = "EIP214 Not Implemented"
-
 	// Random Test failures (REVISIT)
 	skipTests["randomStatetest642.json"] = "random unimplemented"
 	skipTests["randomStatetest644.json"] = "random unimplemented"
 	skipTests["randomStatetest645.json"] = "random unimplemented"
-	skipTests["Opcodes_TransactionInit.json/Byzantium/37"] = "random unimplemented"
-	skipTests["Opcodes_TransactionInit.json/Byzantium/38"] = "random unimplemented"
-	skipTests["Opcodes_TransactionInit.json/Byzantium/125"] = "random unimplemented"
-	skipTests["Opcodes_TransactionInit.json/Byzantium/126"] = "random unimplemented"
-	skipTests["CREATE_ContractRETURNBigOffset.json"] = "random unimplemented"
 
 	skipTests["RevertPrecompiledTouch.json"] = "precompiled unimplemented"
 	skipTests["RevertPrecompiledTouch_nonce.json"] = "precompiled unimplemented"
