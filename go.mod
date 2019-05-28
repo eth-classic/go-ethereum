@@ -13,7 +13,6 @@ require (
 	github.com/huin/goupnp v1.0.0
 	github.com/jackpal/go-nat-pmp v1.0.1
 	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983
-	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/peterh/liner v1.1.0
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a
 	github.com/rjeczalik/notify v0.9.1
