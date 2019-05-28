@@ -689,13 +689,6 @@ func TestAllETH(t *testing.T) {
 	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/0"] = "Bug in Test"
 	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/3"] = "Bug in Test"
 
-	// precompile failing tests
-	skipTests["identity_to_bigger.json/Byzantium/0"] = "Bug in Test"
-	skipTests["identity_to_smaller.json/Byzantium/0"] = "Bug in Test"
-	skipTests["modexp.json"] = "Bug in Test"
-
-	// TODO: Remove following skipped tests:
-
 	// EIP 684 Implementations
 	skipTests["TransactionCollisionToEmptyButCode.json"] = "Not Implemented"
 	skipTests["TransactionCollisionToEmpty.json"] = "Not Implemented"
