@@ -74,7 +74,7 @@ func (evm *EVM) Run(contract *Contract, input []byte) (ret []byte, err error) {
 			}
 		} else {
 			if p := PrecompiledPreAtlantis[contract.CodeAddr.Str()]; p != nil {
-				return evm.RunPrecompiled(p, input, contract)		
+				return evm.RunPrecompiled(p, input, contract)
 			}
 		}
 
