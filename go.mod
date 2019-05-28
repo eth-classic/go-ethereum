@@ -8,11 +8,13 @@ require (
 	github.com/eth-classic/ethash v0.0.0-20190401191819-b3fdb17512de
 	github.com/eth-classic/go-ethereum/accounts/abi/bind v0.0.0-20190521151733-fe17e9e1e2ce
 	github.com/fatih/color v1.7.0
-	github.com/gizak/termui v2.2.0+incompatible
+	github.com/gizak/termui v2.3.0+incompatible
 	github.com/hashicorp/golang-lru v0.5.1
 	github.com/huin/goupnp v1.0.0
 	github.com/jackpal/go-nat-pmp v1.0.1
 	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983
+	github.com/maruel/panicparse v1.2.0 // indirect
+	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/peterh/liner v1.1.0
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a
 	github.com/rjeczalik/notify v0.9.1
