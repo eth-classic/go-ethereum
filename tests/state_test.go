@@ -690,15 +690,6 @@ func TestAllETH(t *testing.T) {
 	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/3"] = "Bug in Test"
 
 	// precompile failing tests
-	skipTests["CALLCODEEcrecoverV_prefixedf0.json/EIP150/0"] = "Bug in Test"
-	skipTests["CALLCODEEcrecoverV_prefixedf0.json/EIP150/1"] = "Bug in Test"
-	skipTests["CALLCODEEcrecoverV_prefixedf0.json/Frontier/0"] = "Bug in Test"
-	skipTests["CALLCODEEcrecoverV_prefixedf0.json/Frontier/1"] = "Bug in Test"
-	skipTests["CALLCODEEcrecoverV_prefixedf0.json/Homestead/0"] = "Bug in Test"
-	skipTests["CALLCODEEcrecoverV_prefixedf0.json/Homestead/1"] = "Bug in Test"
-	skipTests["CALLCODEEcrecoverV_prefixedf0.json/Byzantium/0"] = "Bug in Test"
-	skipTests["CALLCODEEcrecoverV_prefixedf0.json/Byzantium/1"] = "Bug in Test"
-
 	skipTests["identity_to_bigger.json/Byzantium/0"] = "Bug in Test"
 	skipTests["identity_to_smaller.json/Byzantium/0"] = "Bug in Test"
 	skipTests["modexp.json"] = "Bug in Test"
@@ -756,14 +747,14 @@ func TestAllETH(t *testing.T) {
 	skipTests["FailedCreateRevertsDeletion.json"] = "State trie clearing unimplemented"
 
 	unsupportedDirs := map[string]bool{
-		"stStaticCall":            true,
-		"stZeroKnowledge":         true,
-		"stZeroKnowledge2":        true,
-		"stReturnDataTest":        true,
+		"stStaticCall":     true,
+		"stZeroKnowledge":  true,
+		"stZeroKnowledge2": true,
+		"stReturnDataTest": true,
 		//"stPreCompiledContracts":  true,
 		//"stPreCompiledContracts2": true,
-		"stCodeSizeLimit":         true,
-		"stCreate2":               true,
+		"stCodeSizeLimit": true,
+		"stCreate2":       true,
 	}
 
 	for _, dn := range dirNames {

@@ -69,7 +69,7 @@ func (self PrecompiledAccount) Call(in []byte) []byte {
 
 // Precompiled contains the default set of ethereum contracts
 var PrecompiledPreAtlantis = PrecompiledContracts()
-var PrecompiledAtlantis = func () (map[string]*PrecompiledAccount) {
+var PrecompiledAtlantis = func() map[string]*PrecompiledAccount {
 	a := PrecompiledContracts()
 	b := PrecompiledContractsAtlantis()
 	precompiles := make(map[string]*PrecompiledAccount)
@@ -175,7 +175,7 @@ func PrecompiledContractsAtlantis() map[string]*PrecompiledAccount {
 			gas.Div(gas, new(big.Int).SetUint64(ModExpQuadCoeffDiv))
 
 			if gas.BitLen() > 64 {
-				return big.NewInt(1 << 63 - 1)
+				return big.NewInt(1<<63 - 1)
 			}
 			return gas
 		}, bigModExp},
@@ -193,8 +193,8 @@ func PrecompiledContractsAtlantis() map[string]*PrecompiledAccount {
 		// bn256Pairing
 		string(common.LeftPadBytes([]byte{8}, 20)): {func(in []byte) *big.Int {
 			l := len(in)
-			n := big.NewInt(100000) 
-			p := big.NewInt(int64(l/192))
+			n := big.NewInt(100000)
+			p := big.NewInt(int64(l / 192))
 			p.Mul(p, big.NewInt(80000))
 			return n.Add(n, p)
 		}, bn256Pairing},
@@ -221,7 +221,7 @@ func ecrecoverFunc(in []byte) []byte {
 	v := byte(vbig.Uint64())
 
 	// tighter sig s values in homestead only apply to tx sigs
-	if !crypto.ValidateSignatureValues(v, r, s, false) {
+	if !allZero(in[32:63]) || !crypto.ValidateSignatureValues(v, r, s, false) {
 		glog.V(logger.Detail).Infof("ECRECOVER error: v, r or s value invalid")
 		return nil
 	}
