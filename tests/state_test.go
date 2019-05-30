@@ -675,7 +675,7 @@ func TestAllETH(t *testing.T) {
 
 	skipTests := make(map[string]string)
 
-	// Bugs in these tests (Always skip)
+	// Edge case consensus related tests (expect failure on these)
 	skipTests["RevertPrecompiledTouch.json/Byzantium/0"] = "Bug in Test"
 	skipTests["RevertPrecompiledTouch.json/Byzantium/3"] = "Bug in Test"
 	skipTests["RevertPrecompiledTouch.json/Constantinople/0"] = "Bug in Test"
@@ -702,17 +702,6 @@ func TestAllETH(t *testing.T) {
 	skipTests["randomStatetest642.json"] = "random unimplemented"
 	skipTests["randomStatetest644.json"] = "random unimplemented"
 	skipTests["randomStatetest645.json"] = "random unimplemented"
-
-	skipTests["RevertPrecompiledTouch.json"] = "precompiled unimplemented"
-	skipTests["RevertPrecompiledTouch_nonce.json"] = "precompiled unimplemented"
-	skipTests["RevertPrecompiledTouch_storage.json"] = "precompiled unimplemented"
-	skipTests["RevertPrecompiledTouch_noncestorage.json"] = "precompiled unimplemented"
-	skipTests["create_callprecompile_returndatasize.json"] = "precompiled unimplemented"
-	skipTests["modexp_modsize0_returndatasize.json"] = "precompiled unimplemented"
-	skipTests["static_CallEcrecover0_0input.json/Byzantium/5"] = "precompiled unimplemented"
-	skipTests["static_CallEcrecover0_0input.json/Byzantium/6"] = "precompiled unimplemented"
-	skipTests["static_CallEcrecover0_0input.json/Byzantium/7"] = "precompiled unimplemented"
-	skipTests["static_CallEcrecover0_0input.json/Byzantium/8"] = "precompiled unimplemented"
 
 	// EIP 158/161 skipped tests
 	skipTests["RevertPrefoundEmptyOOG.json"] = "State trie clearing unimplemented"
