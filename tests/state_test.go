@@ -689,8 +689,6 @@ func TestAllETH(t *testing.T) {
 	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/0"] = "Bug in Test"
 	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/3"] = "Bug in Test"
 
-	// TODO: Remove following skipped tests:
-
 	// EIP 684 Implementations
 	skipTests["TransactionCollisionToEmptyButCode.json"] = "Not Implemented"
 	skipTests["TransactionCollisionToEmpty.json"] = "Not Implemented"
@@ -721,11 +719,12 @@ func TestAllETH(t *testing.T) {
 	skipTests["FailedCreateRevertsDeletion.json"] = "State trie clearing unimplemented"
 
 	unsupportedDirs := map[string]bool{
-		"stZeroKnowledge":         true,
-		"stZeroKnowledge2":        true,
-		"stPreCompiledContracts":  true,
-		"stPreCompiledContracts2": true,
-		"stCreate2":               true,
+		"stStaticCall":     true,
+		"stZeroKnowledge":  true,
+		"stZeroKnowledge2": true,
+		"stReturnDataTest": true,
+		"stCodeSizeLimit":  true,
+		"stCreate2":        true,
 	}
 
 	for _, dn := range dirNames {
