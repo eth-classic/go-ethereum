@@ -29,7 +29,7 @@ var (
 	callCreateDepthMax = 1024 // limit call/create stack
 	errCallCreateDepth = fmt.Errorf("Max call depth exceeded (%d)", callCreateDepthMax)
 
-	maxCodeSize = 24576
+	maxCodeSize            = 24576
 	errMaxCodeSizeExceeded = fmt.Errorf("Max Code Size exceeded (%d)", maxCodeSize)
 )
 
@@ -152,7 +152,7 @@ func exec(env vm.Environment, caller vm.ContractRef, address, codeAddr *common.A
 	// When an error was returned by the EVM or when setting the creation code
 	// above we revert to the snapshot and consume any gas remaining. Additionally
 	// when we're in homestead this also counts for code storage gas errors.
-	if createAccount && maxCodeSizeExceeded ||(err != nil && (env.RuleSet().IsHomestead(env.BlockNumber()) || err != vm.CodeStoreOutOfGasError)) {
+	if createAccount && maxCodeSizeExceeded || (err != nil && (env.RuleSet().IsHomestead(env.BlockNumber()) || err != vm.CodeStoreOutOfGasError)) {
 		env.RevertToSnapshot(snapshotPreTransfer)
 		if err != vm.ErrRevert {
 			contract.UseGas(contract.Gas)
