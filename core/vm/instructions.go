@@ -274,9 +274,6 @@ func opMulmod(pc *uint64, env Environment, contract *Contract, memory *Memory, s
 	return nil, nil
 }
 
-<<<<<<< HEAD
-func opSha3(pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) ([]byte, error) {
-=======
 func opSHL(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) {
 	shift, value := math.U256(stack.pop()), math.U256(stack.pop())
 
@@ -321,7 +318,6 @@ func opSAR(instr instruction, pc *uint64, env Environment, contract *Contract, m
 }
 
 func opSha3(instr instruction, pc *uint64, env Environment, contract *Contract, memory *Memory, stack *stack) {
->>>>>>> Finished SAR, SHR, SHL opcodes. EIP 145
 	offset, size := stack.pop(), stack.pop()
 	hash := crypto.Keccak256(memory.Get(offset.Int64(), size.Int64()))
 
