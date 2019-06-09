@@ -9,22 +9,8 @@ BINARY=bin
 BUILD_TIME=`date +%FT%T%z`
 COMMIT=`git log --pretty=format:'%h' -n 1`
 
-# Choose to install geth with or without SputnikVM.
-# WITH_SVM?=1
-
 # Provide default value of GOPATH, if it's not set in environment 
 export GOPATH?=${HOME}/go
-
-# LDFLAGS=-ldflags "-X main.Version="`git describe --tags`
-
-# setup: ## Install all the build and lint dependencies
-# 	go get -u github.com/alecthomas/gometalinter
-# 	go get -u github.com/golang/dep/...
-# 	go get -u github.com/pierrre/gotestcover
-# 	go get -u golang.org/x/tools/cmd/cover
-# 	go get -u github.com/omeid/go-resources/cmd/resources
-# 	dep ensure
-# 	gometalinter --install
 
 build: cmd/abigen cmd/bootnode cmd/disasm cmd/ethtest cmd/evm cmd/gethrpctest cmd/rlpdump cmd/geth ## Build a local snapshot binary version of all commands
 	@ls -ld $(BINARY)/*
@@ -76,7 +62,7 @@ install: ## Install all packages to $GOPATH/bin
 
 install_geth: chainconfig ## Install geth to $GOPATH/bin
 	$(info Installing $$GOPATH/bin/geth)
-	go install -tags="netgo" ./cmd/geth ; fi
+	go install -tags="netgo" ./cmd/geth
 
 fmt: ## gofmt and goimports all go files
 	find . -name '*.go' -not -wholename './vendor/*' -not -wholename './_vendor*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
@@ -103,11 +89,10 @@ lint: ## Run all the linters
 		./...
 
 test: ## Run all the tests
-	# echo 'mode: atomic' > coverage.txt && \
-	# go list ./... | xargs -n1 -I{} sh -c 'go test -covermode=atomic -coverprofile=coverage.tmp {} && \
-	# tail -n +2 coverage.tmp >> coverage.txt' && \
-	# rm coverage.tmp
-	go test ./...
+	echo 'mode: atomic' > coverage.txt && \
+	go list ./... | xargs -n1 -I{} sh -c 'go test -covermode=atomic -coverprofile=coverage.tmp {} && \
+	tail -n +2 coverage.tmp >> coverage.txt' && \
+	rm coverage.tmp
 
 cover: test ## Run all the tests and opens the coverage report
 	go tool cover -html=coverage.txt
