@@ -391,7 +391,11 @@ func TestCalcDifficulty1Mainnet(t *testing.T) {
 		new(big.Int).Add(defuseBlock, big.NewInt(0)):  calcDifficultyDefused(time, parentTime, new(big.Int).Add(defuseBlock, big.NewInt(0)), parentDiff),
 		new(big.Int).Add(defuseBlock, big.NewInt(1)):  calcDifficultyDefused(time, parentTime, new(big.Int).Add(defuseBlock, big.NewInt(1)), parentDiff),
 
-		big.NewInt(10000000): calcDifficultyDefused(time, parentTime, big.NewInt(10000000), parentDiff),
+		big.NewInt(10000000): calcDifficultyAtlantis(time, &types.Header{
+			Number:     big.NewInt(10000000),
+			Time:       new(big.Int).SetUint64(parentTime),
+			Difficulty: parentDiff,
+		}),
 	}
 
 	for parentNum, expected := range table {
@@ -469,7 +473,11 @@ func TestCalcDifficulty1Morden(t *testing.T) {
 		new(big.Int).Add(defuseBlock, big.NewInt(0)):  calcDifficultyDefused(time, parentTime, new(big.Int).Add(defuseBlock, big.NewInt(0)), parentDiff),
 		new(big.Int).Add(defuseBlock, big.NewInt(1)):  calcDifficultyDefused(time, parentTime, new(big.Int).Add(defuseBlock, big.NewInt(1)), parentDiff),
 
-		big.NewInt(10000000): calcDifficultyDefused(time, parentTime, big.NewInt(10000000), parentDiff),
+		big.NewInt(10000000): calcDifficultyAtlantis(time, &types.Header{
+			Number:     big.NewInt(10000000),
+			Time:       new(big.Int).SetUint64(parentTime),
+			Difficulty: parentDiff,
+		}),
 	}
 
 	for parentNum, expected := range table {
