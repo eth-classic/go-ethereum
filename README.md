@@ -49,14 +49,14 @@ make cmd/geth
 ```shell
 mkdir -p ./bin
 
-go build -o ./bin/geth -tags="netgo" ./cmd/geth
-go build -o ./bin/abigen ./cmd/abigen
-go build -o ./bin/bootnode ./cmd/bootnode
-go build -o ./bin/disasm ./cmd/disasm
-go build -o ./bin/ethtest ./cmd/ethtest
-go build -o ./bin/evm ./cmd/evm
-go build -o ./bin/gethrpctest ./cmd/gethrpctest
-go build -o ./bin/rlpdump ./cmd/rlpdump
+GO111MODULE=on go build -o ./bin/geth -tags="netgo" ./cmd/geth
+GO111MODULE=on go build -o ./bin/abigen ./cmd/abigen
+GO111MODULE=on go build -o ./bin/bootnode ./cmd/bootnode
+GO111MODULE=on go build -o ./bin/disasm ./cmd/disasm
+GO111MODULE=on go build -o ./bin/ethtest ./cmd/ethtest
+GO111MODULE=on go build -o ./bin/evm ./cmd/evm
+GO111MODULE=on go build -o ./bin/gethrpctest ./cmd/gethrpctest
+GO111MODULE=on go build -o ./bin/rlpdump ./cmd/rlpdump
 ```
 
 
