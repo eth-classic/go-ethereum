@@ -9,8 +9,9 @@ ADD . /go-ethereum
 ARG github_token
 
 RUN git config --global url."https://$github_token:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+# End credential configuration section
 
-RUN cd /go-ethereum && make geth
+RUN cd /go-ethereum && make cmd/geth
 # RUN cd /go-ethereum && go build -o ./bin/geth -tags="netgo" ./cmd/geth
 
 # Pull Geth into a second stage deploy alpine container
