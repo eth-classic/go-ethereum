@@ -5,12 +5,6 @@ RUN apk add --no-cache make gcc musl-dev linux-headers git
 
 ADD . /go-ethereum
 
-# Set up github credential for pulling private go module dependencies (remove section once public repo)
-ARG github_token
-
-RUN git config --global url."https://$github_token:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-# End credential configuration section
-
 RUN cd /go-ethereum && make cmd/geth
 
 # Pull Geth into a second stage deploy alpine container
@@ -21,3 +15,4 @@ COPY --from=builder /go-ethereum/bin/geth /usr/local/bin/
 
 EXPOSE 8545 8546 30303 30303/udp
 ENTRYPOINT ["geth"]
+
