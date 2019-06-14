@@ -113,7 +113,7 @@ In case of using `--mine` together with `--fast`, geth will operate as described
 
 *Note:* To further increase geth's performace, you can use a `--cache=2054` flag to bump the memory allowance of the database (e.g. 2054MB) which can significantly improve sync times, especially for HDD users. This flag is optional and you can set it as high or as low as you'd like, though we'd recommend the 1GB - 2GB range.
 
-### Create andanage accounts
+### Create and manage accounts
 Geth is able to create, import, update, unlock, and otherwise manage your private (encrypted) key files. Key files are in JSON format and, by default, stored in the respective chain folder's `/keystore` directory; you can specify a custom location with the `--keystore` flag.
 
 ```
