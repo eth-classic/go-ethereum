@@ -17,6 +17,7 @@
 package types
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"math/big"
@@ -24,6 +25,11 @@ import (
 	"github.com/eth-classic/go-ethereum/common"
 	"github.com/eth-classic/go-ethereum/core/vm"
 	"github.com/eth-classic/go-ethereum/rlp"
+)
+
+var (
+	receiptStatusFailedRLP     = []byte{}
+	receiptStatusSuccessfulRLP = []byte{0x01}
 )
 
 type ReceiptStatus byte
@@ -57,14 +63,14 @@ func NewReceipt(root []byte, cumulativeGasUsed *big.Int) *Receipt {
 // EncodeRLP implements rlp.Encoder, and flattens the consensus fields of a receipt
 // into an RLP stream.
 func (r *Receipt) EncodeRLP(w io.Writer) error {
-	return rlp.Encode(w, []interface{}{r.PostState, r.CumulativeGasUsed, r.Bloom, r.Logs})
+	return rlp.Encode(w, []interface{}{r.statusEncoding(), r.CumulativeGasUsed, r.Bloom, r.Logs})
 }
 
 // DecodeRLP implements rlp.Decoder, and loads the consensus fields of a receipt
 // from an RLP stream.
 func (r *Receipt) DecodeRLP(s *rlp.Stream) error {
 	var receipt struct {
-		PostState         []byte
+		PostStateOrStatus []byte
 		CumulativeGasUsed *big.Int
 		Bloom             Bloom
 		Logs              vm.Logs
@@ -72,7 +78,36 @@ func (r *Receipt) DecodeRLP(s *rlp.Stream) error {
 	if err := s.Decode(&receipt); err != nil {
 		return err
 	}
-	r.PostState, r.CumulativeGasUsed, r.Bloom, r.Logs = receipt.PostState, receipt.CumulativeGasUsed, receipt.Bloom, receipt.Logs
+
+	if err := r.setStatus(receipt.PostStateOrStatus); err != nil {
+		return err
+	}
+
+	r.CumulativeGasUsed, r.Bloom, r.Logs = receipt.CumulativeGasUsed, receipt.Bloom, receipt.Logs
+	return nil
+}
+
+func (r *Receipt) statusEncoding() []byte {
+	if len(r.PostState) == 0 {
+		if r.Status == TxFailure {
+			return receiptStatusFailedRLP
+		}
+		return receiptStatusSuccessfulRLP
+	}
+	return r.PostState
+}
+
+func (r *Receipt) setStatus(postStateOrStatus []byte) error {
+	switch {
+	case bytes.Equal(postStateOrStatus, receiptStatusSuccessfulRLP):
+		r.Status = TxSuccess
+	case bytes.Equal(postStateOrStatus, receiptStatusFailedRLP):
+		r.Status = TxFailure
+	case len(postStateOrStatus) == len(common.Hash{}):
+		r.PostState = postStateOrStatus
+	default:
+		return fmt.Errorf("invalid receipt status %x", postStateOrStatus)
+	}
 	return nil
 }
 
@@ -101,14 +136,14 @@ func (r *ReceiptForStorage) EncodeRLP(w io.Writer) error {
 	for i, log := range r.Logs {
 		logs[i] = (*vm.LogForStorage)(log)
 	}
-	return rlp.Encode(w, []interface{}{r.PostState, r.CumulativeGasUsed, r.Bloom, r.TxHash, r.ContractAddress, logs, r.GasUsed, r.Status})
+	return rlp.Encode(w, []interface{}{(*Receipt)(r).statusEncoding(), r.CumulativeGasUsed, r.Bloom, r.TxHash, r.ContractAddress, logs, r.GasUsed, r.Status})
 }
 
 // DecodeRLP implements rlp.Decoder, and loads both consensus and implementation
 // fields of a receipt from an RLP stream.
 func (r *ReceiptForStorage) DecodeRLP(s *rlp.Stream) error {
 	var oldReceipt struct {
-		PostState         []byte
+		PostStateOrStatus []byte
 		CumulativeGasUsed *big.Int
 		Bloom             Bloom
 		TxHash            common.Hash
@@ -117,7 +152,7 @@ func (r *ReceiptForStorage) DecodeRLP(s *rlp.Stream) error {
 		GasUsed           *big.Int
 	}
 	var receipt struct {
-		PostState         []byte
+		PostStateOrStatus []byte
 		CumulativeGasUsed *big.Int
 		Bloom             Bloom
 		TxHash            common.Hash
@@ -126,7 +161,6 @@ func (r *ReceiptForStorage) DecodeRLP(s *rlp.Stream) error {
 		GasUsed           *big.Int
 		Status            ReceiptStatus
 	}
-	receipt.Status = TxStatusUnknown
 
 	raw, err := s.Raw()
 	if err != nil {
@@ -137,7 +171,7 @@ func (r *ReceiptForStorage) DecodeRLP(s *rlp.Stream) error {
 		if err := rlp.DecodeBytes(raw, &oldReceipt); err != nil {
 			return err
 		}
-		receipt.PostState = oldReceipt.PostState
+		receipt.PostStateOrStatus = oldReceipt.PostStateOrStatus
 		receipt.CumulativeGasUsed = oldReceipt.CumulativeGasUsed
 		receipt.Bloom = oldReceipt.Bloom
 		receipt.TxHash = oldReceipt.TxHash
@@ -147,8 +181,12 @@ func (r *ReceiptForStorage) DecodeRLP(s *rlp.Stream) error {
 		receipt.Status = TxStatusUnknown
 
 	}
+
+	if err := (*Receipt)(r).setStatus(receipt.PostStateOrStatus); err != nil {
+		return err
+	}
 	// Assign the consensus fields
-	r.PostState, r.CumulativeGasUsed, r.Bloom = receipt.PostState, receipt.CumulativeGasUsed, receipt.Bloom
+	r.PostState, r.CumulativeGasUsed, r.Bloom = receipt.PostStateOrStatus, receipt.CumulativeGasUsed, receipt.Bloom
 	r.Logs = make(vm.Logs, len(receipt.Logs))
 	for i, log := range receipt.Logs {
 		r.Logs[i] = (*vm.Log)(log)
