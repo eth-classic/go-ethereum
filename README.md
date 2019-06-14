@@ -1,13 +1,12 @@
-<!-- [![MacOS Build Status](https://circleci.com/gh/eth-classic/go-ethereum/tree/master.svg?style=shield)](https://circleci.com/gh/eth-classic/go-ethereum/tree/master) -->
+<!-- [![MacOS Build Status](https://circleci.com/gh/eth-classic/go-ethereum/tree/master.svg?style=shield)](https://circleci.com/gh/eth-classic/go-ethereum/tree/master) 
 [![Go Report Card](https://goreportcard.com/badge/github.com/eth-classic/go-ethereum)](https://goreportcard.com/report/github.com/eth-classic/go-ethereum)
 [![API Reference](https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f6c616e672f6764646f3f7374617475732e737667
 )](https://godoc.org/github.com/eth-classic/go-ethereum)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/eth-classic/go-ethereum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/eth-classic/go-ethereum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) -->
 
-## Ethereum Go (Ethereum Classic Blockchain)
+## Geth Classic 
 
-Official Go language implementation of the Ethereum protocol supporting the
-_original_ chain. Ethereum Classic (ETC) offers a censorship-resistant and powerful application platform for developers in parallel to Ethereum (ETHF), while differentially rejecting the DAO bailout.
+Official Go-language implementation of the Ethereum Classic protocol. Ethereum Classic (ETC) offers a censorship-resistant and powerful application platform for developers in parallel to the Ethereum Foundation network (ETH), while differentially rejecting the DAO transition.
 
 ## Install
 
@@ -16,57 +15,56 @@ _original_ chain. Ethereum Classic (ETC) offers a censorship-resistant and power
 If your heart is set on the bleeding edge, install from source. However, please be advised that you may encounter some strange things, and we can't prioritize support beyond the release versions. Recommended for developers only.
 
 #### Dependencies
-Building geth requires both Go >=1.12 and a C compiler. On Linux systems,
-a C compiler can, for example, by installed with `sudo apt-get install
-build-essential`. On Mac: `xcode-select --install`.
+Building geth requires both Go >=1.12 and a C compiler. On Linux systems, a C compiler can, for example, by installed with `sudo apt-get install build-essential`. On Mac: `xcode-select --install`.
 
-#### Install and build command executables
+#### Build using `make`
 
-With [go modules](https://github.com/golang/go/wiki/Modules), dependencies will be downloaded and cached when running build or test commands automatically. If running outside of `$GOPATH` or GO111MODULE=on variable is exported, GO111MODULE=on does not need to be specified when running the following commands.
+With [go modules](https://github.com/golang/go/wiki/Modules), dependencies will be downloaded and cached when running build or test commands automatically.
 
 Clone the repository:
 
 ```
-git clone https://github.com/eth-classic/go-ethereum.git
+git clone https://github.com/eth-classic/go-ethereum.git getc && cd getc
 ```
 
-Build executables simply with:
+Build all executables simply with:
 
 ```
 make build
 ```
 
-- just __geth__:
+Build just Geth Classic with:
 ```
 make cmd/geth
 ```
 
-> For further `make` information, use `make help` to see a list and description of available make
-> commands.
+> For further `make` information, use `make help` to see a list and description of available make commands.
 
-##### With go:
+##### Build using `go`
+
+The following commands work starting with Go version 1.12+; for Go version 1.11, prepend the commands with `GO111MODULE=on` to enable Go modules.
 
 ```shell
 mkdir -p ./bin
 
-GO111MODULE=on go build -o ./bin/geth -tags="netgo" ./cmd/geth
-GO111MODULE=on go build -o ./bin/abigen ./cmd/abigen
-GO111MODULE=on go build -o ./bin/bootnode ./cmd/bootnode
-GO111MODULE=on go build -o ./bin/disasm ./cmd/disasm
-GO111MODULE=on go build -o ./bin/ethtest ./cmd/ethtest
-GO111MODULE=on go build -o ./bin/evm ./cmd/evm
-GO111MODULE=on go build -o ./bin/gethrpctest ./cmd/gethrpctest
-GO111MODULE=on go build -o ./bin/rlpdump ./cmd/rlpdump
+go build -o ./bin/geth -ldflags "-X main.Version="`git describe --tags` -tags="netgo" ./cmd/geth
+go build -o ./bin/abigen ./cmd/abigen
+go build -o ./bin/bootnode ./cmd/bootnode
+go build -o ./bin/disasm ./cmd/disasm
+go build -o ./bin/ethtest ./cmd/ethtest
+go build -o ./bin/evm ./cmd/evm
+go build -o ./bin/gethrpctest ./cmd/gethrpctest
+go build -o ./bin/rlpdump ./cmd/rlpdump
 ```
-
-
 
 ##### Building a specific release
 All the above commands results with building binaries from `HEAD`. To use a specific release/tag, use the following before installing:
 
 ```shell
-git checkout <TAG OR REVISION>
+git checkout v6.0.1
 ```
+
+Where `v6.0.1` can be either a release tag or a specific feature branch.
 
 ## Executables
 
@@ -82,7 +80,7 @@ This repository includes several wrappers/executables found in the `cmd` directo
 | `gethrpctest` | Developer utility tool to support our [ethereum/rpc-test](https://github.com/eth-classic/rpc-tests) test suite which validates baseline conformity to the [Ethereum JSON RPC](https://github.com/ethereumproject/wiki/wiki/JSON-RPC) specs. Please see the [test suite's readme](https://github.com/eth-classic/rpc-tests/blob/master/README.md) for details. |
 | `rlpdump` | Developer utility tool to convert binary RLP ([Recursive Length Prefix](https://github.com/ethereumproject/wiki/wiki/RLP)) dumps (data encoding used by the Ethereum protocol both network as well as consensus wise) to user friendlier hierarchical representation (e.g. `rlpdump --hex CE0183FFFFFFC4C304050583616263`). |
 
-## :green_book: Geth: the basics
+## :green_book: Geth Classic: the basics
 
 ### Data directory
 By default, geth will store all node and blockchain data in a __parent directory__ depending on your OS:
