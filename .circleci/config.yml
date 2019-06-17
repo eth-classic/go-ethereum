@@ -15,12 +15,8 @@ jobs:
       - run:
           name: Release
           command: |
-            ls -lsha ./
-            ls -lsha ./bin/
-            ls -lsha ./artifacts/
-            ./geth version
+            sha256sum ./bin/*
             ./bin/geth version
-            ./artifacts/bin/geth version
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
