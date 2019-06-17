@@ -15,19 +15,23 @@ jobs:
       - run:
           name: Release Artifacts
           command: |
-            sha256sum ./bin/abigen > ./bin/abigen.sha256
-            sha256sum ./bin/bootnode > ./bin/bootnode.sha256
-            sha256sum ./bin/disasm > ./bin/disasm.sha256
-            sha256sum ./bin/ethtest > ./bin/ethtest.sha256
-            sha256sum ./bin/evm > ./bin/evm.sha256
-            sha256sum ./bin/geth > ./bin/geth.sha256
-            sha256sum ./bin/rlpdump > ./bin/rlpdump.sha256
+            pushd ./bin/
+            sha256sum ./abigen > ./abigen.sha256
+            sha256sum ./bootnode > ./bootnode.sha256
+            sha256sum ./disasm > ./disasm.sha256
+            sha256sum ./ethtest > ./ethtest.sha256
+            sha256sum ./evm > ./evm.sha256
+            sha256sum ./geth > ./geth.sha256
+            sha256sum ./rlpdump > ./rlpdump.sha256
+            popd
             mkdir ./artifacts/
             VERSION=$(bin/geth version | grep -i version | head -n1 | awk '{print $2}')
             cp -rv ./bin ./geth-classic-${VERSION}-linux
             tar -zcvf geth-classic-${VERSION}-linux.tar.gz geth-classic-${VERSION}-linux
             cp -v ./geth-classic-${VERSION}-linux.tar.gz ./artifacts/
-            sha256sum ./artifacts/geth-classic-${VERSION}-linux.tar.gz > ./artifacts/geth-classic-${VERSION}-linux.sha256
+            pushd ./artifacts
+            sha256sum ./geth-classic-${VERSION}-linux.tar.gz > ./geth-classic-${VERSION}-linux.sha256
+            popd
       - store_artifacts:
           path: ~/go-ethereum/artifacts
       - save_cache:
