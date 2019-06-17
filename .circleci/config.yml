@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build-linux-go-1-12:
+  build-linux-go-1.12:
     working_directory: ~/go-ethereum
     docker:
       - image: circleci/golang:1.12
@@ -12,11 +12,20 @@ jobs:
       - run:
           name: Compile
           command: make build
+      - run:
+          name: Release
+          command: |
+            ls -lsha ./
+            ls -lsha ./bin/
+            ls -lsha ./artifacts/
+            ./geth version
+            ./bin/geth version
+            ./artifacts/bin/geth version
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-  tests-linux-go-1-12:
+  tests-linux-go-1.12:
     working_directory: ~/go-ethereum
     docker:
       - image: circleci/golang:1.12
@@ -32,25 +41,10 @@ jobs:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-  relse-linux-go-1-12:
-    working_directory: ~/go-ethereum
-    docker:
-      - image: circleci/golang:1.12
-    steps:
-      - attach_workspace:
-          at: ./artifacts
-      - run:
-          name: Check Version
-          command: |
-            ls -lsha ./
-            ls -lsha ./artifacts
-            bin/geth version
-            go get github.com/tcnksm/ghr
 
 workflows:
   version: 2
   release:
     jobs:
-      - build-linux-go-1-12
-      - tests-linux-go-1-12
-      - relse-linux-go-1-12
+      - tests-linux-go-1.12
+      - build-linux-go-1.12
