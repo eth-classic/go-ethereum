@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build-linux-go-1.12:
+  build-linux-go-1-12:
     working_directory: ~/go-ethereum
     docker:
       - image: circleci/golang:1.12
@@ -16,7 +16,7 @@ jobs:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-  tests-linux-go-1.12:
+  tests-linux-go-1-12:
     working_directory: ~/go-ethereum
     docker:
       - image: circleci/golang:1.12
@@ -32,7 +32,7 @@ jobs:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-  release-linux-go-1.12:
+  release-linux-go-1-12:
     working_directory: ~/go-ethereum
     docker:
       - image: circleci/golang:1.12
@@ -51,8 +51,10 @@ workflows:
   version: 2
   main:
     jobs:
-      - build-linux-go-1.12
-      - tests-linux-go-1.12
-          requires: build-linux-go-1.12
-      - release-linux-go-1.12
-          requires: build-linux-go-1.12
+      - build-linux-go-1-12
+      - tests-linux-go-1-12
+          requires:
+            - build-linux-go-1-12
+      - release-linux-go-1-12
+          requires:
+            - build-linux-go-1-12
