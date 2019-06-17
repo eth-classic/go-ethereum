@@ -352,7 +352,7 @@ func TestCalcDifficulty1Mainnet(t *testing.T) {
 
 	// Atlantis
 	atlantisBlock := config.ForkByName("Atlantis").Block
-	if defuseBlock == nil {
+	if atlantisBlock == nil {
 		t.Error("missing Atlantis fork block")
 	}
 
@@ -447,7 +447,7 @@ func TestCalcDifficulty1Morden(t *testing.T) {
 
 	// Atlantis
 	atlantisBlock := config.ForkByName("Atlantis").Block
-	if defuseBlock == nil {
+	if atlantisBlock == nil {
 		t.Error("missing Atlantis fork block")
 	}
 
