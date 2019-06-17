@@ -53,8 +53,6 @@ workflows:
     jobs:
       - build-linux-go-1.12
       - tests-linux-go-1.12
-          requires:
-            - build-linux-go-1.12
+          requires: build-linux-go-1.12
       - release-linux-go-1.12
-          requires:
-            - build-linux-go-1.12
+          requires: build-linux-go-1.12
