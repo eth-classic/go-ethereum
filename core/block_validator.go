@@ -314,7 +314,6 @@ func CalcDifficulty(config *ChainConfig, time uint64, parent *types.Header) *big
 
 // Some weird constants to avoid constant memory allocs for them.
 var (
-	expDiffPeriod = big.NewInt(100000)
 	big1          = big.NewInt(1)
 	big2          = big.NewInt(2)
 	big9          = big.NewInt(9)
@@ -323,6 +322,12 @@ var (
 )
 
 func calcDifficultyAtlantis(time uint64, parent *types.Header) *big.Int {
+	// https://github.com/ethereum/EIPs/issues/100.
+	// algorithm:
+	// diff = (parent_diff +
+	//         (parent_diff / 2048 * max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // 9), -99))
+	//        ) + 2^(periodCount - 2)
+
 	bigTime := new(big.Int).SetUint64(time)
 	bigParentTime := parent.Time
 
