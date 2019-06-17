@@ -24,10 +24,10 @@ jobs:
             sha256sum ./bin/rlpdump > ./bin/rlpdump.sha256
             mkdir ./artifacts/
             VERSION=$(bin/geth version | grep -i version | head -n1 | awk '{print $2}')
-            cp -rv ./bin ./geth-classic-${VERSION}
-            tar -zcvf geth-classic-${VERSION}.tar.gz geth-classic-${VERSION}
-            cp -v ./geth-classic-${VERSION}.tar.gz ./artifacts/
-            sha256sum ./artifacts/geth-classic-${VERSION}.tar.gz > ./artifacts/geth-classic-${VERSION}.sha256
+            cp -rv ./bin ./geth-classic-${VERSION}-linux
+            tar -zcvf geth-classic-${VERSION}-linux.tar.gz geth-classic-${VERSION}-linux
+            cp -v ./geth-classic-${VERSION}-linux.tar.gz ./artifacts/
+            sha256sum ./artifacts/geth-classic-${VERSION}-linux.tar.gz > ./artifacts/geth-classic-${VERSION}-linux.sha256
       - store_artifacts:
           path: ~/go-ethereum/artifacts
       - save_cache:
