@@ -10,10 +10,10 @@ jobs:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
       - run:
-          name: Compile
+          name: Compile Binaries
           command: make build
       - run:
-          name: Release
+          name: Release Artifacts
           command: |
             sha256sum ./bin/abigen > ./bin/abigen.sha256
             sha256sum ./bin/bootnode > ./bin/bootnode.sha256
@@ -24,9 +24,9 @@ jobs:
             sha256sum ./bin/rlpdump > ./bin/rlpdump.sha256
             mkdir ./artifacts/
             VERSION=$(bin/geth version | grep -i version | head -n1 | awk '{print $2}')
-            cp ./bin ./geth-classic-{$VERSION}
+            cp -rv ./bin ./geth-classic-{$VERSION}
             tar -zcvf geth-classic-{$VERSION}.tar.gz geth-classic-{$VERSION}
-            cp ./geth-classic-{$VERSION}.tar.gz ./artifacts/
+            cp -v ./geth-classic-{$VERSION}.tar.gz ./artifacts/
             sha256sum ./artifacts/geth-classic-{$VERSION}.tar.gz > ./artifacts/geth-classic-{$VERSION}.sha256
       - store_artifacts:
           path: ~/go-ethereum/artifacts
@@ -44,7 +44,7 @@ jobs:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
       - run:
-          name: Run tests
+          name: Run All Tests
           command: make test
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
