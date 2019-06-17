@@ -323,13 +323,6 @@ var (
 )
 
 func calcDifficultyAtlantis(time uint64, parent *types.Header) *big.Int {
-	bombDelayFromParent := new(big.Int).Sub(big.NewInt(3000000), big1)
-	// https://github.com/ethereum/EIPs/issues/100.
-	// algorithm:
-	// diff = (parent_diff +
-	//         (parent_diff / 2048 * max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // 9), -99))
-	//        ) + 2^(periodCount - 2)
-
 	bigTime := new(big.Int).SetUint64(time)
 	bigParentTime := parent.Time
 
@@ -357,23 +350,6 @@ func calcDifficultyAtlantis(time uint64, parent *types.Header) *big.Int {
 	// minimum difficulty can ever be (before exponential factor)
 	if x.Cmp(params.MinimumDifficulty) < 0 {
 		x.Set(params.MinimumDifficulty)
-	}
-	// calculate a fake block number for the ice-age delay
-	// Specification: https://eips.ethereum.org/EIPS/eip-1234
-	fakeBlockNumber := new(big.Int)
-	if parent.Number.Cmp(bombDelayFromParent) >= 0 {
-		fakeBlockNumber = fakeBlockNumber.Sub(parent.Number, bombDelayFromParent)
-	}
-	// for the exponential factor
-	periodCount := fakeBlockNumber
-	periodCount.Div(periodCount, expDiffPeriod)
-
-	// the exponential factor, commonly referred to as "the bomb"
-	// diff = diff + 2^(periodCount - 2)
-	if periodCount.Cmp(big1) > 0 {
-		y.Sub(periodCount, big2)
-		y.Exp(big2, y, nil)
-		x.Add(x, y)
 	}
 	return x
 }
