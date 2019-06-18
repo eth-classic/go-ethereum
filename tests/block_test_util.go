@@ -59,7 +59,6 @@ type btJSON struct {
 type btBlock struct {
 	BlockHeader  *btHeader
 	Rlp          string
-	Transactions []btTransaction
 	UncleHeaders []*btHeader
 }
 
@@ -90,18 +89,6 @@ type btHeader struct {
 	GasLimit   string
 	GasUsed    string
 	Timestamp  string
-}
-
-type btTransaction struct {
-	Data     string
-	GasLimit string
-	GasPrice string
-	Nonce    string
-	R        string
-	S        string
-	To       string
-	V        string
-	Value    string
 }
 
 func RunBlockTestWithReader(homesteadBlock, gasPriceFork *big.Int, r io.Reader, skipTests []string) error {
@@ -149,7 +136,12 @@ func runBlockTests(homesteadBlock, gasPriceFork *big.Int, bt map[string]*BlockTe
 			continue
 		}
 		// test the block
-		if err := runBlockTest(homesteadBlock, gasPriceFork, test); err != nil {
+		testConfig := *core.DefaultConfigMainnet.ChainConfig
+		testConfig.ForkByName("Homestead").Block = homesteadBlock
+		if gasPriceFork != nil {
+			testConfig.ForkByName("GasReprice").Block = gasPriceFork
+		}
+		if err := test.runBlockTest(testConfig); err != nil {
 			return fmt.Errorf("%s: %v", name, err)
 		}
 		glog.Infoln("Block test passed: ", name)
@@ -158,7 +150,7 @@ func runBlockTests(homesteadBlock, gasPriceFork *big.Int, bt map[string]*BlockTe
 	return nil
 }
 
-func runBlockTest(homesteadBlock, gasPriceFork *big.Int, test *BlockTest) error {
+func (test *BlockTest) runBlockTest(chainConfig core.ChainConfig) error {
 	// import pre accounts & construct test genesis block & state root
 	db, _ := ethdb.NewMemDatabase()
 	if _, err := test.InsertPreState(db); err != nil {
@@ -170,11 +162,6 @@ func runBlockTest(homesteadBlock, gasPriceFork *big.Int, test *BlockTest) error 
 	core.WriteCanonicalHash(db, test.Genesis.Hash(), test.Genesis.NumberU64())
 	core.WriteHeadBlockHash(db, test.Genesis.Hash())
 	evmux := new(event.TypeMux)
-
-	core.DefaultConfigMainnet.ChainConfig.ForkByName("Homestead").Block = homesteadBlock
-	if gasPriceFork != nil {
-		core.DefaultConfigMainnet.ChainConfig.ForkByName("GasReprice").Block = gasPriceFork
-	}
 
 	chain, err := core.NewBlockChain(db, core.DefaultConfigMainnet.ChainConfig, ethash.NewShared(), evmux)
 	if err != nil {
@@ -275,7 +262,7 @@ func (t *BlockTest) TryBlocksInsert(blockchain *core.BlockChain) ([]btBlock, err
 				// block supposed to be invalid, continue with next
 				continue
 			}
-			return nil, fmt.Errorf("abort on block #%d (%x): %s", blocks[res.Index].Number(), blocks[res.Index].Hash(), res.Error)
+			return nil, fmt.Errorf("abort on block #%d: %s", blocks[res.Index].Number(), res.Error)
 		}
 		if b.BlockHeader == nil {
 			return nil, fmt.Errorf("Block insertion should have failed")
