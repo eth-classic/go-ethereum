@@ -48,8 +48,8 @@ jobs:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
       - run:
-          name: Download ethereum tests submodule
-          command: git submodule update --init
+          name: Initialize Ethereum Testsuite
+          command: git submodule update --init --recursive
       - run:
           name: Run All Tests
           command: make test
