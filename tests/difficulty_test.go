@@ -26,22 +26,22 @@ func TestETHDifficulty(t *testing.T) {
 	fileNames, _ := filepath.Glob(filepath.Join(ethBasicTestDir, "*"))
 
 	supportedTests := map[string]bool{
-		// "difficulty.json":          true, // Testing ETH mainnet config
-		"difficultyFrontier.json":  true,
-		"difficultyHomestead.json": true,
-		"difficultyByzantium.json": true,
+		"Frontier":  true,
+		"Homestead": true,
+		"Byzantium": true,
 	}
 
 	// Loop through each file
 	for _, fn := range fileNames {
 		fileName := fn[strings.LastIndex(fn, "/")+1 : len(fn)]
+		fork := fileName[strings.LastIndex(fileName, "difficulty")+1 : len(fileName)-5]
 
-		if !supportedTests[fileName] {
+		if !supportedTests[fork] {
 			continue
 		}
 
 		t.Run(fileName, func(t *testing.T) {
-			config := ChainConfigs[fileName]
+			config := ChainConfigs[fork]
 			tests := make(map[string]DifficultyTest)
 
 			if err := readJsonFile(fn, &tests); err != nil {

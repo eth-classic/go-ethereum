@@ -30,15 +30,17 @@ import (
 )
 
 var (
-	baseDir            = filepath.Join(".", "files")
-	blockTestDir       = filepath.Join(baseDir, "BlockchainTests")
-	stateTestDir       = filepath.Join(baseDir, "StateTests")
-	transactionTestDir = filepath.Join(baseDir, "TransactionTests")
-	vmTestDir          = filepath.Join(baseDir, "VMTests")
-	rlpTestDir         = filepath.Join(baseDir, "RLPTests")
-	ethDir             = filepath.Join(".", "testData")
-	ethGeneralStateDir = filepath.Join(ethDir, "GeneralStateTests")
-	ethBasicTestDir    = filepath.Join(ethDir, "BasicTests")
+	baseDir               = filepath.Join(".", "files")
+	blockTestDir          = filepath.Join(baseDir, "BlockchainTests")
+	stateTestDir          = filepath.Join(baseDir, "StateTests")
+	transactionTestDir    = filepath.Join(baseDir, "TransactionTests")
+	vmTestDir             = filepath.Join(baseDir, "VMTests")
+	rlpTestDir            = filepath.Join(baseDir, "RLPTests")
+	ethDir                = filepath.Join(".", "testData")
+	ethGeneralStateDir    = filepath.Join(ethDir, "GeneralStateTests")
+	ethBlockchainDir      = filepath.Join(ethDir, "BlockchainTests")
+	ethBlockchainStateDir = filepath.Join(ethBlockchainDir, "GeneralStateTests")
+	ethBasicTestDir       = filepath.Join(ethDir, "BasicTests")
 
 	BlockSkipTests = initBlockSkipTests()
 
@@ -146,8 +148,8 @@ var Forks = map[string]RuleSet{
 // ChainConfigs table used to map configs to difficulty test files
 var ChainConfigs = map[string]core.ChainConfig{
 	// "difficulty":              {},
-	"difficultyFrontier.json": {},
-	"difficultyHomestead.json": {
+	"Frontier": {},
+	"Homestead": {
 		Forks: []*core.Fork{
 			{
 				Name:  "Homestead",
@@ -169,17 +171,27 @@ var ChainConfigs = map[string]core.ChainConfig{
 			},
 		},
 	},
-	"difficultyByzantium.json": {
+	"Byzantium": {
 		Forks: []*core.Fork{
+			{
+				Name:     "Homestead",
+				Block:    big.NewInt(0),
+				Features: []*core.ForkFeature{},
+			},
 			{
 				Name:  "Atlantis",
 				Block: big.NewInt(0),
 				Features: []*core.ForkFeature{
 					{
+						ID: "gastable",
+						Options: core.ChainFeatureConfigOptions{
+							"type": "diehard",
+						},
+					},
+					{
 						ID: "difficulty",
 						Options: core.ChainFeatureConfigOptions{
-							"type":   "atlantis",
-							"length": 3000000,
+							"type": "atlantis",
 						},
 					},
 				},

@@ -21,6 +21,7 @@ import (
 	mrand "math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/eth-classic/go-ethereum/logger/glog"
@@ -233,5 +234,137 @@ func TestEIP150Bc(t *testing.T) {
 	err := RunBlockTest(big.NewInt(0), big.NewInt(10), filepath.Join(blockTestDir, "TestNetwork", "bcEIP150Test.json"), BlockSkipTests)
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestAllETHBlockchain(t *testing.T) {
+	dirNames, _ := filepath.Glob(filepath.Join(ethBlockchainDir, "*"))
+
+	skipTests := make(map[string]string)
+
+	unsupportedDirs := map[string]bool{
+		"GeneralStateTests": true,
+		"TransitionTests":   true,
+	}
+
+	for _, dn := range dirNames {
+		dirName := dn[strings.LastIndex(dn, "/")+1 : len(dn)]
+		if unsupportedDirs[dirName] {
+			continue
+		}
+
+		t.Run(dirName, func(t *testing.T) {
+			fns, _ := filepath.Glob(filepath.Join(ethBlockchainDir, dirName, "*"))
+			runETHBlockchainTests(t, fns, skipTests)
+		})
+	}
+}
+
+func TestETHBlockchainState(t *testing.T) {
+	dirNames, _ := filepath.Glob(filepath.Join(ethBlockchainStateDir, "*"))
+
+	skipTests := make(map[string]string)
+
+	// Edge case consensus related tests (expect failure on these)
+	skipTests["RevertPrecompiledTouch.json/Byzantium/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/Byzantium/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/Constantinople/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/Constantinople/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/ConstantinopleFix/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch.json/ConstantinopleFix/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/Byzantium/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/Byzantium/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/Constantinople/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/Constantinople/3"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/0"] = "Bug in Test"
+	skipTests["RevertPrecompiledTouch_storage.json/ConstantinopleFix/3"] = "Bug in Test"
+
+	// EIP 684 Implementations
+	skipTests["TransactionCollisionToEmptyButCode.json"] = "Not Implemented"
+	skipTests["TransactionCollisionToEmpty.json"] = "Not Implemented"
+	skipTests["TransactionCollisionToEmptyButNonce.json"] = "Not Implemented"
+	skipTests["CreateCollisionToEmpty.json"] = "Not Implemented"
+	skipTests["CreateHashCollision.json"] = "Not Implemented"
+	skipTests["createJS_ExampleContract.json"] = "Not Implemented"
+	skipTests["RevertDepthCreateAddressCollision.json"] = "Not Implemented"
+
+	// Random Test failures
+	// skipTests["randomStatetest644.json"] = "random unimplemented"
+	// skipTests["randomStatetest645.json"] = "random unimplemented"
+
+	// // EIP 158/161 skipped tests
+	// skipTests["RevertPrefoundEmptyOOG.json"] = "State trie clearing unimplemented"
+	// skipTests["FailedCreateRevertsDeletion.json"] = "State trie clearing unimplemented"
+
+	unsupportedDirs := map[string]bool{
+		"stZeroKnowledge":  true,
+		"stZeroKnowledge2": true,
+		"stCreate2":        true,
+	}
+
+	for _, dn := range dirNames {
+		dirName := dn[strings.LastIndex(dn, "/")+1 : len(dn)]
+		if unsupportedDirs[dirName] {
+			continue
+		}
+
+		t.Run(dirName, func(t *testing.T) {
+			fns, _ := filepath.Glob(filepath.Join(ethBlockchainStateDir, dirName, "*"))
+			runETHBlockchainTests(t, fns, skipTests)
+		})
+	}
+}
+
+func runETHBlockchainTests(t *testing.T, fileNames []string, skipTests map[string]string) {
+	supportedForks := map[string]bool{
+		"Frontier":  true,
+		"Homestead": true,
+		"Byzantium": true,
+	}
+
+	for _, fn := range fileNames {
+		fileName := fn[strings.LastIndex(fn, "/")+1 : len(fn)]
+
+		if fileName[strings.LastIndex(fileName, ".")+1:len(fileName)] != "json" {
+			continue
+		}
+
+		// Fill StateTest mapping with tests from file
+		blockTests, err := LoadBlockTests(fn)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+
+		// JSON file subtest
+		t.Run(fileName, func(t *testing.T) {
+			// Check if file is skipped
+			if skipTests[fileName] != "" {
+				t.Skipf("Test file %s skipped: %s", fileName, skipTests[fileName])
+			}
+
+			for key, test := range blockTests {
+				// Not supported implementations to test
+				fork := key[strings.LastIndex(key, "_")+1 : len(key)]
+				if !supportedForks[fork] {
+					continue
+				}
+				config := ChainConfigs[fork]
+				// fmt.Printf("%s, %v", fork, config.IsHomestead(big.NewInt(10)))
+
+				// test within the JSON file
+				t.Run(key, func(t *testing.T) {
+					// Check if subtest is skipped
+					if skipTests[fileName+"/"+key] != "" {
+						t.Skipf("subtest %s skipped: %s", key, skipTests[fileName+"/"+key])
+					}
+
+					if err := test.runBlockTest(config); err != nil {
+						t.Error(err)
+					}
+				})
+
+			}
+		})
 	}
 }
