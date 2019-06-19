@@ -330,7 +330,7 @@ func runETHBlockchainTests(t *testing.T, fileNames []string, skipTests map[strin
 		}
 
 		// Fill StateTest mapping with tests from file
-		blockTests, err := LoadBlockTests(fn)
+		blockTests, err := loadBlockTests(fn)
 		if err != nil {
 			t.Error(err)
 			continue
@@ -345,12 +345,11 @@ func runETHBlockchainTests(t *testing.T, fileNames []string, skipTests map[strin
 
 			for key, test := range blockTests {
 				// Not supported implementations to test
-				fork := key[strings.LastIndex(key, "_")+1 : len(key)]
+				fork := test.Json.Network
 				if !supportedForks[fork] {
 					continue
 				}
 				config := ChainConfigs[fork]
-				// fmt.Printf("%s, %v", fork, config.IsHomestead(big.NewInt(10)))
 
 				// test within the JSON file
 				t.Run(key, func(t *testing.T) {

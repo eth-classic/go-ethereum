@@ -49,11 +49,13 @@ type BlockTest struct {
 }
 
 type btJSON struct {
-	Blocks             []btBlock
-	GenesisBlockHeader btHeader
-	Pre                map[string]btAccount
-	PostState          map[string]btAccount
-	Lastblockhash      string
+	Blocks             []btBlock            `json:"blocks"`
+	GenesisBlockHeader btHeader             `json:"genesisBlockHeader"`
+	Pre                map[string]btAccount `json:"pre"`
+	PostState          map[string]btAccount `json:"postState"`
+	Lastblockhash      string               `json:"lastblockhash"`
+	Network            string               `json:"network"`
+	SealEngine         string               `json:"sealEngine"`
 }
 
 type btBlock struct {
@@ -163,7 +165,14 @@ func (test *BlockTest) runBlockTest(chainConfig core.ChainConfig) error {
 	core.WriteHeadBlockHash(db, test.Genesis.Hash())
 	evmux := new(event.TypeMux)
 
-	chain, err := core.NewBlockChain(db, core.DefaultConfigMainnet.ChainConfig, ethash.NewShared(), evmux)
+	var engine *ethash.Ethash
+	if test.Json.SealEngine == "NoProof" {
+		engine, _ = ethash.NewForTesting()
+	} else {
+		engine = ethash.NewShared()
+	}
+
+	chain, err := core.NewBlockChain(db, core.DefaultConfigMainnet.ChainConfig, engine, evmux)
 	if err != nil {
 		return err
 	}
@@ -531,13 +540,47 @@ func mustConvertUint(in string, base int) uint64 {
 	return out
 }
 
-func LoadBlockTests(file string) (map[string]*BlockTest, error) {
+func loadBlockTests(file string) (map[string]*BlockTest, error) {
 	btjs := make(map[string]*btJSON)
 	if err := readJsonFile(file, &btjs); err != nil {
 		return nil, err
 	}
 
-	return convertBlockTests(btjs)
+	tests, err := convertBlockTests(btjs)
+	if err != nil {
+		return nil, err
+	}
+
+	return cleanETHBlockTests(tests), nil
+}
+
+func cleanETHBlockTests(t map[string]*BlockTest) map[string]*BlockTest {
+	for _, blockTest := range t {
+		newPre := make(map[string]btAccount)
+		for k, v := range blockTest.preAccounts {
+			newPre[strings.TrimPrefix(k, "0x")] = v
+		}
+		blockTest.preAccounts = newPre
+
+		newPost := make(map[string]btAccount)
+		for k, v := range blockTest.postAccounts {
+			newPost[strings.TrimPrefix(k, "0x")] = v
+		}
+		blockTest.postAccounts = newPost
+
+		newJSONPre := make(map[string]btAccount)
+		for k, v := range blockTest.Json.Pre {
+			newJSONPre[strings.TrimPrefix(k, "0x")] = v
+		}
+		blockTest.Json.Pre = newJSONPre
+
+		newJSONPost := make(map[string]btAccount)
+		for k, v := range blockTest.Json.PostState {
+			newJSONPost[strings.TrimPrefix(k, "0x")] = v
+		}
+		blockTest.Json.PostState = newJSONPost
+	}
+	return t
 }
 
 // Nothing to see here, please move along...
