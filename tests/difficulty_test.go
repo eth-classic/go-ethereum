@@ -27,9 +27,10 @@ func TestETHDifficulty(t *testing.T) {
 
 	supportedTests := map[string]bool{
 		// "difficulty.json":          true, // Testing ETH mainnet config
-		"difficultyFrontier.json":  true,
-		"difficultyHomestead.json": true,
-		"difficultyByzantium.json": true,
+		"difficultyFrontier.json":        true,
+		"difficultyHomestead.json":       true,
+		"difficultyByzantium.json":       true,
+		"difficultyClassicAtlantis.json": true,
 	}
 
 	// Loop through each file

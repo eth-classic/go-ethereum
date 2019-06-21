@@ -141,6 +141,12 @@ var Forks = map[string]RuleSet{
 		DiehardBlock:             big.NewInt(0),
 		AtlantisBlock:            big.NewInt(0),
 	},
+	"ClassicAtlantis": {
+		HomesteadBlock:           big.NewInt(0),
+		HomesteadGasRepriceBlock: big.NewInt(0),
+		DiehardBlock:             big.NewInt(0),
+		AtlantisBlock:            big.NewInt(0),
+	},
 }
 
 // ChainConfigs table used to map configs to difficulty test files
@@ -170,6 +176,23 @@ var ChainConfigs = map[string]core.ChainConfig{
 		},
 	},
 	"difficultyByzantium.json": {
+		Forks: []*core.Fork{
+			{
+				Name:  "Atlantis",
+				Block: big.NewInt(0),
+				Features: []*core.ForkFeature{
+					{
+						ID: "difficulty",
+						Options: core.ChainFeatureConfigOptions{
+							"type":   "atlantis",
+							"length": 3000000,
+						},
+					},
+				},
+			},
+		},
+	},
+	"difficultyClassicAtlantis.json": {
 		Forks: []*core.Fork{
 			{
 				Name:  "Atlantis",

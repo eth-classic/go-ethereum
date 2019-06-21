@@ -112,7 +112,11 @@ func insertAccount(state *state.StateDB, saddr string, account Account) {
 	addr := common.HexToAddress(saddr)
 	state.SetCode(addr, common.Hex2Bytes(account.Code))
 	if i, err := strconv.ParseUint(account.Nonce, 0, 64); err != nil {
-		panic(err)
+		if account.Nonce == "" {
+			i = 0
+		} else {
+			panic(err)
+		}
 	} else {
 		state.SetNonce(addr, i)
 	}
